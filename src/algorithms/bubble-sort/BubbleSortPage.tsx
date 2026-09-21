@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
@@ -78,7 +79,10 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   }
 
   return (
-    <main className="bubble-sort">
+    <main
+      className="bubble-sort"
+      style={{ '--step-duration': `${delay}ms` } as CSSProperties}
+    >
       <header className="bubble-sort__header">
         <button type="button" onClick={onBack}>
           Back

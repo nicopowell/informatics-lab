@@ -3,6 +3,8 @@
   --bar-sorted: #22c55e;
   --bar-comparing: #f59e0b;
   --bar-swapped: #ef4444;
+  --bar-gap: 0.5rem;
+  --step-duration: 0.2s;
 
   min-height: 100svh;
   box-sizing: border-box;
@@ -90,7 +92,7 @@
 
 .bars {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--bar-gap);
   height: 18rem;
 }
 
@@ -116,9 +118,27 @@
   width: 100%;
   background: var(--bar);
   border-radius: 4px 4px 0 0;
-  transition:
-    height 0.2s ease,
-    background-color 0.2s ease;
+  transition: background-color 0.2s ease;
+}
+
+@keyframes bar-from-right {
+  from {
+    transform: translateX(calc(100% + var(--bar-gap)));
+  }
+}
+
+@keyframes bar-from-left {
+  from {
+    transform: translateX(calc(-100% - var(--bar-gap)));
+  }
+}
+
+.bar-slot--from-right {
+  animation: bar-from-right var(--step-duration) ease;
+}
+
+.bar-slot--from-left {
+  animation: bar-from-left var(--step-duration) ease;
 }
 
 .bar--sorted {

@@ -6,6 +6,10 @@ type ArrayBarsProps = {
 
 function ArrayBars({ step }: ArrayBarsProps) {
   const maxValue = step.values.length > 0 ? Math.max(...step.values) : 1
+  const swapLeftIndex =
+    step.kind === 'swap' && step.comparing !== null ? step.comparing[0] : null
+  const swapRightIndex =
+    step.kind === 'swap' && step.comparing !== null ? step.comparing[1] : null
 
   return (
     <>
@@ -28,8 +32,16 @@ function ArrayBars({ step }: ArrayBarsProps) {
             className += ' bar--swapped'
           }
 
+          let slotClassName = 'bar-slot'
+          if (index === swapLeftIndex) {
+            slotClassName += ' bar-slot--from-right'
+          }
+          if (index === swapRightIndex) {
+            slotClassName += ' bar-slot--from-left'
+          }
+
           return (
-            <div className="bar-slot" key={index}>
+            <div className={slotClassName} key={index}>
               <div className="bar-track">
                 <div
                   className={className}
