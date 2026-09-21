@@ -14,7 +14,7 @@ function ArrayBars({ step }: ArrayBarsProps) {
           const isComparing =
             step.comparing !== null &&
             (index === step.comparing[0] || index === step.comparing[1])
-          const isSwapped = isComparing && step.swapped
+          const isSwapped = isComparing && step.kind === 'swap'
           const isSorted = index >= step.sortedFrom
 
           let className = 'bar'
