@@ -3,7 +3,6 @@
   --bar-sorted: #22c55e;
   --bar-comparing: #f59e0b;
   --bar-swapped: #ef4444;
-  --bar-outline: #f8fafc;
 
   min-height: 100svh;
   box-sizing: border-box;
@@ -18,7 +17,7 @@
   margin-bottom: 2rem;
 }
 
-.bubble-sort__back {
+.bubble-sort button {
   font: inherit;
   padding: 0.35rem 0.75rem;
   cursor: pointer;
@@ -28,8 +27,27 @@
   border-radius: 4px;
 }
 
-.bubble-sort__back:hover {
+.bubble-sort button:hover {
   border-color: rgba(226, 232, 240, 0.7);
+}
+
+.bubble-sort__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.bubble-sort__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bubble-sort__field input[type='range'] {
+  width: 10rem;
 }
 
 .bubble-sort h1 {
@@ -75,8 +93,6 @@
 
 .bar--comparing {
   background: var(--bar-comparing);
-  outline: 2px dashed var(--bar-outline);
-  outline-offset: 2px;
 }
 
 /* Declared after .bar--comparing so the swap state wins when both apply. */
