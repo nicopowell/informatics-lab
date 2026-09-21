@@ -1,0 +1,126 @@
+.bubble-sort {
+  --bar: #64748b;
+  --bar-sorted: #22c55e;
+  --bar-comparing: #f59e0b;
+  --bar-swapped: #ef4444;
+  --bar-outline: #f8fafc;
+
+  min-height: 100svh;
+  box-sizing: border-box;
+  color: #e2e8f0;
+  padding: 2rem max(1.5rem, calc((100% - 60rem) / 2)) 4rem;
+}
+
+.bubble-sort__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.bubble-sort__back {
+  font: inherit;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(226, 232, 240, 0.35);
+  border-radius: 4px;
+}
+
+.bubble-sort__back:hover {
+  border-color: rgba(226, 232, 240, 0.7);
+}
+
+.bubble-sort h1 {
+  font-size: 1.75rem;
+}
+
+.bars {
+  display: flex;
+  gap: 0.5rem;
+  height: 18rem;
+}
+
+.bar-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.bar-track {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  background: var(--bar);
+  border-radius: 4px 4px 0 0;
+  transition:
+    height 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.bar--sorted {
+  background: var(--bar-sorted);
+}
+
+.bar--comparing {
+  background: var(--bar-comparing);
+  outline: 2px dashed var(--bar-outline);
+  outline-offset: 2px;
+}
+
+/* Declared after .bar--comparing so the swap state wins when both apply. */
+.bar--swapped {
+  background: var(--bar-swapped);
+  outline: none;
+}
+
+.bar-value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend__swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--bar);
+}
+
+.legend__swatch--comparing {
+  background: var(--bar-comparing);
+}
+
+.legend__swatch--swapped {
+  background: var(--bar-swapped);
+}
+
+.legend__swatch--sorted {
+  background: var(--bar-sorted);
+}
