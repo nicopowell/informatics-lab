@@ -50,6 +50,40 @@
   width: 10rem;
 }
 
+.bubble-sort button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.playback__buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.playback__speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.playback__speed input[type='range'] {
+  width: 8rem;
+}
+
+.playback__progress {
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
 .bubble-sort h1 {
   font-size: 1.75rem;
 }
