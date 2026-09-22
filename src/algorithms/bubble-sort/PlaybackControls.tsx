@@ -7,6 +7,7 @@ type PlaybackControlsProps = {
   atEnd: boolean
   comparison: number
   totalComparisons: number
+  swaps: number
   isDone: boolean
   speed: number
   onPlayPause: () => void
@@ -22,6 +23,7 @@ function PlaybackControls({
   atEnd,
   comparison,
   totalComparisons,
+  swaps,
   isDone,
   speed,
   onPlayPause,
@@ -61,6 +63,8 @@ function PlaybackControls({
 
       <span className="playback__progress">
         {isDone ? 'Sorted' : `Comparison ${comparison} / ${totalComparisons}`}
+        {' · '}
+        Swaps {swaps}
       </span>
     </div>
   )

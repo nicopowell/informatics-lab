@@ -90,6 +90,12 @@
   font-size: 1.75rem;
 }
 
+.step-description {
+  min-height: 1.5rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.05rem;
+}
+
 .bars {
   display: flex;
   gap: var(--bar-gap);

@@ -4,7 +4,7 @@ import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 import { frameMovement, toVisualFrames } from './visualFrames'
-import type { FrameMovement } from './visualFrames'
+import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -12,6 +12,23 @@ const MAX_SIZE = 40
 const INITIAL_SIZE = 8
 const INITIAL_SPEED = 5
 const MAX_DELAY = 1000
+
+function describeFrame(frame: BubbleSortFrame): string {
+  if (frame.kind === 'done' || frame.comparing === null) {
+    return 'The array is sorted'
+  }
+
+  const [leftIndex, rightIndex] = frame.comparing
+
+  if (frame.kind === 'compare') {
+    return `Compares ${frame.values[leftIndex]} and ${frame.values[rightIndex]}`
+  }
+
+  // This frame already shows the exchanged order, so the larger value sits on
+  // the right and the smaller one on the left.
+  const [larger, smaller] = [frame.values[rightIndex], frame.values[leftIndex]]
+  return `${larger} > ${smaller}, so they exchange places`
+}
 
 type BubbleSortPageProps = {
   onBack: () => void
@@ -127,6 +144,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
         atEnd={frameIndex >= lastFrameIndex}
         comparison={frame.comparison}
         totalComparisons={totalComparisons}
+        swaps={frame.swaps}
         isDone={frame.kind === 'done'}
         speed={speed}
         onPlayPause={handlePlayPause}
@@ -135,6 +153,10 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
         onReset={handleReset}
         onSpeedChange={setSpeed}
       />
+
+      <p className="step-description" aria-live="polite">
+        {describeFrame(frame)}
+      </p>
 
       <ArrayBars frame={frame} movement={movement} />
     </main>
