@@ -7,3 +7,10 @@
 .home p {
   margin-top: 1rem;
 }
+
+.home button {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  cursor: pointer;
+}

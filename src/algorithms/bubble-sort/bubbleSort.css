@@ -1,0 +1,224 @@
+.bubble-sort {
+  --bar: #64748b;
+  --bar-sorted: #22c55e;
+  --bar-comparing: #f59e0b;
+  --bar-swapped: #ef4444;
+  --bar-gap: 0.5rem;
+  --step-duration: 0.2s;
+
+  min-height: 100svh;
+  box-sizing: border-box;
+  color: #e2e8f0;
+  padding: 2rem max(1.5rem, calc((100% - 60rem) / 2)) 4rem;
+}
+
+.bubble-sort__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.bubble-sort button {
+  font: inherit;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  color: inherit;
+  background: transparent;
+  border: 1px solid rgba(226, 232, 240, 0.35);
+  border-radius: 4px;
+}
+
+.bubble-sort button:hover {
+  border-color: rgba(226, 232, 240, 0.7);
+}
+
+.bubble-sort__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.bubble-sort__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bubble-sort__field input[type='range'] {
+  width: 10rem;
+}
+
+.bubble-sort button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.playback__buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.playback__speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.playback__speed input[type='range'] {
+  width: 8rem;
+}
+
+.playback__progress {
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bubble-sort h1 {
+  font-size: 1.75rem;
+}
+
+.step-description {
+  min-height: 1.5rem;
+  margin: 0 0 1.5rem;
+  font-size: 1.05rem;
+}
+
+.bars {
+  display: flex;
+  gap: var(--bar-gap);
+  height: 18rem;
+}
+
+.bar-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.bar-track {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar {
+  width: 100%;
+  background: var(--bar);
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.2s ease;
+}
+
+@keyframes bar-exchange-from-right {
+  from {
+    transform: translateX(calc(100% + var(--bar-gap)));
+  }
+}
+
+@keyframes bar-exchange-from-left {
+  from {
+    transform: translateX(calc(-100% - var(--bar-gap)));
+  }
+}
+
+/* Duplicated on purpose: the browser does not restart an animation when only
+   the class name changes, so rewinding needs its own animation names. */
+@keyframes bar-rewind-from-right {
+  from {
+    transform: translateX(calc(100% + var(--bar-gap)));
+  }
+}
+
+@keyframes bar-rewind-from-left {
+  from {
+    transform: translateX(calc(-100% - var(--bar-gap)));
+  }
+}
+
+.bar-slot--exchange-right {
+  animation: bar-exchange-from-right var(--step-duration) ease;
+}
+
+.bar-slot--exchange-left {
+  animation: bar-exchange-from-left var(--step-duration) ease;
+}
+
+.bar-slot--rewind-right {
+  animation: bar-rewind-from-right var(--step-duration) ease;
+}
+
+.bar-slot--rewind-left {
+  animation: bar-rewind-from-left var(--step-duration) ease;
+}
+
+.bar--sorted {
+  background: var(--bar-sorted);
+}
+
+.bar--comparing {
+  background: var(--bar-comparing);
+}
+
+/* Declared after .bar--comparing so the swap state wins when both apply. */
+.bar--swapped {
+  background: var(--bar-swapped);
+  outline: none;
+}
+
+.bar-value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.legend__swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--bar);
+}
+
+.legend__swatch--comparing {
+  background: var(--bar-comparing);
+}
+
+.legend__swatch--swapped {
+  background: var(--bar-swapped);
+}
+
+.legend__swatch--sorted {
+  background: var(--bar-sorted);
+}

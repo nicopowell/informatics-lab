@@ -277,7 +277,14 @@ The project currently contains:
 
 * A Vite + React + TypeScript application.
 * A minimal Informatics Lab landing screen.
-* Cleaned-up Vite starter assets and styles.
-* Basic project documentation and development guidelines.
+* The first interactive experience: a Bubble Sort visualization.
+* Pure, deterministic algorithm logic and step generation, covered by tests.
+* Project documentation and development guidelines.
 
-The next implementation target is the first interactive algorithm visualization: Bubble Sort.
+The Bubble Sort experience lets the user generate an array, run the algorithm,
+pause, move forward and backward, control the speed, and read a description of
+each comparison and exchange.
+
+The next implementation target is a second algorithm experience. Building it
+should reveal which parts are genuinely shared and which are specific to each
+concept, before introducing any shared abstraction.
