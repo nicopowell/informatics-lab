@@ -3,8 +3,11 @@ const MAX_SPEED = 10
 
 type PlaybackControlsProps = {
   isPlaying: boolean
-  stepIndex: number
-  totalSteps: number
+  atStart: boolean
+  atEnd: boolean
+  comparison: number
+  totalComparisons: number
+  isDone: boolean
   speed: number
   onPlayPause: () => void
   onStepForward: () => void
@@ -15,8 +18,11 @@ type PlaybackControlsProps = {
 
 function PlaybackControls({
   isPlaying,
-  stepIndex,
-  totalSteps,
+  atStart,
+  atEnd,
+  comparison,
+  totalComparisons,
+  isDone,
   speed,
   onPlayPause,
   onStepForward,
@@ -24,9 +30,6 @@ function PlaybackControls({
   onReset,
   onSpeedChange,
 }: PlaybackControlsProps) {
-  const atStart = stepIndex === 0
-  const atEnd = stepIndex >= totalSteps - 1
-
   return (
     <div className="playback">
       <div className="playback__buttons">
@@ -57,7 +60,7 @@ function PlaybackControls({
       </label>
 
       <span className="playback__progress">
-        Step {stepIndex + 1} / {totalSteps}
+        {isDone ? 'Sorted' : `Comparison ${comparison} / ${totalComparisons}`}
       </span>
     </div>
   )

@@ -1,25 +1,26 @@
-import type { BubbleSortStep } from './bubbleSort'
+import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 
 type ArrayBarsProps = {
-  step: BubbleSortStep
+  frame: BubbleSortFrame
+  movement: FrameMovement
 }
 
-function ArrayBars({ step }: ArrayBarsProps) {
-  const maxValue = step.values.length > 0 ? Math.max(...step.values) : 1
-  const swapLeftIndex =
-    step.kind === 'swap' && step.comparing !== null ? step.comparing[0] : null
-  const swapRightIndex =
-    step.kind === 'swap' && step.comparing !== null ? step.comparing[1] : null
+function ArrayBars({ frame, movement }: ArrayBarsProps) {
+  const maxValue = frame.values.length > 0 ? Math.max(...frame.values) : 1
+  const movementPair = movement !== 'none' ? frame.comparing : null
+  const swapLeftIndex = movementPair !== null ? movementPair[0] : null
+  const swapRightIndex = movementPair !== null ? movementPair[1] : null
+  const movementSuffix = movement === 'rewind' ? 'rewind' : 'exchange'
 
   return (
     <>
       <div className="bars">
-        {step.values.map((value, index) => {
+        {frame.values.map((value, index) => {
           const isComparing =
-            step.comparing !== null &&
-            (index === step.comparing[0] || index === step.comparing[1])
-          const isSwapped = isComparing && step.kind === 'swap'
-          const isSorted = index >= step.sortedFrom
+            frame.comparing !== null &&
+            (index === frame.comparing[0] || index === frame.comparing[1])
+          const isSwapped = isComparing && frame.kind === 'swap'
+          const isSorted = index >= frame.sortedFrom
 
           let className = 'bar'
           if (isSorted) {
@@ -34,10 +35,10 @@ function ArrayBars({ step }: ArrayBarsProps) {
 
           let slotClassName = 'bar-slot'
           if (index === swapLeftIndex) {
-            slotClassName += ' bar-slot--from-right'
+            slotClassName += ` bar-slot--${movementSuffix}-right`
           }
           if (index === swapRightIndex) {
-            slotClassName += ' bar-slot--from-left'
+            slotClassName += ` bar-slot--${movementSuffix}-left`
           }
 
           return (

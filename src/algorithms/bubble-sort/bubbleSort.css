@@ -121,24 +121,46 @@
   transition: background-color 0.2s ease;
 }
 
-@keyframes bar-from-right {
+@keyframes bar-exchange-from-right {
   from {
     transform: translateX(calc(100% + var(--bar-gap)));
   }
 }
 
-@keyframes bar-from-left {
+@keyframes bar-exchange-from-left {
   from {
     transform: translateX(calc(-100% - var(--bar-gap)));
   }
 }
 
-.bar-slot--from-right {
-  animation: bar-from-right var(--step-duration) ease;
+/* Duplicated on purpose: the browser does not restart an animation when only
+   the class name changes, so rewinding needs its own animation names. */
+@keyframes bar-rewind-from-right {
+  from {
+    transform: translateX(calc(100% + var(--bar-gap)));
+  }
 }
 
-.bar-slot--from-left {
-  animation: bar-from-left var(--step-duration) ease;
+@keyframes bar-rewind-from-left {
+  from {
+    transform: translateX(calc(-100% - var(--bar-gap)));
+  }
+}
+
+.bar-slot--exchange-right {
+  animation: bar-exchange-from-right var(--step-duration) ease;
+}
+
+.bar-slot--exchange-left {
+  animation: bar-exchange-from-left var(--step-duration) ease;
+}
+
+.bar-slot--rewind-right {
+  animation: bar-rewind-from-right var(--step-duration) ease;
+}
+
+.bar-slot--rewind-left {
+  animation: bar-rewind-from-left var(--step-duration) ease;
 }
 
 .bar--sorted {

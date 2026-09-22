@@ -3,6 +3,8 @@ import type { CSSProperties } from 'react'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
+import { frameMovement, toVisualFrames } from './visualFrames'
+import type { FrameMovement } from './visualFrames'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -18,14 +20,22 @@ type BubbleSortPageProps = {
 function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [size, setSize] = useState(INITIAL_SIZE)
   const [values, setValues] = useState(() => createRandomArray(INITIAL_SIZE))
-  const [stepIndex, setStepIndex] = useState(0)
+  const [frameIndex, setFrameIndex] = useState(0)
+  const [movement, setMovement] = useState<FrameMovement>('none')
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
 
   const steps = useMemo(() => generateBubbleSortSteps(values), [values])
-  const step = steps[stepIndex]
-  const lastStepIndex = steps.length - 1
+  const frames = useMemo(() => toVisualFrames(steps), [steps])
+  const frame = frames[frameIndex]
+  const lastFrameIndex = frames.length - 1
+  const totalComparisons = steps[steps.length - 1].comparison
   const delay = Math.round(MAX_DELAY / speed)
+
+  function navigateTo(nextIndex: number) {
+    setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
+    setFrameIndex(nextIndex)
+  }
 
   useEffect(() => {
     if (!isPlaying) {
@@ -33,19 +43,22 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
     }
 
     const timer = setTimeout(() => {
-      setStepIndex((index) => index + 1)
-      if (stepIndex >= lastStepIndex - 1) {
+      const nextIndex = Math.min(frameIndex + 1, lastFrameIndex)
+      setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
+      setFrameIndex(nextIndex)
+      if (frameIndex >= lastFrameIndex - 1) {
         setIsPlaying(false)
       }
     }, delay)
 
     return () => clearTimeout(timer)
-  }, [isPlaying, stepIndex, lastStepIndex, delay])
+  }, [isPlaying, frameIndex, lastFrameIndex, delay, frames])
 
   // A new input invalidates the current position in the execution.
   function restartWith(nextValues: number[]) {
     setValues(nextValues)
-    setStepIndex(0)
+    setFrameIndex(0)
+    setMovement('none')
     setIsPlaying(false)
   }
 
@@ -65,17 +78,18 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
 
   function handleStepForward() {
     setIsPlaying(false)
-    setStepIndex((index) => Math.min(index + 1, lastStepIndex))
+    navigateTo(Math.min(frameIndex + 1, lastFrameIndex))
   }
 
   function handleStepBackward() {
     setIsPlaying(false)
-    setStepIndex((index) => Math.max(index - 1, 0))
+    navigateTo(Math.max(frameIndex - 1, 0))
   }
 
   function handleReset() {
     setIsPlaying(false)
-    setStepIndex(0)
+    setFrameIndex(0)
+    setMovement('none')
   }
 
   return (
@@ -109,8 +123,11 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
 
       <PlaybackControls
         isPlaying={isPlaying}
-        stepIndex={stepIndex}
-        totalSteps={steps.length}
+        atStart={frameIndex === 0}
+        atEnd={frameIndex >= lastFrameIndex}
+        comparison={frame.comparison}
+        totalComparisons={totalComparisons}
+        isDone={frame.kind === 'done'}
         speed={speed}
         onPlayPause={handlePlayPause}
         onStepForward={handleStepForward}
@@ -119,7 +136,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
         onSpeedChange={setSpeed}
       />
 
-      <ArrayBars step={step} />
+      <ArrayBars frame={frame} movement={movement} />
     </main>
   )
 }

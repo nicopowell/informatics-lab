@@ -1,106 +1,101 @@
 import { describe, expect, it } from 'vitest'
-import type { BubbleSortStep } from './bubbleSort'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 
 function sorted(values: number[]): number[] {
   return [...values].sort((a, b) => a - b)
 }
 
-function kindsOf(steps: BubbleSortStep[]): string[] {
-  return steps.map((step) => step.kind)
-}
-
 describe('generateBubbleSortSteps', () => {
-  it('produces a single finished step for an empty array', () => {
+  it('produces a single done step for an empty array', () => {
     const steps = generateBubbleSortSteps([])
 
     expect(steps).toHaveLength(1)
     expect(steps[0]).toMatchObject({
-      values: [],
       kind: 'done',
+      comparison: 0,
+      values: [],
+      swappedValues: null,
       comparing: null,
       sortedFrom: 0,
-      comparisons: 0,
       swaps: 0,
     })
   })
 
-  it('produces a single finished step for a single element', () => {
+  it('produces a single done step for a single element', () => {
     const steps = generateBubbleSortSteps([7])
 
     expect(steps).toHaveLength(1)
-    expect(steps[0].values).toEqual([7])
     expect(steps[0].kind).toBe('done')
+    expect(steps[0].values).toEqual([7])
   })
 
-  it('shows the comparison before the swap of two elements', () => {
+  it('represents one comparison with the state before and after the swap', () => {
     const steps = generateBubbleSortSteps([2, 1])
 
-    expect(kindsOf(steps)).toEqual(['compare', 'swap', 'done'])
-    expect(steps[0].values).toEqual([2, 1])
-    expect(steps[1].values).toEqual([1, 2])
-    expect(steps[1].comparing).toEqual([0, 1])
+    expect(steps).toHaveLength(2)
+    expect(steps[0]).toMatchObject({
+      kind: 'compare',
+      comparison: 1,
+      values: [2, 1],
+      swappedValues: [1, 2],
+      comparing: [0, 1],
+      swaps: 1,
+    })
+    expect(steps[1]).toMatchObject({
+      kind: 'done',
+      comparison: 1,
+      values: [1, 2],
+    })
   })
 
-  it('does not emit a swap step when no exchange is needed', () => {
+  it('keeps swappedValues null when no exchange is needed', () => {
     const steps = generateBubbleSortSteps([1, 2])
 
-    expect(kindsOf(steps)).toEqual(['compare', 'done'])
-    expect(steps[0].values).toEqual([1, 2])
+    expect(steps).toHaveLength(2)
+    expect(steps[0].swappedValues).toBeNull()
+    expect(steps[0].swaps).toBe(0)
   })
 
-  it('sorts the array and tracks exact comparison and swap counts', () => {
+  it('counts comparisons rather than visual phases', () => {
     const steps = generateBubbleSortSteps([3, 1, 2])
-    const last = steps[steps.length - 1]
+    const done = steps[steps.length - 1]
 
-    expect(kindsOf(steps)).toEqual([
+    expect(steps.map((step) => step.kind)).toEqual([
       'compare',
-      'swap',
       'compare',
-      'swap',
       'compare',
       'done',
     ])
-    expect(last.values).toEqual([1, 2, 3])
-    expect(last.comparisons).toBe(3)
-    expect(last.swaps).toBe(2)
-    expect(last.comparing).toBeNull()
-    expect(last.sortedFrom).toBe(0)
+    expect(done.comparison).toBe(3)
+    expect(done.swaps).toBe(2)
+    expect(done.values).toEqual([1, 2, 3])
   })
 
   it('stops early when the array is already sorted', () => {
     const steps = generateBubbleSortSteps([1, 2, 3])
-    const last = steps[steps.length - 1]
+    const done = steps[steps.length - 1]
 
-    expect(kindsOf(steps)).toEqual(['compare', 'compare', 'done'])
-    expect(last.comparisons).toBe(2)
-    expect(last.swaps).toBe(0)
+    expect(steps).toHaveLength(3)
+    expect(done.comparison).toBe(2)
+    expect(done.swaps).toBe(0)
   })
 
   it('handles the reversed worst case', () => {
     const steps = generateBubbleSortSteps([3, 2, 1])
-    const last = steps[steps.length - 1]
+    const done = steps[steps.length - 1]
 
-    expect(kindsOf(steps)).toEqual([
-      'compare',
-      'swap',
-      'compare',
-      'swap',
-      'compare',
-      'swap',
-      'done',
-    ])
-    expect(last.values).toEqual([1, 2, 3])
-    expect(last.comparisons).toBe(3)
-    expect(last.swaps).toBe(3)
+    expect(steps).toHaveLength(4)
+    expect(done.values).toEqual([1, 2, 3])
+    expect(done.comparison).toBe(3)
+    expect(done.swaps).toBe(3)
   })
 
   it('does not swap equal elements', () => {
     const steps = generateBubbleSortSteps([2, 2])
 
-    expect(kindsOf(steps)).toEqual(['compare', 'done'])
+    expect(steps.map((step) => step.kind)).toEqual(['compare', 'done'])
     expect(steps[0].comparing).toEqual([0, 1])
-    expect(steps[steps.length - 1].values).toEqual([2, 2])
+    expect(steps[0].swappedValues).toBeNull()
   })
 
   it('sorts arrays with duplicate values', () => {
@@ -118,33 +113,42 @@ describe('generateBubbleSortSteps', () => {
     expect(input).toEqual([3, 1, 2])
   })
 
-  it('stores an independent snapshot for every step', () => {
-    const steps = generateBubbleSortSteps([2, 1])
+  it('continues from the state left by the previous comparison', () => {
+    const inputs = [
+      [5, 1, 4, 2, 8],
+      [3, 1, 2],
+      [3, 2, 1],
+      [2, 1, 3, 1, 2],
+    ]
 
-    expect(steps).toHaveLength(3)
-    expect(steps[0].values).not.toBe(steps[1].values)
-    expect(steps[0]).toMatchObject({
-      comparing: [0, 1],
-      kind: 'compare',
-      pass: 1,
-      comparisons: 1,
-      swaps: 0,
-    })
-    expect(steps[1]).toMatchObject({
-      comparing: [0, 1],
-      kind: 'swap',
-      comparisons: 1,
-      swaps: 1,
-    })
+    for (const input of inputs) {
+      const steps = generateBubbleSortSteps(input)
+      for (let i = 0; i < steps.length - 1; i++) {
+        const carried = steps[i].swappedValues ?? steps[i].values
+        expect(steps[i + 1].values).toEqual(carried)
+      }
+    }
   })
 
   it('only marks the final step as done', () => {
     const steps = generateBubbleSortSteps([5, 1, 4, 2, 8])
-    const last = steps[steps.length - 1]
 
-    expect(last.kind).toBe('done')
-    expect(steps.slice(0, -1).every((step) => step.kind !== 'done')).toBe(true)
-    expect(last.values).toEqual([1, 2, 4, 5, 8])
+    expect(steps[steps.length - 1].kind).toBe('done')
+    expect(steps.slice(0, -1).every((step) => step.kind === 'compare')).toBe(true)
+  })
+
+  it('stores independent snapshots', () => {
+    const steps = generateBubbleSortSteps([2, 1])
+
+    expect(steps[0].values).not.toBe(steps[0].swappedValues)
+    expect(steps[0].values).not.toBe(steps[1].values)
+  })
+
+  it('tracks the sorted region and the pass number', () => {
+    const steps = generateBubbleSortSteps([3, 1, 2])
+
+    expect(steps[0]).toMatchObject({ pass: 1, sortedFrom: 3 })
+    expect(steps[2]).toMatchObject({ pass: 2, sortedFrom: 2 })
   })
 
   it('ends sorted for varied inputs', () => {

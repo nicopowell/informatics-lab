@@ -1,10 +1,11 @@
 export type BubbleSortStep = {
+  kind: 'compare' | 'done'
+  comparison: number
   values: number[]
-  kind: 'compare' | 'swap' | 'done'
+  swappedValues: number[] | null
   comparing: [number, number] | null
   sortedFrom: number
   pass: number
-  comparisons: number
   swaps: number
 }
 
@@ -33,16 +34,8 @@ export function generateBubbleSortSteps(values: number[]): BubbleSortStep[] {
     for (let j = 0; j < array.length - currentPass; j++) {
       comparisons++
       const shouldSwap = array[j] > array[j + 1]
-
-      steps.push({
-        values: [...array],
-        kind: 'compare',
-        comparing: [j, j + 1],
-        sortedFrom,
-        pass,
-        comparisons,
-        swaps,
-      })
+      const valuesBefore = [...array]
+      let swappedValues: number[] | null = null
 
       if (shouldSwap) {
         const current = array[j]
@@ -50,17 +43,19 @@ export function generateBubbleSortSteps(values: number[]): BubbleSortStep[] {
         array[j + 1] = current
         swaps++
         swappedInPass = true
-
-        steps.push({
-          values: [...array],
-          kind: 'swap',
-          comparing: [j, j + 1],
-          sortedFrom,
-          pass,
-          comparisons,
-          swaps,
-        })
+        swappedValues = [...array]
       }
+
+      steps.push({
+        kind: 'compare',
+        comparison: comparisons,
+        values: valuesBefore,
+        swappedValues,
+        comparing: [j, j + 1],
+        sortedFrom,
+        pass,
+        swaps,
+      })
     }
 
     // No swap in a full pass means the remaining prefix is already sorted.
@@ -70,12 +65,13 @@ export function generateBubbleSortSteps(values: number[]): BubbleSortStep[] {
   }
 
   steps.push({
-    values: [...array],
     kind: 'done',
+    comparison: comparisons,
+    values: [...array],
+    swappedValues: null,
     comparing: null,
     sortedFrom: 0,
     pass,
-    comparisons,
     swaps,
   })
 
