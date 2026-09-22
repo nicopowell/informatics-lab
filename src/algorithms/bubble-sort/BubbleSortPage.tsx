@@ -14,8 +14,8 @@ const INITIAL_SPEED = 5
 const MAX_DELAY = 1000
 
 function describeFrame(frame: BubbleSortFrame): string {
-  if (frame.kind === 'done' || frame.comparing === null) {
-    return 'The array is sorted'
+  if (frame.comparing === null) {
+    return frame.kind === 'done' ? 'The array is sorted' : 'Ready to sort'
   }
 
   const [leftIndex, rightIndex] = frame.comparing
@@ -43,7 +43,17 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [speed, setSpeed] = useState(INITIAL_SPEED)
 
   const steps = useMemo(() => generateBubbleSortSteps(values), [values])
-  const frames = useMemo(() => toVisualFrames(steps), [steps])
+  const frames = useMemo(() => {
+    const readyFrame: BubbleSortFrame = {
+      kind: 'compare',
+      values,
+      comparing: null,
+      sortedFrom: values.length,
+      comparison: 0,
+      swaps: 0,
+    }
+    return [readyFrame, ...toVisualFrames(steps)]
+  }, [steps, values])
   const frame = frames[frameIndex]
   const lastFrameIndex = frames.length - 1
   const totalComparisons = steps[steps.length - 1].comparison
