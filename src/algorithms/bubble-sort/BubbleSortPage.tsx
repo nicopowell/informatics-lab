@@ -136,6 +136,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
           Size
           <input
             type="range"
+            aria-label="Size"
             min={MIN_SIZE}
             max={MAX_SIZE}
             value={size}

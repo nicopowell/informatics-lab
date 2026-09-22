@@ -53,6 +53,7 @@ function PlaybackControls({
         Speed
         <input
           type="range"
+          aria-label="Speed"
           min={MIN_SPEED}
           max={MAX_SPEED}
           value={speed}
