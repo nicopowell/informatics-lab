@@ -317,14 +317,22 @@ The project currently contains:
 
 * A Vite + React + TypeScript application.
 * A minimal Informatics Lab landing screen.
-* The first interactive experience: a Bubble Sort visualization.
+* Two interactive experiences: a Bubble Sort visualization and a Binary Search visualization.
 * Pure, deterministic algorithm logic and step generation, covered by tests.
+* Shared visual design guidelines for the experiences.
 * Project documentation and development guidelines.
 
 The Bubble Sort experience lets the user generate an array, run the algorithm,
 pause, move forward and backward, control the speed, and read a description of
 each comparison and exchange.
 
-The next implementation target is a second algorithm experience. Building it
-should reveal which parts are genuinely shared and which are specific to each
-concept, before introducing any shared abstraction.
+The Binary Search experience lets the user generate a sorted array, choose a
+search key (by typing it or by clicking a value), move through the search or
+play it at a configurable speed, and read why each step narrows the search
+space. It shows both outcomes: the element being found and the element not
+being present.
+
+The next implementation target is a third experience, in a different part of
+the curriculum. Building it should keep revealing which parts are genuinely
+shared and which are specific to each concept, before introducing any shared
+abstraction.
