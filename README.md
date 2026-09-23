@@ -10,6 +10,10 @@ The project currently focuses on Algorithms and Data Structures.
 - **Bubble Sort** (`src/algorithms/bubble-sort`): generate an array, run the
   algorithm and follow each comparison and exchange step by step.
 
+- **Binary Search** (`src/algorithms/binary-search`): generate a sorted array,
+  choose a search key, and follow how the search range narrows until the value
+  is found or ruled out.
+
 ## Scripts
 
 - `npm run dev` starts the development server.
