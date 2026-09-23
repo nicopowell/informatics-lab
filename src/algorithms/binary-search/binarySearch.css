@@ -132,6 +132,48 @@
   gap: 0.6rem;
 }
 
+.binary-search__playback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.binary-search__speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.binary-search__speed input[type='range'] {
+  width: 8rem;
+}
+
+.binary-search__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.binary-search__progress-track {
+  width: 12rem;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+}
+
+.binary-search__progress-fill {
+  height: 100%;
+  background: var(--text-muted);
+  transition: width var(--step-duration, 0.32s) ease;
+}
+
 .binary-search__button.binary-search__button--primary {
   color: #0f172a;
   background: var(--text);
@@ -204,12 +246,12 @@
   border: 1px solid transparent;
   border-radius: var(--cell-radius);
   transition:
-    background-color 0.32s ease,
-    color 0.32s ease,
-    border-color 0.32s ease,
-    opacity 0.32s ease,
-    transform 0.32s ease,
-    box-shadow 0.32s ease;
+    background-color var(--step-duration, 0.32s) ease,
+    color var(--step-duration, 0.32s) ease,
+    border-color var(--step-duration, 0.32s) ease,
+    opacity var(--step-duration, 0.32s) ease,
+    transform var(--step-duration, 0.32s) ease,
+    box-shadow var(--step-duration, 0.32s) ease;
 }
 
 .cell-index {
@@ -219,8 +261,8 @@
   line-height: 1;
   color: var(--text-faint);
   transition:
-    color 0.32s ease,
-    opacity 0.32s ease;
+    color var(--step-duration, 0.32s) ease,
+    opacity var(--step-duration, 0.32s) ease;
 }
 
 .cell-slot--mid .cell-index {
@@ -303,8 +345,8 @@
     calc(var(--column) * (var(--cell-size) + var(--cell-gap)))
   );
   transition:
-    transform 0.32s ease,
-    bottom 0.32s ease;
+    transform var(--step-duration, 0.32s) ease,
+    bottom var(--step-duration, 0.32s) ease;
 }
 
 .pointer--mid {
