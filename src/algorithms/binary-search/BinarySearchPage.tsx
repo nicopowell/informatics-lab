@@ -30,7 +30,13 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
         <h1>Binary Search</h1>
       </header>
 
-      <p className="binary-search__key">Searching for {EXAMPLE_KEY}</p>
+      <section className="binary-search__stage">
+        <p className="binary-search__key">
+          <span className="binary-search__key-label">Searching for</span>
+          <span className="binary-search__key-value">{EXAMPLE_KEY}</span>
+        </p>
+        <ArrayCells values={EXAMPLE_VALUES} frame={frame} />
+      </section>
 
       <div className="binary-search__controls">
         <button
@@ -49,6 +55,7 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
         </button>
         <button
           type="button"
+          className="binary-search__primary"
           onClick={() =>
             setFrameIndex((index) => Math.min(index + 1, lastFrameIndex))
           }
@@ -57,8 +64,6 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
           Step forward
         </button>
       </div>
-
-      <ArrayCells values={EXAMPLE_VALUES} frame={frame} />
     </main>
   )
 }

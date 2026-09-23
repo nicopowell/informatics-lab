@@ -229,6 +229,46 @@ Algorithmic or computational logic should remain reasonably independent from UI 
 
 This does not require creating abstractions solely to enforce separation.
 
+## Visual design guidelines
+
+These guidelines keep the experiences recognizably part of Informatics Lab. They are principles to consult while building, not a design system or a component architecture.
+
+### One visual identity
+
+Every experience should feel like part of the same application: typography, spacing, color roles, button treatment, and page structure should stay consistent. Moving between experiences should not feel like switching applications.
+
+### The visualization is the protagonist
+
+The representation of the concept should dominate the screen. Give it the largest scale, the central position, and the most space. Everything else supports it.
+
+### Controls are secondary
+
+Controls belong in the background relative to the visualization. Keep them visually quiet, with a single clear primary action when there is one. Chrome should not compete with the concept.
+
+### Color carries consistent meaning
+
+Color encodes state, not decoration. The same role uses the same color across experiences, and each color has a single meaning within an experience. Prefer a small, reused palette over many colors.
+
+### States and motion before decoration
+
+Prefer clear states and purposeful transitions over decorative effects. Gradients, shadows, and flourishes are acceptable when they reinforce hierarchy or state, never as the reason an element exists.
+
+### Animations explain
+
+Animation should clarify what the algorithm or process does — a comparison, a movement, a narrowing range — rather than make the interface feel dynamic. If an animation does not help explain something, it does not belong.
+
+### Technical information is a second layer
+
+Indices, counters, and internal values matter, but they support the main representation. Keep them legible and present without competing with it.
+
+### Consistency without uniformity
+
+A shared visual language does not mean identical visualizations. Each concept uses the representation and interaction that explain it best. Sorting may use bars; searching may use cells; graphs will use nodes and edges.
+
+### Reuse before inventing
+
+New experiences should reuse the existing visual language first. A new representation, color role, or interaction pattern should be introduced only when the concept genuinely requires it.
+
 ## Scope philosophy
 
 The project is intentionally ambitious in its long-term vision but conservative in its immediate scope.

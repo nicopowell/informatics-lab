@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { BinarySearchFrame } from './visualFrames'
 
 type ArrayCellsProps = {
@@ -8,9 +9,11 @@ type ArrayCellsProps = {
 type PointerName = 'low' | 'mid' | 'high'
 type PointerClamp = 'none' | 'left' | 'right'
 
-type PointerMarker = {
+type PointerView = {
   name: PointerName
+  column: number
   clamp: PointerClamp
+  stack: number
 }
 
 function cellState(
@@ -32,15 +35,12 @@ function cellState(
   return index === frame.mid ? 'mid' : 'active'
 }
 
-// Each pointer lands on a cell; one past either end is clamped to the edge so
+// Pointers are positioned by column, not rendered inside a cell, so they can
+// slide when the interval moves. One past either end is clamped to the edge so
 // an empty interval (low > high) stays visible.
-function markersPerColumn(
-  frame: BinarySearchFrame,
-  size: number,
-): PointerMarker[][] {
-  const columns: PointerMarker[][] = Array.from({ length: size }, () => [])
+function pointerViews(frame: BinarySearchFrame, size: number): PointerView[] {
   if (size === 0) {
-    return columns
+    return []
   }
 
   const pointers: { name: PointerName; index: number | null }[] = [
@@ -49,6 +49,7 @@ function markersPerColumn(
     { name: 'high', index: frame.high },
   ]
 
+  const views: PointerView[] = []
   for (const { name, index } of pointers) {
     if (index === null) {
       continue
@@ -64,38 +65,63 @@ function markersPerColumn(
       clamp = 'right'
     }
 
-    columns[column].push({ name, clamp })
+    views.push({ name, column, clamp, stack: 0 })
   }
 
-  return columns
+  // Pointers sharing a column stack upward, keeping the first name on top.
+  const groupSize = new Map<number, number>()
+  for (const view of views) {
+    groupSize.set(view.column, (groupSize.get(view.column) ?? 0) + 1)
+  }
+
+  const seenInColumn = new Map<number, number>()
+  for (const view of views) {
+    const seen = seenInColumn.get(view.column) ?? 0
+    seenInColumn.set(view.column, seen + 1)
+    view.stack = (groupSize.get(view.column) ?? 1) - 1 - seen
+  }
+
+  return views
 }
 
 function ArrayCells({ values, frame }: ArrayCellsProps) {
-  const markers = markersPerColumn(frame, values.length)
+  const pointers = pointerViews(frame, values.length)
 
   return (
-    <>
-      <div className="cells">
-        {values.map((value, index) => (
-          <div className="cell-slot" key={index}>
-            <div className={`cell cell--${cellState(index, frame)}`}>
-              {value}
-            </div>
-            <div className="cell-pointers">
-              {markers[index].map((marker) => (
-                <span
-                  className={`pointer pointer--${marker.name}`}
-                  key={marker.name}
-                >
-                  {marker.clamp === 'left' ? '← ' : ''}
-                  {marker.name}
-                  {marker.clamp === 'right' ? ' →' : ''}
-                </span>
-              ))}
-            </div>
-            <span className="cell-index">{index}</span>
+    <div className="matrix">
+      <div className="matrix-scroll">
+        <div className="matrix-grid">
+          <div className="pointer-rail">
+            {pointers.map((pointer) => (
+              <span
+                className={`pointer pointer--${pointer.name}`}
+                key={pointer.name}
+                style={
+                  {
+                    '--column': pointer.column,
+                    '--stack': pointer.stack,
+                  } as CSSProperties
+                }
+              >
+                {pointer.clamp === 'left' ? '← ' : ''}
+                {pointer.name}
+                {pointer.clamp === 'right' ? ' →' : ''}
+              </span>
+            ))}
           </div>
-        ))}
+
+          <div className="cells">
+            {values.map((value, index) => {
+              const state = cellState(index, frame)
+              return (
+                <div className={`cell-slot cell-slot--${state}`} key={index}>
+                  <div className={`cell cell--${state}`}>{value}</div>
+                  <span className="cell-index">{index}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       <ul className="legend">
@@ -112,7 +138,7 @@ function ArrayCells({ values, frame }: ArrayCellsProps) {
           <span className="legend__swatch legend__swatch--found" /> Found
         </li>
       </ul>
-    </>
+    </div>
   )
 }
 

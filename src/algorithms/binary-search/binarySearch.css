@@ -1,178 +1,325 @@
 .binary-search {
-  --cell-active: #334155;
-  --cell-active-border: #64748b;
-  --cell-mid: #f59e0b;
-  --cell-eliminated: #1e293b;
-  --cell-eliminated-text: #64748b;
-  --cell-found: #22c55e;
-  --cell-found-text: #052e16;
+  --cell-size: clamp(2rem, 6.5vw, 3.5rem);
+  --cell-gap: clamp(0.35rem, 0.8vw, 0.5rem);
+  --cell-radius: 8px;
+  --lane-height: 1.4rem;
+  --surface-raised: #2b3a52;
+  --border-strong: #64748b;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --accent: #f59e0b;
+  --found: #22c55e;
+  --pointer: #cbd5e1;
 
   min-height: 100svh;
   box-sizing: border-box;
-  color: #e2e8f0;
-  padding: 2rem max(1.5rem, calc((100% - 60rem) / 2)) 4rem;
+  color: var(--text);
+  padding: 2rem max(1.5rem, calc((100% - 64rem) / 2)) 4rem;
 }
 
 .binary-search__header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
+}
+
+.binary-search__header h1 {
+  font-size: 1.75rem;
+  letter-spacing: -0.01em;
 }
 
 .binary-search button {
   font: inherit;
-  padding: 0.35rem 0.75rem;
+  padding: 0.4rem 0.85rem;
   cursor: pointer;
-  color: inherit;
+  color: var(--text-muted);
   background: transparent;
-  border: 1px solid rgba(226, 232, 240, 0.35);
-  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 6px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .binary-search button:hover {
-  border-color: rgba(226, 232, 240, 0.7);
+  color: var(--text);
+  border-color: rgba(148, 163, 184, 0.6);
 }
 
 .binary-search button:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
-.binary-search h1 {
-  font-size: 1.75rem;
+.binary-search__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  margin-bottom: 3rem;
 }
 
 .binary-search__key {
-  display: inline-block;
-  margin: 0 0 1.5rem;
-  padding: 0.3rem 0.7rem;
-  font-size: 0.95rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.binary-search__key-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-faint);
+}
+
+.binary-search__key-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
-  border: 1px solid rgba(226, 232, 240, 0.35);
-  border-radius: 999px;
+  line-height: 1;
+  color: var(--text);
 }
 
 .binary-search__controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2.5rem;
+  justify-content: center;
+  gap: 0.6rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.binary-search__primary {
+  color: #0f172a;
+  background: var(--text);
+  border-color: var(--text);
+  font-weight: 600;
+}
+
+.binary-search__primary:hover {
+  color: #0f172a;
+  background: #f8fafc;
+  border-color: #f8fafc;
+}
+
+.matrix {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Local scroll only: cells and rail live inside .matrix-grid, so they scroll
+   together and stay aligned. margin-inline:auto centers when there is room and
+   collapses to 0 when overflowing, keeping the start reachable. */
+.matrix-scroll {
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-block: 0.3rem;
+  overflow-x: auto;
+}
+
+/* Sizes to the cells row so the pointer rail shares its exact column metrics. */
+.matrix-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: max-content;
+  margin-inline: auto;
 }
 
 .cells {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--cell-gap);
 }
 
 .cell-slot {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.5rem;
+  width: var(--cell-size);
 }
 
 .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: var(--cell-size);
+  height: var(--cell-size);
   box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
   font-variant-numeric: tabular-nums;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--cell-radius);
   transition:
-    background-color 0.25s ease,
-    color 0.25s ease,
-    border-color 0.25s ease,
-    opacity 0.25s ease;
-}
-
-.cell--active {
-  background: var(--cell-active);
-  border-color: var(--cell-active-border);
-}
-
-.cell--mid {
-  background: var(--cell-mid);
-  border-color: var(--cell-mid);
-  color: #1e293b;
-}
-
-.cell--eliminated {
-  background: var(--cell-eliminated);
-  color: var(--cell-eliminated-text);
-  opacity: 0.55;
-}
-
-.cell--found {
-  background: var(--cell-found);
-  border-color: var(--cell-found);
-  color: var(--cell-found-text);
-}
-
-.cell-pointers {
-  display: flex;
-  gap: 0.15rem;
-  min-height: 1rem;
-  font-size: 0.7rem;
-  line-height: 1;
-}
-
-.pointer {
-  color: #94a3b8;
-}
-
-.pointer + .pointer::before {
-  content: '· ';
-  color: #475569;
-}
-
-.pointer--mid {
-  color: var(--cell-mid);
-  font-weight: 600;
+    background-color 0.32s ease,
+    color 0.32s ease,
+    border-color 0.32s ease,
+    opacity 0.32s ease,
+    transform 0.32s ease,
+    box-shadow 0.32s ease;
 }
 
 .cell-index {
-  font-size: 0.7rem;
-  color: #64748b;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text-faint);
+  transition:
+    color 0.32s ease,
+    opacity 0.32s ease;
 }
 
-.legend {
+.cell-slot--mid .cell-index {
+  color: var(--accent);
+}
+
+.cell-slot--found .cell-index {
+  color: var(--found);
+}
+
+.cell-slot--eliminated .cell-index {
+  color: #475569;
+  opacity: 0.5;
+}
+
+.cell--active {
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* Discarded cells recede: no surface, dashed ghost border, and a smaller box.
+   The shrink is what makes the narrowing search space readable. */
+.cell--eliminated {
+  background: transparent;
+  border-color: rgba(100, 116, 139, 0.28);
+  border-style: dashed;
+  color: #475569;
+  opacity: 0.45;
+  transform: scale(0.86);
+}
+
+.cell--mid {
+  z-index: 1;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1c1917;
+  transform: scale(1.07);
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.1),
+    0 6px 16px -10px rgba(245, 158, 11, 0.35);
+}
+
+.cell--found {
+  z-index: 1;
+  background: var(--found);
+  border-color: var(--found);
+  color: #052e16;
+  transform: scale(1.07);
+  box-shadow:
+    0 0 0 4px rgba(34, 197, 94, 0.16),
+    0 10px 24px -8px rgba(34, 197, 94, 0.6);
+}
+
+/* The rail is absolutely positioned inside a fixed-height track, so a pointer
+   changing column never reflows the layout. Each pointer has its own lane, so
+   pointers sharing a cell stack instead of overlapping. */
+.pointer-rail {
+  position: relative;
+  height: calc(var(--lane-height) * 3);
+}
+
+.pointer {
+  position: absolute;
+  bottom: calc(var(--stack, 0) * var(--lane-height));
+  left: 0;
+  box-sizing: border-box;
+  width: var(--cell-size);
+  padding-bottom: 0.2rem;
+  text-align: center;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.62rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pointer);
+  border-bottom: 2px solid currentColor;
+  transform: translateX(
+    calc(var(--column) * (var(--cell-size) + var(--cell-gap)))
+  );
+  transition:
+    transform 0.32s ease,
+    bottom 0.32s ease;
+}
+
+.pointer--mid {
+  color: var(--accent);
+  font-weight: 600;
+  animation: pointer-appear 0.3s ease;
+}
+
+@keyframes pointer-appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scoped under the experience root: Bubble Sort defines global .legend rules
+   and its stylesheet is bundled after this one, so unscoped selectors would
+   inherit --bar (undefined here) and leave the swatches transparent. */
+.binary-search .legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.25rem;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0 0;
-  font-size: 0.8rem;
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
 }
 
-.legend li {
+.binary-search .legend li {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
-.legend__swatch {
+.binary-search .legend__swatch {
+  box-sizing: border-box;
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 2px;
-  background: var(--cell-active);
+  background: var(--border-strong);
 }
 
-.legend__swatch--mid {
-  background: var(--cell-mid);
+.binary-search .legend__swatch--mid {
+  background: var(--accent);
 }
 
-.legend__swatch--eliminated {
-  background: var(--cell-eliminated);
-  opacity: 0.55;
+/* Mirrors the discarded cell: no fill, dashed border. */
+.binary-search .legend__swatch--eliminated {
+  background: transparent;
+  border: 1px dashed rgba(100, 116, 139, 0.28);
 }
 
-.legend__swatch--found {
-  background: var(--cell-found);
+.binary-search .legend__swatch--found {
+  background: var(--found);
 }
