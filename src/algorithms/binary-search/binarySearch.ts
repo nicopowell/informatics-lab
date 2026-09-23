@@ -1,5 +1,17 @@
 export type BinarySearchOutcome = 'less' | 'equal' | 'greater'
 
+const MAX_VALUE = 99
+
+// Binary search requires a sorted array; distinct values keep the found index
+// unambiguous.
+export function createSortedArray(size: number): number[] {
+  const values = new Set<number>()
+  while (values.size < size) {
+    values.add(Math.floor(Math.random() * MAX_VALUE) + 1)
+  }
+  return [...values].sort((a, b) => a - b)
+}
+
 export type BinarySearchStep = {
   kind: 'probe' | 'notFound'
   key: number

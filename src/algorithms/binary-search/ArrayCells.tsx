@@ -4,6 +4,7 @@ import type { BinarySearchFrame } from './visualFrames'
 type ArrayCellsProps = {
   values: number[]
   frame: BinarySearchFrame
+  onSelectCell: (value: number) => void
 }
 
 type PointerName = 'low' | 'mid' | 'high'
@@ -68,23 +69,19 @@ function pointerViews(frame: BinarySearchFrame, size: number): PointerView[] {
     views.push({ name, column, clamp, stack: 0 })
   }
 
-  // Pointers sharing a column stack upward, keeping the first name on top.
-  const groupSize = new Map<number, number>()
-  for (const view of views) {
-    groupSize.set(view.column, (groupSize.get(view.column) ?? 0) + 1)
-  }
-
+  // Pointers sharing a column stack upward in name order: low at the bottom,
+  // then mid, then high on top.
   const seenInColumn = new Map<number, number>()
   for (const view of views) {
     const seen = seenInColumn.get(view.column) ?? 0
     seenInColumn.set(view.column, seen + 1)
-    view.stack = (groupSize.get(view.column) ?? 1) - 1 - seen
+    view.stack = seen
   }
 
   return views
 }
 
-function ArrayCells({ values, frame }: ArrayCellsProps) {
+function ArrayCells({ values, frame, onSelectCell }: ArrayCellsProps) {
   const pointers = pointerViews(frame, values.length)
 
   return (
@@ -115,7 +112,15 @@ function ArrayCells({ values, frame }: ArrayCellsProps) {
               const state = cellState(index, frame)
               return (
                 <div className={`cell-slot cell-slot--${state}`} key={index}>
-                  <div className={`cell cell--${state}`}>{value}</div>
+                  <button
+                    type="button"
+                    className={`cell cell--${state}`}
+                    aria-label={`Search for ${value}`}
+                    title={`Search for ${value}`}
+                    onClick={() => onSelectCell(value)}
+                  >
+                    {value}
+                  </button>
                   <span className="cell-index">{index}</span>
                 </div>
               )

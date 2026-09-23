@@ -30,7 +30,7 @@
   letter-spacing: -0.01em;
 }
 
-.binary-search button {
+.binary-search__button {
   font: inherit;
   padding: 0.4rem 0.85rem;
   cursor: pointer;
@@ -44,12 +44,12 @@
     background-color 0.15s ease;
 }
 
-.binary-search button:hover {
+.binary-search__button:hover {
   color: var(--text);
   border-color: rgba(148, 163, 184, 0.6);
 }
 
-.binary-search button:disabled {
+.binary-search__button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
@@ -62,14 +62,15 @@
   margin-bottom: 3rem;
 }
 
-.binary-search__key {
+.binary-search__search {
   display: flex;
-  align-items: baseline;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   gap: 0.65rem;
-  margin: 0;
 }
 
-.binary-search__key-label {
+.binary-search__search-label {
   font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
@@ -77,13 +78,51 @@
   color: var(--text-faint);
 }
 
-.binary-search__key-value {
+.binary-search__key-input {
+  width: 5ch;
+  padding: 0.1rem 0.25rem 0.2rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+  text-align: center;
   color: var(--text);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.35);
+}
+
+.binary-search__key-input:focus {
+  border-color: var(--text);
+}
+
+.binary-search__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.binary-search__settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1.5rem;
+}
+
+.binary-search__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.binary-search__field input[type='range'] {
+  width: 10rem;
 }
 
 .binary-search__controls {
@@ -91,18 +130,16 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.6rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-.binary-search__primary {
+.binary-search__button.binary-search__button--primary {
   color: #0f172a;
   background: var(--text);
   border-color: var(--text);
   font-weight: 600;
 }
 
-.binary-search__primary:hover {
+.binary-search__button.binary-search__button--primary:hover {
   color: #0f172a;
   background: #f8fafc;
   border-color: #f8fafc;
@@ -155,9 +192,15 @@
   width: var(--cell-size);
   height: var(--cell-size);
   box-sizing: border-box;
+  padding: 0;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: clamp(0.9rem, 2vw, 1.15rem);
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  overflow: visible;
   border: 1px solid transparent;
   border-radius: var(--cell-radius);
   transition:

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { generateBinarySearchSteps } from './binarySearch'
+import { createSortedArray, generateBinarySearchSteps } from './binarySearch'
 import type { BinarySearchStep } from './binarySearch'
 
 const VALUES = [1, 3, 5, 7, 9, 11, 13, 15]
@@ -212,5 +212,28 @@ describe('generateBinarySearchSteps', () => {
     generateBinarySearchSteps(input, 2)
 
     expect(input).toEqual([3, 1, 2])
+  })
+})
+
+describe('createSortedArray', () => {
+  it('returns the requested number of distinct ascending values', () => {
+    const values = createSortedArray(16)
+
+    expect(values).toHaveLength(16)
+    for (let i = 1; i < values.length; i++) {
+      expect(values[i]).toBeGreaterThan(values[i - 1])
+    }
+  })
+
+  it('returns integers within the generated range', () => {
+    for (const value of createSortedArray(10)) {
+      expect(Number.isInteger(value)).toBe(true)
+      expect(value).toBeGreaterThanOrEqual(1)
+      expect(value).toBeLessThanOrEqual(99)
+    }
+  })
+
+  it('returns an empty array when no values are requested', () => {
+    expect(createSortedArray(0)).toEqual([])
   })
 })
