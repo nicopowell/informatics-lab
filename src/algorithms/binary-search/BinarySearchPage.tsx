@@ -4,6 +4,7 @@ import ArrayCells from './ArrayCells'
 import PlaybackControls from './PlaybackControls'
 import { createSortedArray, generateBinarySearchSteps } from './binarySearch'
 import { createReadyFrame, toVisualFrames } from './visualFrames'
+import type { BinarySearchFrame } from './visualFrames'
 import './binarySearch.css'
 
 const MIN_SIZE = 5
@@ -36,6 +37,36 @@ function createSearchState(size: number): SearchState {
   const values = createSortedArray(size)
   const key = values[Math.floor(values.length / 2)]
   return { values, key, keyInput: String(key) }
+}
+
+function describeFrame(frame: BinarySearchFrame, values: number[]): string {
+  if (frame.kind === 'ready') {
+    return `Ready to search for ${frame.key}. The whole array (indices 0–${values.length - 1}) is in range.`
+  }
+
+  if (frame.kind === 'notFound') {
+    return `The range is empty (${frame.low} > ${frame.high}): ${frame.key} is not in the array.`
+  }
+
+  if (frame.kind === 'found') {
+    const comparisons =
+      frame.comparisons === 1 ? '1 comparison' : `${frame.comparisons} comparisons`
+    return `Found ${frame.key} at index ${frame.mid} using ${comparisons}.`
+  }
+
+  if (frame.kind === 'eliminate') {
+    const side = frame.outcome === 'less' ? 'smaller' : 'larger'
+    return `Since the array is sorted, every discarded value is ${side} than ${frame.key}. The range is now indices ${frame.low}–${frame.high}.`
+  }
+
+  const value = frame.mid === null ? null : values[frame.mid]
+  if (frame.outcome === 'equal') {
+    return `Comparing ${value} with ${frame.key}: they match.`
+  }
+  if (frame.outcome === 'less') {
+    return `Comparing ${value} with ${frame.key}: ${value} < ${frame.key}, so the key must be to the right.`
+  }
+  return `Comparing ${value} with ${frame.key}: ${value} > ${frame.key}, so the key must be to the left.`
 }
 
 type BinarySearchPageProps = {
@@ -142,20 +173,25 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
       </header>
 
       <section className="binary-search__stage">
-        <div className="binary-search__search">
-          <label
-            className="binary-search__search-label"
-            htmlFor="binary-search-key"
-          >
-            Searching for
-          </label>
-          <input
-            id="binary-search-key"
-            className="binary-search__key-input"
-            type="number"
-            value={search.keyInput}
-            onChange={(event) => handleKeyInput(event.target.value)}
-          />
+        <div className="binary-search__prompt">
+          <div className="binary-search__search">
+            <label
+              className="binary-search__search-label"
+              htmlFor="binary-search-key"
+            >
+              Searching for
+            </label>
+            <input
+              id="binary-search-key"
+              className="binary-search__key-input"
+              type="number"
+              value={search.keyInput}
+              onChange={(event) => handleKeyInput(event.target.value)}
+            />
+          </div>
+          <p className="binary-search__description" aria-live="polite">
+            {describeFrame(frame, search.values)}
+          </p>
         </div>
 
         <ArrayCells
