@@ -1,37 +1,67 @@
 import { useState } from 'react'
 import BinarySearchPage from './algorithms/binary-search/BinarySearchPage'
 import BubbleSortPage from './algorithms/bubble-sort/BubbleSortPage'
-import './App.css'
+import ModulesPage from './modules/ModulesPage'
+import TopicsPage from './modules/TopicsPage'
+import ExperiencesPage from './modules/ExperiencesPage'
+import { MODULES } from './modules/modules'
 
-type View = 'home' | 'bubble-sort' | 'binary-search'
+type View = 'modules' | 'topics' | 'experiences' | 'bubble-sort' | 'binary-search'
 
 function App() {
-  const [view, setView] = useState<View>('home')
+  const [view, setView] = useState<View>('modules')
+  const [moduleId, setModuleId] = useState(MODULES[0].id)
+  const [topicId, setTopicId] = useState(MODULES[0].topics[0].id)
 
   if (view === 'bubble-sort') {
-    return <BubbleSortPage onBack={() => setView('home')} />
+    return <BubbleSortPage onBack={() => setView('experiences')} />
   }
 
   if (view === 'binary-search') {
-    return <BinarySearchPage onBack={() => setView('home')} />
+    return <BinarySearchPage onBack={() => setView('experiences')} />
+  }
+
+  const moduleInfo =
+    MODULES.find((entry) => entry.id === moduleId) ?? MODULES[0]
+
+  if (view === 'topics') {
+    return (
+      <TopicsPage
+        moduleInfo={moduleInfo}
+        onBack={() => setView('modules')}
+        onSelectTopic={(id) => {
+          setTopicId(id)
+          setView('experiences')
+        }}
+      />
+    )
+  }
+
+  if (view === 'experiences') {
+    const topic =
+      moduleInfo.topics.find((entry) => entry.id === topicId) ??
+      moduleInfo.topics[0]
+    return (
+      <ExperiencesPage
+        moduleInfo={moduleInfo}
+        topic={topic}
+        onBack={() => setView('topics')}
+        onSelectExperience={(id) => {
+          if (id === 'bubble-sort' || id === 'binary-search') {
+            setView(id)
+          }
+        }}
+      />
+    )
   }
 
   return (
-    <main className="home">
-      <h1>Informatics Lab</h1>
-      <p>
-        An interactive web application for exploring and visualizing concepts
-        from Informatics, with a focus on Algorithms and Data Structures.
-      </p>
-      <div className="home__actions">
-        <button type="button" onClick={() => setView('bubble-sort')}>
-          Explore Bubble Sort
-        </button>
-        <button type="button" onClick={() => setView('binary-search')}>
-          Explore Binary Search
-        </button>
-      </div>
-    </main>
+    <ModulesPage
+      onSelectModule={(id) => {
+        setModuleId(id)
+        setView('topics')
+      }}
+    />
   )
 }
 
