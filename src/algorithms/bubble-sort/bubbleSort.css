@@ -6,17 +6,13 @@
   --bar-gap: 0.5rem;
   --step-duration: 0.2s;
 
+  display: flex;
+  flex-direction: column;
   min-height: 100svh;
   box-sizing: border-box;
   color: var(--color-text);
-  padding: 2rem max(1.5rem, calc((100% - 60rem) / 2)) 4rem;
-}
-
-.bubble-sort__header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  background: var(--color-bg);
+  padding: 1.5rem max(1.25rem, calc((100% - 84rem) / 2)) 1.75rem;
 }
 
 .bubble-sort button {
@@ -33,73 +29,77 @@
   border-color: rgba(226, 232, 240, 0.7);
 }
 
-.bubble-sort__controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.bubble-sort__field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.bubble-sort__field input[type='range'] {
-  width: 10rem;
-}
-
 .bubble-sort button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.bubble-sort__playback {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.bubble-sort__playback-buttons {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.bubble-sort__playback-speed {
+.bubble-sort__navbar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-.bubble-sort__playback-speed input[type='range'] {
-  width: 8rem;
+/* The code panel takes the right column; the visualization keeps the rest. */
+.bubble-sort__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+  gap: 0;
+  flex: 1 1 auto;
+  transition: grid-template-columns 0.28s ease;
 }
 
-.bubble-sort__playback-progress {
-  font-size: 0.9rem;
-  font-variant-numeric: tabular-nums;
+.bubble-sort--with-code .bubble-sort__layout {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
 }
 
-.bubble-sort h1 {
-  font-size: 1.75rem;
+/* One bordered block; the bands inside are divided by hairlines, not gaps. */
+.bubble-sort__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
 }
 
-.bubble-sort__description {
-  min-height: 1.5rem;
-  margin: 0 0 1.5rem;
-  font-size: 1.05rem;
+.bubble-sort__visualization {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 22rem;
+  padding: 3rem 1.75rem 1.5rem;
+}
+
+.bubble-sort__code-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--color-comparing);
+  border-color: var(--color-comparing);
+  border-radius: 0 15px 0 12px;
+}
+
+.bubble-sort__code-toggle:hover {
+  color: var(--color-comparing);
+  border-color: var(--color-comparing);
+  background: rgba(245, 158, 11, 0.1);
 }
 
 .bubble-sort__bars {
   display: flex;
   gap: var(--bar-gap);
-  height: 18rem;
+  height: clamp(16rem, 38vh, 26rem);
 }
 
 .bubble-sort__bar-slot {
@@ -221,4 +221,196 @@
 
 .bubble-sort__legend-swatch--sorted {
   background: var(--bar-sorted);
+}
+
+.bubble-sort__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.bubble-sort__playback {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.bubble-sort__playback-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bubble-sort__playback-speed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bubble-sort__playback-speed input[type='range'] {
+  width: 8rem;
+}
+
+.bubble-sort__playback-progress {
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bubble-sort__input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.bubble-sort__field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.bubble-sort__field input[type='range'] {
+  width: 10rem;
+}
+
+.bubble-sort__status {
+  min-height: 1.4rem;
+  margin: 0 0 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.bubble-sort__explanation {
+  padding: 1rem 1.1rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.bubble-sort__explanation-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.bubble-sort__explanation p {
+  margin: 0 0 0.6rem;
+}
+
+.bubble-sort__explanation p:last-child {
+  margin-bottom: 0;
+}
+
+.bubble-sort__code {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 22rem;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(0.75rem);
+  transition:
+    visibility 0s linear 0.28s,
+    opacity 0.24s ease,
+    transform 0.28s ease;
+}
+
+/* The panel stays mounted when closed so opening it animates from zero width. */
+.bubble-sort__code--open {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    visibility 0s,
+    opacity 0.24s ease,
+    transform 0.28s ease;
+}
+
+.bubble-sort__code-langs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.bubble-sort__lang {
+  padding: 0.35rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+}
+
+.bubble-sort__lang:hover {
+  color: var(--color-text);
+  border-color: transparent;
+}
+
+.bubble-sort__lang--active {
+  color: var(--color-comparing);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.bubble-sort__code-body {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 1rem 1.15rem;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+}
+
+@media (max-width: 960px) {
+  /* Stacking cannot animate smoothly; the code simply sits below the lab. */
+  .bubble-sort__layout {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1rem;
+    transition: none;
+  }
+
+  .bubble-sort--with-code .bubble-sort__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* No room for a side drawer, so the reference code is always shown below. */
+  .bubble-sort__code-toggle {
+    display: none;
+  }
+
+  .bubble-sort__code {
+    min-height: 18rem;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .bubble-sort__bars {
+    height: clamp(14rem, 34vh, 20rem);
+  }
+
+  .bubble-sort__controls {
+    justify-content: flex-start;
+  }
 }
