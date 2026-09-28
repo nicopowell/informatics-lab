@@ -9,6 +9,7 @@ import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import { BUBBLE_SORT_REFERENCE } from './bubbleSortReference'
 import LanguageIcon from './LanguageIcon'
+import HighlightedCode from './HighlightedCode'
 import description from './description.md?raw'
 import './bubbleSort.css'
 
@@ -268,7 +269,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
             </div>
           </div>
           <pre className="bubble-sort__code-body">
-            <code>{reference.code}</code>
+            <HighlightedCode language={reference.id} code={reference.code} />
           </pre>
         </aside>
       </div>

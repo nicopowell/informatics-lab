@@ -512,12 +512,57 @@
 .bubble-sort__code-body {
   flex: 1 1 auto;
   margin: 0;
-  padding: 1rem 1.15rem;
+  padding: 1rem 0;
   overflow: auto;
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #cbd5e1;
+  counter-reset: code-line;
+}
+
+/* Each line is a gutter + code row, so the panel reads like an editor. */
+.code-line {
+  display: block;
+  padding: 0 1.15rem 0 3rem;
+  position: relative;
+  white-space: pre;
+}
+
+.code-line::before {
+  counter-increment: code-line;
+  content: counter(code-line);
+  position: absolute;
+  left: 0;
+  width: 2.2rem;
+  text-align: right;
+  color: #4b5563;
+  user-select: none;
+}
+
+.code-token--keyword {
+  color: #c084fc;
+}
+
+.code-token--string {
+  color: #86efac;
+}
+
+.code-token--number {
+  color: #fbbf24;
+}
+
+.code-token--comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+.code-token--type {
+  color: #38bdf8;
+}
+
+.code-token--operator {
+  color: #f472b6;
 }
 
 @media (max-width: 960px) {
