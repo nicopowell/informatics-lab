@@ -1,6 +1,7 @@
 export type ReferenceLanguage = {
   id: string
   label: string
+  color: string
   code: string
 }
 
@@ -8,6 +9,7 @@ export const BUBBLE_SORT_REFERENCE: ReferenceLanguage[] = [
   {
     id: 'pseudocode',
     label: 'Pseudocode',
+    color: '#e2e8f0',
     code: `procedure bubbleSort(A : list of numbers)
     n <- length(A)
     while n > 1
@@ -23,6 +25,7 @@ export const BUBBLE_SORT_REFERENCE: ReferenceLanguage[] = [
   {
     id: 'python',
     label: 'Python',
+    color: '#3776ab',
     code: `def bubble_sort(values):
     n = len(values)
     while n > 1:
@@ -38,6 +41,7 @@ export const BUBBLE_SORT_REFERENCE: ReferenceLanguage[] = [
   {
     id: 'javascript',
     label: 'JavaScript',
+    color: '#f7df1e',
     code: `function bubbleSort(values) {
   let n = values.length
   while (n > 1) {
@@ -58,6 +62,7 @@ export const BUBBLE_SORT_REFERENCE: ReferenceLanguage[] = [
   {
     id: 'cpp',
     label: 'C++',
+    color: '#00599c',
     code: `void bubbleSort(std::vector<int>& values) {
   int n = static_cast<int>(values.size());
   while (n > 1) {

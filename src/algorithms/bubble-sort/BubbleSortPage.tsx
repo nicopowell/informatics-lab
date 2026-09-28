@@ -7,6 +7,7 @@ import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import { BUBBLE_SORT_REFERENCE } from './bubbleSortReference'
+import LanguageIcon from './LanguageIcon'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -44,6 +45,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
   const [referenceLanguage, setReferenceLanguage] = useState(
     BUBBLE_SORT_REFERENCE[0].id,
   )
@@ -142,11 +144,18 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
             <ArrayBars frame={frame} movement={movement} />
             <button
               type="button"
-              className="bubble-sort__code-toggle"
+              className={
+                showCode
+                  ? 'bubble-sort__code-toggle bubble-sort__code-toggle--active'
+                  : 'bubble-sort__code-toggle'
+              }
               aria-pressed={showCode}
               onClick={() => setShowCode((open) => !open)}
             >
-              {showCode ? 'Code →' : '← Code'}
+              <span className="bubble-sort__code-toggle-icon" aria-hidden="true">
+                {'</>'}
+              </span>
+              {showCode ? 'Hide code' : 'View code'}
             </button>
           </section>
 
@@ -213,21 +222,65 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
               : 'bubble-sort__code'
           }
         >
-          <div className="bubble-sort__code-langs">
-            {BUBBLE_SORT_REFERENCE.map((entry) => (
+          <div className="bubble-sort__code-header">
+            <div className="bubble-sort__language">
               <button
-                key={entry.id}
                 type="button"
-                className={
-                  entry.id === referenceLanguage
-                    ? 'bubble-sort__lang bubble-sort__lang--active'
-                    : 'bubble-sort__lang'
-                }
-                onClick={() => setReferenceLanguage(entry.id)}
+                className="bubble-sort__language-trigger"
+                aria-haspopup="listbox"
+                aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen((open) => !open)}
               >
-                {entry.label}
+                <span
+                  className="bubble-sort__language-icon"
+                  style={{ color: reference.color }}
+                >
+                  <LanguageIcon id={reference.id} />
+                </span>
+                {reference.label}
+                <span
+                  className={
+                    languageMenuOpen
+                      ? 'bubble-sort__language-chevron bubble-sort__language-chevron--open'
+                      : 'bubble-sort__language-chevron'
+                  }
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
               </button>
-            ))}
+
+              {languageMenuOpen && (
+                <ul className="bubble-sort__language-menu" role="listbox">
+                  {BUBBLE_SORT_REFERENCE.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={entry.id === referenceLanguage}
+                        className={
+                          entry.id === referenceLanguage
+                            ? 'bubble-sort__language-option bubble-sort__language-option--active'
+                            : 'bubble-sort__language-option'
+                        }
+                        onClick={() => {
+                          setReferenceLanguage(entry.id)
+                          setLanguageMenuOpen(false)
+                        }}
+                      >
+                        <span
+                          className="bubble-sort__language-icon"
+                          style={{ color: entry.color }}
+                        >
+                          <LanguageIcon id={entry.id} />
+                        </span>
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <pre className="bubble-sort__code-body">
             <code>{reference.code}</code>
