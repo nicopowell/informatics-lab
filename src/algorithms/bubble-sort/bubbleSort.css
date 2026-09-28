@@ -295,6 +295,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  width: 100%;
+}
+
+.bubble-sort__playback-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.75rem 1.25rem;
 }
 
@@ -336,27 +345,63 @@
   border-color: #f8fafc;
 }
 
+/* At the end the run is finished, so the primary action recedes instead of
+   looking clickable. Reset restarts it. */
 .bubble-sort button.bubble-sort__icon-button--primary:disabled {
-  opacity: 1;
-  color: #0f172a;
-  background: var(--color-text);
-  border-color: var(--color-text);
+  color: var(--color-text-muted);
+  background: transparent;
+  border-color: var(--color-border);
 }
 
-.bubble-sort__playback-speed {
+.bubble-sort__slider {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
-.bubble-sort__playback-speed input[type='range'] {
-  width: 8rem;
+.bubble-sort__slider-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
 }
 
-.bubble-sort__playback-progress {
-  font-size: 0.9rem;
+.bubble-sort__slider input[type='range'] {
+  width: 7rem;
+}
+
+.bubble-sort__input .bubble-sort__slider input[type='range'] {
+  width: 9rem;
+}
+
+.bubble-sort__counts {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.bubble-sort__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+}
+
+.bubble-sort__count-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+}
+
+.bubble-sort__count-value {
   font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.bubble-sort__count-value--swaps {
+  color: var(--bar-swapped);
 }
 
 .bubble-sort__input {
@@ -366,15 +411,54 @@
   gap: 0.75rem 1rem;
 }
 
-.bubble-sort__field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+/* Shared range styling so both sliders read as part of the same control bar. */
+.bubble-sort__slider input[type='range'] {
+  appearance: none;
+  height: 1.2rem;
+  background: transparent;
+  cursor: pointer;
 }
 
-.bubble-sort__field input[type='range'] {
-  width: 10rem;
+.bubble-sort__slider input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.bubble-sort__slider input[type='range']::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.bubble-sort__slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: -0.34rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: none;
+}
+
+.bubble-sort__slider input[type='range']::-moz-range-thumb {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: none;
+}
+
+.bubble-sort__slider input[type='range']:focus-visible {
+  outline: none;
+}
+
+.bubble-sort__slider input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.35);
+}
+
+.bubble-sort__slider input[type='range']:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.35);
 }
 
 .bubble-sort__status {
@@ -649,5 +733,25 @@
 
   .bubble-sort__controls {
     justify-content: flex-start;
+  }
+
+  /* Playback first, then the run counters; the input group takes its own row. */
+  .bubble-sort__playback {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .bubble-sort__playback-group {
+    width: 100%;
+  }
+
+  .bubble-sort__input {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .bubble-sort__input .bubble-sort__slider input[type='range'] {
+    width: 6rem;
   }
 }

@@ -178,17 +178,18 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
               onSpeedChange={setSpeed}
             />
             <div className="bubble-sort__input">
-              <label className="bubble-sort__field">
-                Size
+              <label className="bubble-sort__slider">
+                <span className="bubble-sort__slider-label">Size</span>
                 <input
                   type="range"
                   aria-label="Size"
+                  aria-valuetext={`${size} values`}
                   min={MIN_SIZE}
                   max={MAX_SIZE}
                   value={size}
                   onChange={(event) => handleSizeChange(event.target.value)}
                 />
-                <span>{size}</span>
+                <span className="bubble-sort__count-value">{size}</span>
               </label>
               <button type="button" onClick={handleRandomize}>
                 Randomize
