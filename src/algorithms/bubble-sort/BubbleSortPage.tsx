@@ -132,8 +132,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
         <Brand />
         <button type="button" className="bubble-sort__back" onClick={onBack}>
           ← Experiences
-        </button>
-      </header>
+        </button>      </header>
 
       <div className="bubble-sort__layout">
         <div className="bubble-sort__stage">
