@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
+import Brand from '../../modules/Brand'
+import MarkdownDescription from '../../modules/MarkdownDescription'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
+import { BUBBLE_SORT_REFERENCE } from './bubbleSortReference'
+import LanguageIcon from './LanguageIcon'
+import HighlightedCode from './HighlightedCode'
+import description from './description.md?raw'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -41,6 +47,11 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [movement, setMovement] = useState<FrameMovement>('none')
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
+  const [showCode, setShowCode] = useState(false)
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const [referenceLanguage, setReferenceLanguage] = useState(
+    BUBBLE_SORT_REFERENCE[0].id,
+  )
 
   const steps = useMemo(() => generateBubbleSortSteps(values), [values])
   const frames = useMemo(
@@ -51,6 +62,9 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const lastFrameIndex = frames.length - 1
   const totalComparisons = steps[steps.length - 1].comparison
   const delay = Math.round(MAX_DELAY / speed)
+  const reference =
+    BUBBLE_SORT_REFERENCE.find((entry) => entry.id === referenceLanguage) ??
+    BUBBLE_SORT_REFERENCE[0]
 
   function navigateTo(nextIndex: number) {
     setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
@@ -114,55 +128,152 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
 
   return (
     <main
-      className="bubble-sort"
+      className={showCode ? 'bubble-sort bubble-sort--with-code' : 'bubble-sort'}
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
     >
-      <header className="bubble-sort__header">
-        <button type="button" onClick={onBack}>
-          Back
-        </button>
-        <h1>Bubble Sort</h1>
-      </header>
+      <header className="bubble-sort__navbar">
+        <Brand />
+        <button type="button" className="bubble-sort__back" onClick={onBack}>
+          ← Experiences
+        </button>      </header>
 
-      <div className="bubble-sort__controls">
-        <label className="bubble-sort__field">
-          Size
-          <input
-            type="range"
-            aria-label="Size"
-            min={MIN_SIZE}
-            max={MAX_SIZE}
-            value={size}
-            onChange={(event) => handleSizeChange(event.target.value)}
-          />
-          <span>{size}</span>
-        </label>
-        <button type="button" onClick={handleRandomize}>
-          Randomize
-        </button>
+      <div className="bubble-sort__layout">
+        <div className="bubble-sort__stage">
+          <section className="bubble-sort__visualization">
+            <p className="bubble-sort__status" aria-live="polite">
+              {describeFrame(frame)}
+            </p>
+            <ArrayBars frame={frame} movement={movement} />
+            <button
+              type="button"
+              className={
+                showCode
+                  ? 'bubble-sort__code-toggle bubble-sort__code-toggle--active'
+                  : 'bubble-sort__code-toggle'
+              }
+              aria-pressed={showCode}
+              onClick={() => setShowCode((open) => !open)}
+            >
+              <span className="bubble-sort__code-toggle-icon" aria-hidden="true">
+                {'</>'}
+              </span>
+              {showCode ? 'Hide code' : 'View code'}
+            </button>
+          </section>
+
+          <div className="bubble-sort__controls">
+            <PlaybackControls
+              isPlaying={isPlaying}
+              atStart={frameIndex === 0}
+              atEnd={frameIndex >= lastFrameIndex}
+              comparison={frame.comparison}
+              totalComparisons={totalComparisons}
+              swaps={frame.swaps}
+              isDone={frame.kind === 'done'}
+              speed={speed}
+              onPlayPause={handlePlayPause}
+              onStepForward={handleStepForward}
+              onStepBackward={handleStepBackward}
+              onReset={handleReset}
+              onSpeedChange={setSpeed}
+            />
+            <div className="bubble-sort__input">
+              <label className="bubble-sort__slider">
+                <span className="bubble-sort__slider-label">Size</span>
+                <input
+                  type="range"
+                  aria-label="Size"
+                  aria-valuetext={`${size} values`}
+                  min={MIN_SIZE}
+                  max={MAX_SIZE}
+                  value={size}
+                  onChange={(event) => handleSizeChange(event.target.value)}
+                />
+                <span className="bubble-sort__count-value">{size}</span>
+              </label>
+              <button type="button" onClick={handleRandomize}>
+                Randomize
+              </button>
+            </div>
+          </div>
+
+          <div className="bubble-sort__explanation">
+            <MarkdownDescription source={description} />
+          </div>
+        </div>
+
+        <aside
+          className={
+            showCode
+              ? 'bubble-sort__code bubble-sort__code--open'
+              : 'bubble-sort__code'
+          }
+        >
+          <div className="bubble-sort__code-header">
+            <div className="bubble-sort__language">
+              <button
+                type="button"
+                className="bubble-sort__language-trigger"
+                aria-haspopup="listbox"
+                aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen((open) => !open)}
+              >
+                <span
+                  className="bubble-sort__language-icon"
+                  style={{ color: reference.color }}
+                >
+                  <LanguageIcon id={reference.id} />
+                </span>
+                {reference.label}
+                <span
+                  className={
+                    languageMenuOpen
+                      ? 'bubble-sort__language-chevron bubble-sort__language-chevron--open'
+                      : 'bubble-sort__language-chevron'
+                  }
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
+              </button>
+
+              {languageMenuOpen && (
+                <ul className="bubble-sort__language-menu" role="listbox">
+                  {BUBBLE_SORT_REFERENCE.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={entry.id === referenceLanguage}
+                        className={
+                          entry.id === referenceLanguage
+                            ? 'bubble-sort__language-option bubble-sort__language-option--active'
+                            : 'bubble-sort__language-option'
+                        }
+                        onClick={() => {
+                          setReferenceLanguage(entry.id)
+                          setLanguageMenuOpen(false)
+                        }}
+                      >
+                        <span
+                          className="bubble-sort__language-icon"
+                          style={{ color: entry.color }}
+                        >
+                          <LanguageIcon id={entry.id} />
+                        </span>
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+          <pre className="bubble-sort__code-body">
+            <HighlightedCode language={reference.id} code={reference.code} />
+          </pre>
+        </aside>
       </div>
-
-      <PlaybackControls
-        isPlaying={isPlaying}
-        atStart={frameIndex === 0}
-        atEnd={frameIndex >= lastFrameIndex}
-        comparison={frame.comparison}
-        totalComparisons={totalComparisons}
-        swaps={frame.swaps}
-        isDone={frame.kind === 'done'}
-        speed={speed}
-        onPlayPause={handlePlayPause}
-        onStepForward={handleStepForward}
-        onStepBackward={handleStepBackward}
-        onReset={handleReset}
-        onSpeedChange={setSpeed}
-      />
-
-      <p className="bubble-sort__description" aria-live="polite">
-        {describeFrame(frame)}
-      </p>
-
-      <ArrayBars frame={frame} movement={movement} />
     </main>
   )
 }

@@ -1,3 +1,9 @@
+/* Reserve the scrollbar track on every view so navigating between a page that
+   scrolls and one that does not reflows the layout without a width jump. */
+html {
+  scrollbar-gutter: stable;
+}
+
 :root {
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
