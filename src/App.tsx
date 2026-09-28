@@ -1,38 +1,22 @@
 import { useState } from 'react'
 import BinarySearchPage from './algorithms/binary-search/BinarySearchPage'
 import BubbleSortPage from './algorithms/bubble-sort/BubbleSortPage'
-import './App.css'
+import ModulesPage from './modules/ModulesPage'
 
-type View = 'home' | 'bubble-sort' | 'binary-search'
+type View = 'modules' | 'bubble-sort' | 'binary-search'
 
 function App() {
-  const [view, setView] = useState<View>('home')
+  const [view, setView] = useState<View>('modules')
 
   if (view === 'bubble-sort') {
-    return <BubbleSortPage onBack={() => setView('home')} />
+    return <BubbleSortPage onBack={() => setView('modules')} />
   }
 
   if (view === 'binary-search') {
-    return <BinarySearchPage onBack={() => setView('home')} />
+    return <BinarySearchPage onBack={() => setView('modules')} />
   }
 
-  return (
-    <main className="home">
-      <h1>Informatics Lab</h1>
-      <p>
-        An interactive web application for exploring and visualizing concepts
-        from Informatics, with a focus on Algorithms and Data Structures.
-      </p>
-      <div className="home__actions">
-        <button type="button" onClick={() => setView('bubble-sort')}>
-          Explore Bubble Sort
-        </button>
-        <button type="button" onClick={() => setView('binary-search')}>
-          Explore Binary Search
-        </button>
-      </div>
-    </main>
-  )
+  return <ModulesPage />
 }
 
 export default App

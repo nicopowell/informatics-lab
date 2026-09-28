@@ -1,11 +1,15 @@
 /*
- * Shared visual language for the experiences. Only tokens that already repeat
- * across experiences live here, so the same role keeps the same color.
+ * Shared visual language. Holds the state colors used by the experiences and
+ * the dark page/surface palette shared by the application shell.
  */
 :root {
   --color-comparing: #f59e0b;
   --color-success: #22c55e;
   --color-neutral: #64748b;
   --color-text: #e2e8f0;
+  --color-bg: #0b0c0e;
+  --color-surface: #141619;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-muted: #8b93a1;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }

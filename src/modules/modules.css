@@ -1,0 +1,189 @@
+.modules {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: 1.75rem max(1.5rem, calc((100% - 72rem) / 2)) 2rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Subtle film grain over the dark surface. */
+.modules::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.modules__header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 4.5rem;
+}
+
+.modules__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.modules__logo {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--color-text);
+}
+
+.modules__wordmark {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.modules__main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.modules__title {
+  max-width: 30rem;
+  margin: 0 0 3.5rem;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.modules__title-accent {
+  color: var(--color-comparing);
+}
+
+.modules__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.module-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 21rem;
+  padding: 0;
+  overflow: hidden;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.module-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.module-card--selected {
+  border-color: var(--color-comparing);
+  box-shadow: 0 0 0 1px var(--color-comparing);
+}
+
+.module-card__art {
+  position: absolute;
+  inset: 0;
+}
+
+.module-card__art-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.module-card__art-svg--algorithms {
+  color: var(--color-comparing);
+}
+
+.module-card__art-svg--numerical {
+  color: #60a5fa;
+}
+
+.module-card__art-svg--networks {
+  color: #2dd4bf;
+}
+
+/* Fades the artwork into the card so the overlaid text stays readable. */
+.module-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    var(--color-surface) 88%
+  );
+}
+
+.module-card__body {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 1.4rem 1.5rem 1.6rem;
+}
+
+.module-card__title {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.module-card__subtitle {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.modules__footer {
+  position: relative;
+  z-index: 2;
+  margin-top: 4rem;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1024px) {
+  .modules__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .modules__header {
+    margin-bottom: 3rem;
+  }
+
+  .modules__title {
+    margin-bottom: 2.5rem;
+  }
+
+  .modules__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
