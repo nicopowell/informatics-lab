@@ -351,8 +351,12 @@
   color: var(--color-text-muted);
 }
 
-.bubble-sort__explanation-title {
-  margin: 0 0 0.5rem;
+.experience-description {
+  max-width: 60rem;
+}
+
+.experience-description__title {
+  margin: 0 0 0.65rem;
   padding-left: 0.6rem;
   font-size: 1.1rem;
   font-weight: 600;
@@ -360,12 +364,28 @@
   border-left: 3px solid var(--color-comparing);
 }
 
-.bubble-sort__explanation p {
-  margin: 0 0 0.6rem;
+.experience-description p {
+  margin: 0 0 0.85rem;
 }
 
-.bubble-sort__explanation p:last-child {
-  margin-bottom: 0;
+.experience-description ul {
+  display: grid;
+  gap: 0.3rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.experience-description li::before {
+  content: '·';
+  margin-right: 0.5rem;
+  color: var(--color-comparing);
+}
+
+.experience-description strong {
+  color: var(--color-text);
+  font-weight: 600;
 }
 
 .bubble-sort__code {

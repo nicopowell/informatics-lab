@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import Brand from '../../modules/Brand'
+import MarkdownDescription from '../../modules/MarkdownDescription'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
@@ -8,6 +9,7 @@ import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import { BUBBLE_SORT_REFERENCE } from './bubbleSortReference'
 import LanguageIcon from './LanguageIcon'
+import description from './description.md?raw'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -194,23 +196,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
           </div>
 
           <div className="bubble-sort__explanation">
-            <h1 className="bubble-sort__explanation-title">Bubble Sort</h1>
-            <p>
-              Run Bubble Sort on a random array and step through every
-              comparison and exchange to see how the order builds up.
-            </p>
-            <p>
-              Bubble Sort walks the array comparing adjacent values and
-              exchanging them when they are out of order. On each pass the
-              largest remaining value drifts to the end, until a full pass
-              makes no exchange and the array is already sorted.
-            </p>
-            <p>
-              Complexity: O(n²) comparisons in the worst and average case, O(n)
-              when the array is already ordered. It sorts in place, using O(1)
-              extra space, and keeps equal values in their original order
-              (stable).
-            </p>
+            <MarkdownDescription source={description} />
           </div>
         </div>
 
