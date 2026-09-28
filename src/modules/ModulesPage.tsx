@@ -1,38 +1,7 @@
-import { useState } from 'react'
 import type { ReactNode } from 'react'
+import Brand from './Brand'
+import { MODULES } from './modules'
 import './modules.css'
-
-type Module = {
-  id: string
-  title: string
-  subtitle: string
-  art: ReactNode
-}
-
-function LogoMark() {
-  return (
-    <svg className="modules__logo" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <rect
-        x="1"
-        y="1"
-        width="26"
-        height="26"
-        rx="7"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <g stroke="currentColor" strokeWidth="1.5">
-        <line x1="11" y1="14" x2="17.5" y2="10" />
-        <line x1="11" y1="14" x2="17.5" y2="18" />
-      </g>
-      <g fill="currentColor">
-        <circle cx="10" cy="14" r="1.8" />
-        <circle cx="18" cy="9.5" r="1.8" />
-        <circle cx="18" cy="18.5" r="1.8" />
-      </g>
-    </svg>
-  )
-}
 
 function AlgorithmsArt() {
   return (
@@ -126,37 +95,21 @@ function NetworksArt() {
   )
 }
 
-const MODULES: Module[] = [
-  {
-    id: 'algorithms',
-    title: 'Algorithms & Data Structures',
-    subtitle: 'Complexity, ADTs, sorting and searching',
-    art: <AlgorithmsArt />,
-  },
-  {
-    id: 'numerical',
-    title: 'Numerical Methods',
-    subtitle: 'Approximation, convergence and error',
-    art: <NumericalArt />,
-  },
-  {
-    id: 'networks',
-    title: 'Computer Networks',
-    subtitle: 'Protocols, layers, routing and latency',
-    art: <NetworksArt />,
-  },
-]
+const MODULE_ART: Record<string, ReactNode> = {
+  algorithms: <AlgorithmsArt />,
+  numerical: <NumericalArt />,
+  networks: <NetworksArt />,
+}
 
-function ModulesPage() {
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+type ModulesPageProps = {
+  onSelectModule: (moduleId: string) => void
+}
 
+function ModulesPage({ onSelectModule }: ModulesPageProps) {
   return (
     <main className="modules">
       <header className="modules__header">
-        <div className="modules__brand">
-          <LogoMark />
-          <span className="modules__wordmark">Informatics Lab</span>
-        </div>
+        <Brand />
       </header>
 
       <section className="modules__main">
@@ -167,30 +120,22 @@ function ModulesPage() {
         </h1>
 
         <div className="modules__grid">
-          {MODULES.map((module) => {
-            const isSelected = selectedId === module.id
-            return (
-              <button
-                key={module.id}
-                type="button"
-                className={
-                  isSelected ? 'module-card module-card--selected' : 'module-card'
-                }
-                aria-pressed={isSelected}
-                onClick={() => setSelectedId(module.id)}
-              >
-                <span className="module-card__art" aria-hidden="true">
-                  {module.art}
-                </span>
-                <span className="module-card__body">
-                  <span className="module-card__title">{module.title}</span>
-                  <span className="module-card__subtitle">
-                    {module.subtitle}
-                  </span>
-                </span>
-              </button>
-            )
-          })}
+          {MODULES.map((module) => (
+            <button
+              key={module.id}
+              type="button"
+              className="module-card"
+              onClick={() => onSelectModule(module.id)}
+            >
+              <span className="module-card__art" aria-hidden="true">
+                {MODULE_ART[module.id]}
+              </span>
+              <span className="module-card__body">
+                <span className="module-card__title">{module.title}</span>
+                <span className="module-card__subtitle">{module.subtitle}</span>
+              </span>
+            </button>
+          ))}
         </div>
       </section>
 
