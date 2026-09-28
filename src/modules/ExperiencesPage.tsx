@@ -1,37 +1,43 @@
 import Brand from './Brand'
-import type { ModuleInfo } from './modules'
-import TopicArt from './topicArt'
+import type { ModuleInfo, Topic } from './modules'
+import ExperienceArt from './experienceArt'
 import './modules.css'
 
-type TopicsPageProps = {
+type ExperiencesPageProps = {
   moduleInfo: ModuleInfo
+  topic: Topic
   onBack: () => void
-  onSelectTopic: (topicId: string) => void
+  onSelectExperience: (experienceId: string) => void
 }
 
-function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
+function ExperiencesPage({
+  moduleInfo,
+  topic,
+  onBack,
+  onSelectExperience,
+}: ExperiencesPageProps) {
   return (
     <main className="modules">
       <header className="modules__header">
         <Brand />
         <button type="button" className="modules__back" onClick={onBack}>
-          ← Modules
+          ← Topics
         </button>
       </header>
 
       <section className="modules__main">
-        <p className="modules__kicker">{moduleInfo.subtitle}</p>
-        <h1 className="modules__title">{moduleInfo.title}</h1>
+        <p className="modules__kicker">{moduleInfo.title}</p>
+        <h1 className="modules__title">{topic.title}</h1>
 
         <div className={`modules__grid modules__grid--${moduleInfo.id}`}>
-          {moduleInfo.topics.map((topic) => {
+          {topic.experiences.map((experience) => {
             const art = (
               <span className="topic-card__art" aria-hidden="true">
-                <TopicArt id={topic.id} />
+                <ExperienceArt id={experience.id} />
               </span>
             )
 
-            const meta = !topic.available ? (
+            const meta = !experience.available ? (
               <span className="topic-card__meta">
                 <span className="topic-card__status">Coming soon</span>
               </span>
@@ -39,17 +45,17 @@ function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
 
             const body = (
               <>
-                <span className="topic-card__title">{topic.title}</span>
+                <span className="topic-card__title">{experience.title}</span>
                 <span className="topic-card__description">
-                  {topic.description}
+                  {experience.description}
                 </span>
               </>
             )
 
-            if (!topic.available) {
+            if (!experience.available) {
               return (
                 <div
-                  key={topic.id}
+                  key={experience.id}
                   className="topic-card topic-card--coming-soon"
                 >
                   {art}
@@ -61,10 +67,10 @@ function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
 
             return (
               <button
-                key={topic.id}
+                key={experience.id}
                 type="button"
                 className="topic-card"
-                onClick={() => onSelectTopic(topic.id)}
+                onClick={() => onSelectExperience(experience.id)}
               >
                 {art}
                 {meta}
@@ -80,4 +86,4 @@ function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
   )
 }
 
-export default TopicsPage
+export default ExperiencesPage
