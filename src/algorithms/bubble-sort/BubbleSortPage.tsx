@@ -3,7 +3,7 @@ import type { CSSProperties } from 'react'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
-import { frameMovement, toVisualFrames } from './visualFrames'
+import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import './bubbleSort.css'
 
@@ -43,17 +43,10 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [speed, setSpeed] = useState(INITIAL_SPEED)
 
   const steps = useMemo(() => generateBubbleSortSteps(values), [values])
-  const frames = useMemo(() => {
-    const readyFrame: BubbleSortFrame = {
-      kind: 'compare',
-      values,
-      comparing: null,
-      sortedFrom: values.length,
-      comparison: 0,
-      swaps: 0,
-    }
-    return [readyFrame, ...toVisualFrames(steps)]
-  }, [steps, values])
+  const frames = useMemo(
+    () => [createReadyFrame(values), ...toVisualFrames(steps)],
+    [steps, values],
+  )
   const frame = frames[frameIndex]
   const lastFrameIndex = frames.length - 1
   const totalComparisons = steps[steps.length - 1].comparison
@@ -165,7 +158,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
         onSpeedChange={setSpeed}
       />
 
-      <p className="step-description" aria-live="polite">
+      <p className="bubble-sort__description" aria-live="polite">
         {describeFrame(frame)}
       </p>
 

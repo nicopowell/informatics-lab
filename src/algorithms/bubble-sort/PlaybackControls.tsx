@@ -33,8 +33,8 @@ function PlaybackControls({
   onSpeedChange,
 }: PlaybackControlsProps) {
   return (
-    <div className="playback">
-      <div className="playback__buttons">
+    <div className="bubble-sort__playback">
+      <div className="bubble-sort__playback-buttons">
         <button type="button" onClick={onReset} disabled={atStart}>
           Reset
         </button>
@@ -49,7 +49,7 @@ function PlaybackControls({
         </button>
       </div>
 
-      <label className="playback__speed">
+      <label className="bubble-sort__playback-speed">
         Speed
         <input
           type="range"
@@ -62,7 +62,7 @@ function PlaybackControls({
         <span>{speed}</span>
       </label>
 
-      <span className="playback__progress">
+      <span className="bubble-sort__playback-progress">
         {isDone ? 'Sorted' : `Comparison ${comparison} / ${totalComparisons}`}
         {' · '}
         Swaps {swaps}

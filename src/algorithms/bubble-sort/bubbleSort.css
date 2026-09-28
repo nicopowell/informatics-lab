@@ -1,14 +1,14 @@
 .bubble-sort {
-  --bar: #64748b;
-  --bar-sorted: #22c55e;
-  --bar-comparing: #f59e0b;
+  --bar: var(--color-neutral);
+  --bar-sorted: var(--color-success);
+  --bar-comparing: var(--color-comparing);
   --bar-swapped: #ef4444;
   --bar-gap: 0.5rem;
   --step-duration: 0.2s;
 
   min-height: 100svh;
   box-sizing: border-box;
-  color: #e2e8f0;
+  color: var(--color-text);
   padding: 2rem max(1.5rem, calc((100% - 60rem) / 2)) 4rem;
 }
 
@@ -57,7 +57,7 @@
   cursor: not-allowed;
 }
 
-.playback {
+.bubble-sort__playback {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -65,23 +65,23 @@
   margin-bottom: 2rem;
 }
 
-.playback__buttons {
+.bubble-sort__playback-buttons {
   display: flex;
   gap: 0.5rem;
 }
 
-.playback__speed {
+.bubble-sort__playback-speed {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
 }
 
-.playback__speed input[type='range'] {
+.bubble-sort__playback-speed input[type='range'] {
   width: 8rem;
 }
 
-.playback__progress {
+.bubble-sort__playback-progress {
   font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
 }
@@ -90,19 +90,19 @@
   font-size: 1.75rem;
 }
 
-.step-description {
+.bubble-sort__description {
   min-height: 1.5rem;
   margin: 0 0 1.5rem;
   font-size: 1.05rem;
 }
 
-.bars {
+.bubble-sort__bars {
   display: flex;
   gap: var(--bar-gap);
   height: 18rem;
 }
 
-.bar-slot {
+.bubble-sort__bar-slot {
   flex: 1 1 0;
   min-width: 0;
   height: 100%;
@@ -112,7 +112,7 @@
   gap: 0.35rem;
 }
 
-.bar-track {
+.bubble-sort__bar-track {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
@@ -120,20 +120,20 @@
   align-items: flex-end;
 }
 
-.bar {
+.bubble-sort__bar {
   width: 100%;
   background: var(--bar);
   border-radius: 4px 4px 0 0;
   transition: background-color 0.2s ease;
 }
 
-@keyframes bar-exchange-from-right {
+@keyframes bubble-sort-bar-exchange-from-right {
   from {
     transform: translateX(calc(100% + var(--bar-gap)));
   }
 }
 
-@keyframes bar-exchange-from-left {
+@keyframes bubble-sort-bar-exchange-from-left {
   from {
     transform: translateX(calc(-100% - var(--bar-gap)));
   }
@@ -141,54 +141,54 @@
 
 /* Duplicated on purpose: the browser does not restart an animation when only
    the class name changes, so rewinding needs its own animation names. */
-@keyframes bar-rewind-from-right {
+@keyframes bubble-sort-bar-rewind-from-right {
   from {
     transform: translateX(calc(100% + var(--bar-gap)));
   }
 }
 
-@keyframes bar-rewind-from-left {
+@keyframes bubble-sort-bar-rewind-from-left {
   from {
     transform: translateX(calc(-100% - var(--bar-gap)));
   }
 }
 
-.bar-slot--exchange-right {
-  animation: bar-exchange-from-right var(--step-duration) ease;
+.bubble-sort__bar-slot--exchange-right {
+  animation: bubble-sort-bar-exchange-from-right var(--step-duration) ease;
 }
 
-.bar-slot--exchange-left {
-  animation: bar-exchange-from-left var(--step-duration) ease;
+.bubble-sort__bar-slot--exchange-left {
+  animation: bubble-sort-bar-exchange-from-left var(--step-duration) ease;
 }
 
-.bar-slot--rewind-right {
-  animation: bar-rewind-from-right var(--step-duration) ease;
+.bubble-sort__bar-slot--rewind-right {
+  animation: bubble-sort-bar-rewind-from-right var(--step-duration) ease;
 }
 
-.bar-slot--rewind-left {
-  animation: bar-rewind-from-left var(--step-duration) ease;
+.bubble-sort__bar-slot--rewind-left {
+  animation: bubble-sort-bar-rewind-from-left var(--step-duration) ease;
 }
 
-.bar--sorted {
+.bubble-sort__bar--sorted {
   background: var(--bar-sorted);
 }
 
-.bar--comparing {
+.bubble-sort__bar--comparing {
   background: var(--bar-comparing);
 }
 
-/* Declared after .bar--comparing so the swap state wins when both apply. */
-.bar--swapped {
+/* Declared after .bubble-sort__bar--comparing so the swap state wins when both apply. */
+.bubble-sort__bar--swapped {
   background: var(--bar-swapped);
   outline: none;
 }
 
-.bar-value {
+.bubble-sort__bar-value {
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
-.legend {
+.bubble-sort__legend {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem 1.25rem;
@@ -198,27 +198,27 @@
   font-size: 0.8rem;
 }
 
-.legend li {
+.bubble-sort__legend li {
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.legend__swatch {
+.bubble-sort__legend-swatch {
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 2px;
   background: var(--bar);
 }
 
-.legend__swatch--comparing {
+.bubble-sort__legend-swatch--comparing {
   background: var(--bar-comparing);
 }
 
-.legend__swatch--swapped {
+.bubble-sort__legend-swatch--swapped {
   background: var(--bar-swapped);
 }
 
-.legend__swatch--sorted {
+.bubble-sort__legend-swatch--sorted {
   background: var(--bar-sorted);
 }

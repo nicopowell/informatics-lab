@@ -11,6 +11,17 @@ export type BubbleSortFrame = {
 
 export type FrameMovement = 'none' | 'exchange' | 'rewind'
 
+export function createReadyFrame(values: number[]): BubbleSortFrame {
+  return {
+    kind: 'compare',
+    values,
+    comparing: null,
+    sortedFrom: values.length,
+    comparison: 0,
+    swaps: 0,
+  }
+}
+
 export function frameMovement(
   from: BubbleSortFrame,
   to: BubbleSortFrame,

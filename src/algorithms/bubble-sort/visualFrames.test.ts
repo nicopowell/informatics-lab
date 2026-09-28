@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest'
 import { generateBubbleSortSteps } from './bubbleSort'
-import { frameMovement, toVisualFrames } from './visualFrames'
+import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
+
+describe('createReadyFrame', () => {
+  it('presents the whole array as unsorted before the first comparison', () => {
+    expect(createReadyFrame([3, 1, 2])).toEqual({
+      kind: 'compare',
+      values: [3, 1, 2],
+      comparing: null,
+      sortedFrom: 3,
+      comparison: 0,
+      swaps: 0,
+    })
+  })
+})
 
 describe('toVisualFrames', () => {
   it('produces a single done frame for an empty array', () => {
