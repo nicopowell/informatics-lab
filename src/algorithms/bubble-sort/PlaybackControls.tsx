@@ -1,3 +1,5 @@
+import PlaybackIcon from './PlaybackIcon'
+
 const MIN_SPEED = 1
 const MAX_SPEED = 10
 
@@ -35,17 +37,45 @@ function PlaybackControls({
   return (
     <div className="bubble-sort__playback">
       <div className="bubble-sort__playback-buttons">
-        <button type="button" onClick={onReset} disabled={atStart}>
-          Reset
+        <button
+          type="button"
+          className="bubble-sort__icon-button"
+          aria-label="Reset"
+          title="Reset"
+          onClick={onReset}
+          disabled={atStart}
+        >
+          <PlaybackIcon name="reset" />
         </button>
-        <button type="button" onClick={onStepBackward} disabled={atStart}>
-          Step back
+        <button
+          type="button"
+          className="bubble-sort__icon-button"
+          aria-label="Step back"
+          title="Step back"
+          onClick={onStepBackward}
+          disabled={atStart}
+        >
+          <PlaybackIcon name="step-back" />
         </button>
-        <button type="button" onClick={onPlayPause} disabled={atEnd}>
-          {isPlaying ? 'Pause' : 'Play'}
+        <button
+          type="button"
+          className="bubble-sort__icon-button bubble-sort__icon-button--primary"
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          title={isPlaying ? 'Pause' : 'Play'}
+          onClick={onPlayPause}
+          disabled={atEnd}
+        >
+          <PlaybackIcon name={isPlaying ? 'pause' : 'play'} />
         </button>
-        <button type="button" onClick={onStepForward} disabled={atEnd}>
-          Step forward
+        <button
+          type="button"
+          className="bubble-sort__icon-button"
+          aria-label="Step forward"
+          title="Step forward"
+          onClick={onStepForward}
+          disabled={atEnd}
+        >
+          <PlaybackIcon name="step-forward" />
         </button>
       </div>
 
