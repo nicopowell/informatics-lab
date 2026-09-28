@@ -4,12 +4,12 @@
   --cell-radius: 8px;
   --lane-height: 1.4rem;
   --surface-raised: #2b3a52;
-  --border-strong: #64748b;
-  --text: #e2e8f0;
+  --border-strong: var(--color-neutral);
+  --text: var(--color-text);
   --text-muted: #94a3b8;
-  --text-faint: #64748b;
-  --accent: #f59e0b;
-  --found: #22c55e;
+  --text-faint: var(--color-neutral);
+  --accent: var(--color-comparing);
+  --found: var(--color-success);
   --pointer: #cbd5e1;
 
   min-height: 100svh;
@@ -96,7 +96,7 @@
 .binary-search__key-input {
   width: 5ch;
   padding: 0.1rem 0.25rem 0.2rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -250,7 +250,7 @@
   height: var(--cell-size);
   box-sizing: border-box;
   padding: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: clamp(0.9rem, 2vw, 1.15rem);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
@@ -270,7 +270,7 @@
 }
 
 .cell-index {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.65rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -349,7 +349,7 @@
   padding-bottom: 0.2rem;
   text-align: center;
   white-space: nowrap;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.62rem;
   line-height: 1;
   letter-spacing: 0.06em;
@@ -380,9 +380,7 @@
   }
 }
 
-/* Scoped under the experience root: Bubble Sort defines global .legend rules
-   and its stylesheet is bundled after this one, so unscoped selectors would
-   inherit --bar (undefined here) and leave the swatches transparent. */
+/* Legend styles are scoped to this experience so they never leak to others. */
 .binary-search .legend {
   display: flex;
   flex-wrap: wrap;

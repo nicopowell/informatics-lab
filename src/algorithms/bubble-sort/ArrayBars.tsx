@@ -14,7 +14,7 @@ function ArrayBars({ frame, movement }: ArrayBarsProps) {
 
   return (
     <>
-      <div className="bars">
+      <div className="bubble-sort__bars">
         {frame.values.map((value, index) => {
           const isComparing =
             frame.comparing !== null &&
@@ -22,51 +22,54 @@ function ArrayBars({ frame, movement }: ArrayBarsProps) {
           const isSwapped = isComparing && frame.kind === 'swap'
           const isSorted = index >= frame.sortedFrom
 
-          let className = 'bar'
+          let className = 'bubble-sort__bar'
           if (isSorted) {
-            className += ' bar--sorted'
+            className += ' bubble-sort__bar--sorted'
           }
           if (isComparing) {
-            className += ' bar--comparing'
+            className += ' bubble-sort__bar--comparing'
           }
           if (isSwapped) {
-            className += ' bar--swapped'
+            className += ' bubble-sort__bar--swapped'
           }
 
-          let slotClassName = 'bar-slot'
+          let slotClassName = 'bubble-sort__bar-slot'
           if (index === swapLeftIndex) {
-            slotClassName += ` bar-slot--${movementSuffix}-right`
+            slotClassName += ` bubble-sort__bar-slot--${movementSuffix}-right`
           }
           if (index === swapRightIndex) {
-            slotClassName += ` bar-slot--${movementSuffix}-left`
+            slotClassName += ` bubble-sort__bar-slot--${movementSuffix}-left`
           }
 
           return (
             <div className={slotClassName} key={index}>
-              <div className="bar-track">
+              <div className="bubble-sort__bar-track">
                 <div
                   className={className}
                   style={{ height: `${(value / maxValue) * 100}%` }}
                 />
               </div>
-              <span className="bar-value">{value}</span>
+              <span className="bubble-sort__bar-value">{value}</span>
             </div>
           )
         })}
       </div>
 
-      <ul className="legend">
+      <ul className="bubble-sort__legend">
         <li>
-          <span className="legend__swatch" /> Unordered
+          <span className="bubble-sort__legend-swatch" /> Unordered
         </li>
         <li>
-          <span className="legend__swatch legend__swatch--comparing" /> Comparing
+          <span className="bubble-sort__legend-swatch bubble-sort__legend-swatch--comparing" />{' '}
+          Comparing
         </li>
         <li>
-          <span className="legend__swatch legend__swatch--swapped" /> Swapped
+          <span className="bubble-sort__legend-swatch bubble-sort__legend-swatch--swapped" />{' '}
+          Swapped
         </li>
         <li>
-          <span className="legend__swatch legend__swatch--sorted" /> Sorted
+          <span className="bubble-sort__legend-swatch bubble-sort__legend-swatch--sorted" />{' '}
+          Sorted
         </li>
       </ul>
     </>

@@ -1,0 +1,11 @@
+/*
+ * Shared visual language for the experiences. Only tokens that already repeat
+ * across experiences live here, so the same role keeps the same color.
+ */
+:root {
+  --color-comparing: #f59e0b;
+  --color-success: #22c55e;
+  --color-neutral: #64748b;
+  --color-text: #e2e8f0;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
