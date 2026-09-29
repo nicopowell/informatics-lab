@@ -1,4 +1,4 @@
-import Brand from './Brand'
+import PageHeader, { PageHeaderBack } from './PageHeader'
 import type { ModuleInfo, Topic } from './modules'
 import ExperienceArt from './experienceArt'
 import './modules.css'
@@ -6,6 +6,7 @@ import './modules.css'
 type ExperiencesPageProps = {
   moduleInfo: ModuleInfo
   topic: Topic
+  implementedExperiences: Set<string>
   onBack: () => void
   onSelectExperience: (experienceId: string) => void
 }
@@ -13,17 +14,13 @@ type ExperiencesPageProps = {
 function ExperiencesPage({
   moduleInfo,
   topic,
+  implementedExperiences,
   onBack,
   onSelectExperience,
 }: ExperiencesPageProps) {
   return (
     <main className="modules">
-      <header className="modules__header">
-        <Brand />
-        <button type="button" className="modules__back" onClick={onBack}>
-          ← Topics
-        </button>
-      </header>
+      <PageHeader action={<PageHeaderBack label="← Topics" onClick={onBack} />} />
 
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.title}</p>
@@ -31,13 +28,15 @@ function ExperiencesPage({
 
         <div className={`modules__grid modules__grid--${moduleInfo.id}`}>
           {topic.experiences.map((experience) => {
+            const isImplemented = implementedExperiences.has(experience.id)
+
             const art = (
               <span className="topic-card__art" aria-hidden="true">
                 <ExperienceArt id={experience.id} />
               </span>
             )
 
-            const meta = !experience.available ? (
+            const meta = !isImplemented ? (
               <span className="topic-card__meta">
                 <span className="topic-card__status">Coming soon</span>
               </span>
@@ -52,7 +51,7 @@ function ExperiencesPage({
               </>
             )
 
-            if (!experience.available) {
+            if (!isImplemented) {
               return (
                 <div
                   key={experience.id}

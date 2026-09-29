@@ -2,7 +2,6 @@ export type Experience = {
   id: string
   title: string
   description: string
-  available: boolean
 }
 
 export type Topic = {
@@ -36,25 +35,21 @@ export const MODULES: ModuleInfo[] = [
             id: 'bubble-sort',
             title: 'Bubble Sort',
             description: 'Compare and exchange adjacent values.',
-            available: true,
           },
           {
             id: 'selection-sort',
             title: 'Selection Sort',
             description: 'Select the smallest value each pass.',
-            available: false,
           },
           {
             id: 'insertion-sort',
             title: 'Insertion Sort',
             description: 'Insert each value into the sorted prefix.',
-            available: false,
           },
           {
             id: 'merge-sort',
             title: 'Merge Sort',
             description: 'Divide, sort and merge the halves.',
-            available: false,
           },
         ],
       },
@@ -68,13 +63,11 @@ export const MODULES: ModuleInfo[] = [
             id: 'binary-search',
             title: 'Binary Search',
             description: 'Halve a sorted range until the value is found.',
-            available: true,
           },
           {
             id: 'sequential-search',
             title: 'Sequential Search',
             description: 'Check each value from the start.',
-            available: false,
           },
         ],
       },

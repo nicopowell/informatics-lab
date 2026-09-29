@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import Brand from '../../modules/Brand'
+import PageHeader, { PageHeaderBack } from '../../modules/PageHeader'
 import MarkdownDescription from '../../modules/MarkdownDescription'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
@@ -131,11 +131,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
       className={showCode ? 'bubble-sort bubble-sort--with-code' : 'bubble-sort'}
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
     >
-      <header className="bubble-sort__navbar">
-        <Brand />
-        <button type="button" className="bubble-sort__back" onClick={onBack}>
-          ← Experiences
-        </button>      </header>
+      <PageHeader action={<PageHeaderBack label="← Experiences" onClick={onBack} />} />
 
       <div className="bubble-sort__layout">
         <div className="bubble-sort__stage">

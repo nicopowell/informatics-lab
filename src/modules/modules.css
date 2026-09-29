@@ -19,7 +19,7 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.modules__header {
+.page-header {
   position: relative;
   z-index: 2;
   display: flex;
@@ -29,27 +29,27 @@
   margin-bottom: 4.5rem;
 }
 
-.modules__brand {
+.page-header__brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.modules__logo {
+.page-header__logo {
   flex: none;
   width: 1.6rem;
   height: 1.6rem;
   color: var(--color-text);
 }
 
-.modules__wordmark {
+.page-header__wordmark {
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
 }
 
-.modules__back {
+.page-header__back {
   font: inherit;
   font-size: 0.7rem;
   letter-spacing: 0.16em;
@@ -65,7 +65,7 @@
     border-color 0.15s ease;
 }
 
-.modules__back:hover {
+.page-header__back:hover {
   color: var(--color-text);
   border-color: rgba(255, 255, 255, 0.3);
 }
@@ -286,7 +286,7 @@
 }
 
 @media (max-width: 720px) {
-  .modules__header {
+  .page-header {
     margin-bottom: 3rem;
   }
 

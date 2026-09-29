@@ -1,4 +1,4 @@
-import Brand from './Brand'
+import PageHeader, { PageHeaderBack } from './PageHeader'
 import type { ModuleInfo } from './modules'
 import TopicArt from './topicArt'
 import './modules.css'
@@ -12,12 +12,7 @@ type TopicsPageProps = {
 function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
   return (
     <main className="modules">
-      <header className="modules__header">
-        <Brand />
-        <button type="button" className="modules__back" onClick={onBack}>
-          ← Modules
-        </button>
-      </header>
+      <PageHeader action={<PageHeaderBack label="← Modules" onClick={onBack} />} />
 
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.subtitle}</p>

@@ -179,9 +179,14 @@ The current technology direction is:
 * TypeScript.
 * React.
 * Vite.
+* React Router for client-side navigation (routed with `BrowserRouter`).
+* Shared design tokens as CSS custom properties in `src/theme.css`.
 * SVG and/or Canvas for visualizations, depending on what is appropriate for each concept.
 
 The project is intentionally a client-side web application at this stage.
+
+Because routing uses real paths, a static host must fall back to `index.html`
+for unknown paths so deep links keep working.
 
 There is currently no need for:
 
@@ -232,6 +237,9 @@ This does not require creating abstractions solely to enforce separation.
 ## Visual design guidelines
 
 These guidelines keep the experiences recognizably part of Informatics Lab. They are principles to consult while building, not a design system or a component architecture.
+
+The shared identity they describe already lives in code: color and typography
+tokens in `src/theme.css`, and the catalogue shell (`PageHeader`, `modules.css`).
 
 ### One visual identity
 
@@ -316,23 +324,34 @@ Those directions should not influence current implementation unless a concrete f
 The project currently contains:
 
 * A Vite + React + TypeScript application.
-* A minimal Informatics Lab landing screen.
+* A three-level catalogue for navigation: Modules → Topics → Experiences.
 * Two interactive experiences: a Bubble Sort visualization and a Binary Search visualization.
 * Pure, deterministic algorithm logic and step generation, covered by tests.
-* Shared visual design guidelines for the experiences.
-* Project documentation and development guidelines.
+* Shared visual design guidelines for the experiences, and shared design tokens.
+* Project documentation and development guidelines, including the experience conventions in `docs/experiences.md`.
 
-The Bubble Sort experience lets the user generate an array, run the algorithm,
-pause, move forward and backward, control the speed, and read a description of
-each comparison and exchange.
+The catalogue lists several modules (Algorithms and Data Structures, Numerical
+Methods, Computer Networks) and their topics. Only the experiences that exist in
+code are offered as available; everything else is shown as "coming soon" based
+on a single source of truth in `src/routes/experiences.ts`.
+
+The Bubble Sort experience follows the intended experience layout: the
+visualization is the protagonist, playback controls and input configuration sit
+below it, a static description explains the algorithm and its complexity, and a
+collapsible panel shows the reference implementation in pseudocode, Python,
+JavaScript and C++ with syntax highlighting. It lets the user generate an array,
+run the algorithm, pause, move forward and backward, control the speed, and read
+a description of each comparison and exchange.
 
 The Binary Search experience lets the user generate a sorted array, choose a
 search key (by typing it or by clicking a value), move through the search or
 play it at a configurable speed, and read why each step narrows the search
 space. It shows both outcomes: the element being found and the element not
-being present.
+being present. It is functionally complete but still uses the previous layout,
+so it does not yet match the Bubble Sort experience.
 
-The next implementation target is a third experience, in a different part of
-the curriculum. Building it should keep revealing which parts are genuinely
-shared and which are specific to each concept, before introducing any shared
-abstraction.
+The next implementation target is to adapt Binary Search to the experience
+layout. That second concrete implementation is what should justify extracting
+the shared experience shell and the shared control styles, rather than designing
+them in advance. After that, the next concepts from the curriculum (for example
+Selection Sort) can be added following the conventions in `docs/experiences.md`.

@@ -26,7 +26,6 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.bubble-sort__navbar,
 .bubble-sort__layout {
   position: relative;
   z-index: 2;
@@ -57,14 +56,6 @@
 .bubble-sort button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-}
-
-.bubble-sort__navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 4.5rem;
 }
 
 /* The code panel takes the right column; the visualization keeps the rest. */

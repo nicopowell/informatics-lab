@@ -38,6 +38,7 @@ The current implementation focuses on Algorithms and Data Structures. See `docs/
 * Prefer existing project capabilities when they are sufficient.
 * Use current official documentation when library behavior or APIs need verification.
 * Read `docs/project.md` when a task depends on the project's broader goals, scope, or design direction.
+* Read `docs/experiences.md` when adding or modifying an interactive experience.
 
 ## Workflow
 
