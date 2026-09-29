@@ -1,4 +1,4 @@
-import PlaybackIcon from '../bubble-sort/PlaybackIcon'
+import PlaybackIcon from '../../experience/PlaybackIcon'
 
 const MIN_SPEED = 1
 const MAX_SPEED = 10
@@ -31,12 +31,12 @@ function PlaybackControls({
   onSpeedChange,
 }: PlaybackControlsProps) {
   return (
-    <div className="binary-search__playback">
-      <div className="binary-search__playback-group">
-        <div className="binary-search__playback-buttons">
+    <div className="experience__playback">
+      <div className="experience__playback-group">
+        <div className="experience__playback-buttons">
           <button
             type="button"
-            className="binary-search__icon-button"
+            className="icon-button"
             aria-label="Reset"
             title="Reset"
             onClick={onReset}
@@ -46,7 +46,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="binary-search__icon-button"
+            className="icon-button"
             aria-label="Step back"
             title="Step back"
             onClick={onStepBackward}
@@ -56,7 +56,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="binary-search__icon-button binary-search__icon-button--primary"
+            className="icon-button icon-button--primary"
             aria-label={isPlaying ? 'Pause' : 'Play'}
             title={isPlaying ? 'Pause' : 'Play'}
             onClick={onPlayPause}
@@ -66,7 +66,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="binary-search__icon-button"
+            className="icon-button"
             aria-label="Step forward"
             title="Step forward"
             onClick={onStepForward}
@@ -76,8 +76,8 @@ function PlaybackControls({
           </button>
         </div>
 
-        <label className="binary-search__slider">
-          <span className="binary-search__slider-label">Speed</span>
+        <label className="experience__slider">
+          <span className="experience__slider-label">Speed</span>
           <input
             type="range"
             aria-label="Speed"
@@ -90,10 +90,10 @@ function PlaybackControls({
         </label>
       </div>
 
-      <div className="binary-search__counts">
-        <span className="binary-search__count">
-          <span className="binary-search__count-label">Comparisons</span>
-          <span className="binary-search__count-value">
+      <div className="experience__counts">
+        <span className="experience__count">
+          <span className="experience__count-label">Comparisons</span>
+          <span className="experience__count-value">
             {comparisons} / {totalComparisons}
           </span>
         </span>

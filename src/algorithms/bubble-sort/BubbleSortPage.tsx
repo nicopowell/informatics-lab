@@ -2,15 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import PageHeader, { PageHeaderBack } from '../../modules/PageHeader'
 import MarkdownDescription from '../../modules/MarkdownDescription'
+import CodePanel from '../../experience/CodePanel'
+import CodeToggle from '../../experience/CodeToggle'
 import ArrayBars from './ArrayBars'
 import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
 import { BUBBLE_SORT_REFERENCE } from './bubbleSortReference'
-import LanguageIcon from './LanguageIcon'
-import HighlightedCode from './HighlightedCode'
 import description from './description.md?raw'
+import '../../experience/experience.css'
 import './bubbleSort.css'
 
 const MIN_SIZE = 5
@@ -48,10 +49,6 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
-  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
-  const [referenceLanguage, setReferenceLanguage] = useState(
-    BUBBLE_SORT_REFERENCE[0].id,
-  )
 
   const steps = useMemo(() => generateBubbleSortSteps(values), [values])
   const frames = useMemo(
@@ -62,9 +59,6 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   const lastFrameIndex = frames.length - 1
   const totalComparisons = steps[steps.length - 1].comparison
   const delay = Math.round(MAX_DELAY / speed)
-  const reference =
-    BUBBLE_SORT_REFERENCE.find((entry) => entry.id === referenceLanguage) ??
-    BUBBLE_SORT_REFERENCE[0]
 
   function navigateTo(nextIndex: number) {
     setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
@@ -128,36 +122,28 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
 
   return (
     <main
-      className={showCode ? 'bubble-sort bubble-sort--with-code' : 'bubble-sort'}
+      className={
+        showCode
+          ? 'experience experience--with-code bubble-sort'
+          : 'experience bubble-sort'
+      }
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
     >
-      <PageHeader action={<PageHeaderBack label="← Experiences" onClick={onBack} />} />
+      <PageHeader
+        action={<PageHeaderBack label="← Experiences" onClick={onBack} />}
+      />
 
-      <div className="bubble-sort__layout">
-        <div className="bubble-sort__stage">
-          <section className="bubble-sort__visualization">
-            <p className="bubble-sort__status" aria-live="polite">
+      <div className="experience__layout">
+        <div className="experience__stage">
+          <section className="experience__visualization">
+            <p className="experience__status" aria-live="polite">
               {describeFrame(frame)}
             </p>
             <ArrayBars frame={frame} movement={movement} />
-            <button
-              type="button"
-              className={
-                showCode
-                  ? 'bubble-sort__code-toggle bubble-sort__code-toggle--active'
-                  : 'bubble-sort__code-toggle'
-              }
-              aria-pressed={showCode}
-              onClick={() => setShowCode((open) => !open)}
-            >
-              <span className="bubble-sort__code-toggle-icon" aria-hidden="true">
-                {'</>'}
-              </span>
-              {showCode ? 'Hide code' : 'View code'}
-            </button>
+            <CodeToggle open={showCode} onToggle={() => setShowCode((o) => !o)} />
           </section>
 
-          <div className="bubble-sort__controls">
+          <div className="experience__controls">
             <PlaybackControls
               isPlaying={isPlaying}
               atStart={frameIndex === 0}
@@ -173,9 +159,9 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
               onReset={handleReset}
               onSpeedChange={setSpeed}
             />
-            <div className="bubble-sort__input">
-              <label className="bubble-sort__slider">
-                <span className="bubble-sort__slider-label">Size</span>
+            <div className="experience__input">
+              <label className="experience__slider">
+                <span className="experience__slider-label">Size</span>
                 <input
                   type="range"
                   aria-label="Size"
@@ -185,7 +171,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
                   value={size}
                   onChange={(event) => handleSizeChange(event.target.value)}
                 />
-                <span className="bubble-sort__count-value">{size}</span>
+                <span className="experience__count-value">{size}</span>
               </label>
               <button type="button" onClick={handleRandomize}>
                 Randomize
@@ -193,82 +179,12 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
             </div>
           </div>
 
-          <div className="bubble-sort__explanation">
+          <div className="experience__explanation">
             <MarkdownDescription source={description} />
           </div>
         </div>
 
-        <aside
-          className={
-            showCode
-              ? 'bubble-sort__code bubble-sort__code--open'
-              : 'bubble-sort__code'
-          }
-        >
-          <div className="bubble-sort__code-header">
-            <div className="bubble-sort__language">
-              <button
-                type="button"
-                className="bubble-sort__language-trigger"
-                aria-haspopup="listbox"
-                aria-expanded={languageMenuOpen}
-                onClick={() => setLanguageMenuOpen((open) => !open)}
-              >
-                <span
-                  className="bubble-sort__language-icon"
-                  style={{ color: reference.color }}
-                >
-                  <LanguageIcon id={reference.id} />
-                </span>
-                {reference.label}
-                <span
-                  className={
-                    languageMenuOpen
-                      ? 'bubble-sort__language-chevron bubble-sort__language-chevron--open'
-                      : 'bubble-sort__language-chevron'
-                  }
-                  aria-hidden="true"
-                >
-                  ▾
-                </span>
-              </button>
-
-              {languageMenuOpen && (
-                <ul className="bubble-sort__language-menu" role="listbox">
-                  {BUBBLE_SORT_REFERENCE.map((entry) => (
-                    <li key={entry.id}>
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={entry.id === referenceLanguage}
-                        className={
-                          entry.id === referenceLanguage
-                            ? 'bubble-sort__language-option bubble-sort__language-option--active'
-                            : 'bubble-sort__language-option'
-                        }
-                        onClick={() => {
-                          setReferenceLanguage(entry.id)
-                          setLanguageMenuOpen(false)
-                        }}
-                      >
-                        <span
-                          className="bubble-sort__language-icon"
-                          style={{ color: entry.color }}
-                        >
-                          <LanguageIcon id={entry.id} />
-                        </span>
-                        {entry.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </div>
-          <pre className="bubble-sort__code-body">
-            <HighlightedCode language={reference.id} code={reference.code} />
-          </pre>
-        </aside>
+        <CodePanel languages={BUBBLE_SORT_REFERENCE} open={showCode} />
       </div>
     </main>
   )
