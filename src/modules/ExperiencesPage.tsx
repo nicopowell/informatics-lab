@@ -1,4 +1,4 @@
-import Brand from './Brand'
+import PageHeader, { PageHeaderBack } from './PageHeader'
 import type { ModuleInfo, Topic } from './modules'
 import ExperienceArt from './experienceArt'
 import './modules.css'
@@ -20,12 +20,7 @@ function ExperiencesPage({
 }: ExperiencesPageProps) {
   return (
     <main className="modules">
-      <header className="modules__header">
-        <Brand />
-        <button type="button" className="modules__back" onClick={onBack}>
-          ← Topics
-        </button>
-      </header>
+      <PageHeader action={<PageHeaderBack label="← Topics" onClick={onBack} />} />
 
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.title}</p>

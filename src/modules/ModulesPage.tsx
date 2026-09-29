@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Brand from './Brand'
+import PageHeader from './PageHeader'
 import { MODULES } from './modules'
 import './modules.css'
 
@@ -108,9 +108,7 @@ type ModulesPageProps = {
 function ModulesPage({ onSelectModule }: ModulesPageProps) {
   return (
     <main className="modules">
-      <header className="modules__header">
-        <Brand />
-      </header>
+      <PageHeader />
 
       <section className="modules__main">
         <h1 className="modules__title">
