@@ -6,6 +6,7 @@ import './modules.css'
 type ExperiencesPageProps = {
   moduleInfo: ModuleInfo
   topic: Topic
+  implementedExperiences: Set<string>
   onBack: () => void
   onSelectExperience: (experienceId: string) => void
 }
@@ -13,6 +14,7 @@ type ExperiencesPageProps = {
 function ExperiencesPage({
   moduleInfo,
   topic,
+  implementedExperiences,
   onBack,
   onSelectExperience,
 }: ExperiencesPageProps) {
@@ -31,13 +33,15 @@ function ExperiencesPage({
 
         <div className={`modules__grid modules__grid--${moduleInfo.id}`}>
           {topic.experiences.map((experience) => {
+            const isImplemented = implementedExperiences.has(experience.id)
+
             const art = (
               <span className="topic-card__art" aria-hidden="true">
                 <ExperienceArt id={experience.id} />
               </span>
             )
 
-            const meta = !experience.available ? (
+            const meta = !isImplemented ? (
               <span className="topic-card__meta">
                 <span className="topic-card__status">Coming soon</span>
               </span>
@@ -52,7 +56,7 @@ function ExperiencesPage({
               </>
             )
 
-            if (!experience.available) {
+            if (!isImplemented) {
               return (
                 <div
                   key={experience.id}
