@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '../../components/AppShell'
-import MarkdownDescription from '../../modules/MarkdownDescription'
 import CodePanel from '../../experience/CodePanel'
 import CodeToggle from '../../experience/CodeToggle'
+import MarkdownDescription from '../../experience/MarkdownDescription'
+import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '../../experience/PlaybackControls'
+import { usePlayback } from '../../experience/usePlayback'
 import ArrayCells from './ArrayCells'
-import PlaybackControls from './PlaybackControls'
 import { createSortedArray, generateBinarySearchSteps } from './binarySearch'
 import { createReadyFrame, toVisualFrames } from './visualFrames'
 import type { BinarySearchFrame } from './visualFrames'
@@ -17,8 +18,6 @@ import './binarySearch.css'
 const MIN_SIZE = 5
 const MAX_SIZE = 16
 const INITIAL_SIZE = 8
-const MIN_SPEED = 1
-const MAX_SPEED = 10
 const INITIAL_SPEED = 5
 const SLOWEST_DELAY = 2500
 const FASTEST_DELAY = 100
@@ -82,8 +81,6 @@ type BinarySearchPageProps = {
 
 function BinarySearchPage({ backTo }: BinarySearchPageProps) {
   const [search, setSearch] = useState(() => createSearchState(INITIAL_SIZE))
-  const [frameIndex, setFrameIndex] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
 
@@ -94,32 +91,16 @@ function BinarySearchPage({ backTo }: BinarySearchPageProps) {
     ],
     [search.values, search.key],
   )
-  const frame = frames[frameIndex]
-  const lastFrameIndex = frames.length - 1
-  const totalComparisons = frames[lastFrameIndex].comparisons
+  const totalComparisons = frames[frames.length - 1].comparisons
   const delay = frameDelay(speed)
   const transition = Math.min(delay, MAX_TRANSITION)
 
-  useEffect(() => {
-    if (!isPlaying) {
-      return
-    }
-
-    const timer = setTimeout(() => {
-      const next = Math.min(frameIndex + 1, lastFrameIndex)
-      setFrameIndex(next)
-      if (next >= lastFrameIndex) {
-        setIsPlaying(false)
-      }
-    }, delay)
-
-    return () => clearTimeout(timer)
-  }, [isPlaying, frameIndex, lastFrameIndex, delay])
+  const playback = usePlayback(frames.length, delay)
+  const frame = frames[playback.frameIndex]
 
   // A new input invalidates the current execution.
   function restart() {
-    setIsPlaying(false)
-    setFrameIndex(0)
+    playback.reset()
   }
 
   function handleSizeChange(value: string) {
@@ -149,19 +130,12 @@ function BinarySearchPage({ backTo }: BinarySearchPageProps) {
     restart()
   }
 
-  function handlePlayPause() {
-    setIsPlaying((playing) => !playing)
-  }
-
-  function handleStepForward() {
-    setIsPlaying(false)
-    setFrameIndex((index) => Math.min(index + 1, lastFrameIndex))
-  }
-
-  function handleStepBackward() {
-    setIsPlaying(false)
-    setFrameIndex((index) => Math.max(index - 1, 0))
-  }
+  const counts = [
+    {
+      label: 'Comparisons',
+      value: `${frame.comparisons} / ${totalComparisons}`,
+    },
+  ]
 
   return (
     <AppShell
@@ -190,15 +164,14 @@ function BinarySearchPage({ backTo }: BinarySearchPageProps) {
 
           <div className="experience__controls">
             <PlaybackControls
-              isPlaying={isPlaying}
-              atStart={frameIndex === 0}
-              atEnd={frameIndex >= lastFrameIndex}
-              comparisons={frame.comparisons}
-              totalComparisons={totalComparisons}
+              isPlaying={playback.isPlaying}
+              atStart={playback.atStart}
+              atEnd={playback.atEnd}
+              counts={counts}
               speed={speed}
-              onPlayPause={handlePlayPause}
-              onStepForward={handleStepForward}
-              onStepBackward={handleStepBackward}
+              onPlayPause={playback.togglePlay}
+              onStepForward={playback.stepForward}
+              onStepBackward={playback.stepBackward}
               onReset={restart}
               onSpeedChange={setSpeed}
             />

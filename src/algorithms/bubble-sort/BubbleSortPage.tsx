@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '../../components/AppShell'
-import MarkdownDescription from '../../modules/MarkdownDescription'
 import CodePanel from '../../experience/CodePanel'
 import CodeToggle from '../../experience/CodeToggle'
+import MarkdownDescription from '../../experience/MarkdownDescription'
+import PlaybackControls from '../../experience/PlaybackControls'
+import { usePlayback } from '../../experience/usePlayback'
 import ArrayBars from './ArrayBars'
-import PlaybackControls from './PlaybackControls'
 import { createRandomArray, generateBubbleSortSteps } from './bubbleSort'
 import { createReadyFrame, frameMovement, toVisualFrames } from './visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './visualFrames'
@@ -44,9 +45,7 @@ type BubbleSortPageProps = {
 function BubbleSortPage({ backTo }: BubbleSortPageProps) {
   const [size, setSize] = useState(INITIAL_SIZE)
   const [values, setValues] = useState(() => createRandomArray(INITIAL_SIZE))
-  const [frameIndex, setFrameIndex] = useState(0)
   const [movement, setMovement] = useState<FrameMovement>('none')
-  const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
 
@@ -55,39 +54,28 @@ function BubbleSortPage({ backTo }: BubbleSortPageProps) {
     () => [createReadyFrame(values), ...toVisualFrames(steps)],
     [steps, values],
   )
-  const frame = frames[frameIndex]
-  const lastFrameIndex = frames.length - 1
   const totalComparisons = steps[steps.length - 1].comparison
   const delay = Math.round(MAX_DELAY / speed)
 
-  function navigateTo(nextIndex: number) {
-    setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
-    setFrameIndex(nextIndex)
+  // The bars animate an exchange or a rewind only when a step crosses between
+  // the comparison and the swap that carries it out.
+  function trackMovement(from: number, to: number) {
+    setMovement(frameMovement(frames[from], frames[to]))
   }
 
-  useEffect(() => {
-    if (!isPlaying) {
-      return
-    }
+  const playback = usePlayback(frames.length, delay, trackMovement)
+  const frame = frames[playback.frameIndex]
 
-    const timer = setTimeout(() => {
-      const nextIndex = Math.min(frameIndex + 1, lastFrameIndex)
-      setMovement(frameMovement(frames[frameIndex], frames[nextIndex]))
-      setFrameIndex(nextIndex)
-      if (frameIndex >= lastFrameIndex - 1) {
-        setIsPlaying(false)
-      }
-    }, delay)
-
-    return () => clearTimeout(timer)
-  }, [isPlaying, frameIndex, lastFrameIndex, delay, frames])
+  // A reset returns to the start without replaying the movement animation.
+  function handleReset() {
+    setMovement('none')
+    playback.reset()
+  }
 
   // A new input invalidates the current position in the execution.
   function restartWith(nextValues: number[]) {
     setValues(nextValues)
-    setFrameIndex(0)
-    setMovement('none')
-    setIsPlaying(false)
+    handleReset()
   }
 
   function handleSizeChange(value: string) {
@@ -100,25 +88,17 @@ function BubbleSortPage({ backTo }: BubbleSortPageProps) {
     restartWith(createRandomArray(size))
   }
 
-  function handlePlayPause() {
-    setIsPlaying((playing) => !playing)
-  }
-
-  function handleStepForward() {
-    setIsPlaying(false)
-    navigateTo(Math.min(frameIndex + 1, lastFrameIndex))
-  }
-
-  function handleStepBackward() {
-    setIsPlaying(false)
-    navigateTo(Math.max(frameIndex - 1, 0))
-  }
-
-  function handleReset() {
-    setIsPlaying(false)
-    setFrameIndex(0)
-    setMovement('none')
-  }
+  const isDone = frame.kind === 'done'
+  const counts = [
+    {
+      label: 'Comparisons',
+      value: `${isDone ? totalComparisons : frame.comparison} / ${totalComparisons}`,
+    },
+    {
+      label: 'Swaps',
+      value: <span className="bubble-sort__swaps">{frame.swaps}</span>,
+    },
+  ]
 
   return (
     <AppShell
@@ -142,17 +122,14 @@ function BubbleSortPage({ backTo }: BubbleSortPageProps) {
 
           <div className="experience__controls">
             <PlaybackControls
-              isPlaying={isPlaying}
-              atStart={frameIndex === 0}
-              atEnd={frameIndex >= lastFrameIndex}
-              comparison={frame.comparison}
-              totalComparisons={totalComparisons}
-              swaps={frame.swaps}
-              isDone={frame.kind === 'done'}
+              isPlaying={playback.isPlaying}
+              atStart={playback.atStart}
+              atEnd={playback.atEnd}
+              counts={counts}
               speed={speed}
-              onPlayPause={handlePlayPause}
-              onStepForward={handleStepForward}
-              onStepBackward={handleStepBackward}
+              onPlayPause={playback.togglePlay}
+              onStepForward={playback.stepForward}
+              onStepBackward={playback.stepBackward}
               onReset={handleReset}
               onSpeedChange={setSpeed}
             />
