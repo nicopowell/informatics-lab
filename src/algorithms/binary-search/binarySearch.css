@@ -11,195 +11,32 @@
   --accent: var(--color-comparing);
   --found: var(--color-success);
   --pointer: #cbd5e1;
-
-  min-height: 100svh;
-  box-sizing: border-box;
-  color: var(--text);
-  padding: 2rem max(1.5rem, calc((100% - 64rem) / 2)) 4rem;
+  --step-duration: 0.32s;
 }
 
-.binary-search__header {
+.binary-search__key {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 3rem;
-}
-
-.binary-search__header h1 {
-  font-size: 1.75rem;
-  letter-spacing: -0.01em;
-}
-
-.binary-search__button {
-  font: inherit;
-  padding: 0.4rem 0.85rem;
-  cursor: pointer;
-  color: var(--text-muted);
-  background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  border-radius: 6px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background-color 0.15s ease;
-}
-
-.binary-search__button:hover {
-  color: var(--text);
-  border-color: rgba(148, 163, 184, 0.6);
-}
-
-.binary-search__button:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.binary-search__stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
-  margin-bottom: 3rem;
-}
-
-.binary-search__prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.binary-search__description {
-  min-height: 1.5rem;
-  max-width: 40rem;
-  margin: 0;
-  text-align: center;
-  font-size: 1.05rem;
-}
-
-.binary-search__search {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-}
-
-.binary-search__search-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--text-faint);
+  gap: 0.5rem;
 }
 
 .binary-search__key-input {
   width: 5ch;
-  padding: 0.1rem 0.25rem 0.2rem;
+  padding: 0.05rem 0.25rem 0.1rem;
   font-family: var(--font-mono);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: 1.05rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  line-height: 1.2;
   text-align: center;
-  color: var(--text);
+  color: var(--color-text);
   background: transparent;
-  border: none;
-  border-bottom: 2px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
 }
 
 .binary-search__key-input:focus {
-  border-color: var(--text);
-}
-
-.binary-search__panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
-}
-
-.binary-search__settings {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem 1.5rem;
-}
-
-.binary-search__field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.binary-search__field input[type='range'] {
-  width: 10rem;
-}
-
-.binary-search__controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
-}
-
-.binary-search__playback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.binary-search__speed {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.binary-search__speed input[type='range'] {
-  width: 8rem;
-}
-
-.binary-search__progress {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
-}
-
-.binary-search__progress-track {
-  width: 12rem;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.2);
-  overflow: hidden;
-}
-
-.binary-search__progress-fill {
-  height: 100%;
-  background: var(--text-muted);
-  transition: width var(--step-duration, 0.32s) ease;
-}
-
-.binary-search__button.binary-search__button--primary {
-  color: #0f172a;
-  background: var(--text);
-  border-color: var(--text);
-  font-weight: 600;
-}
-
-.binary-search__button.binary-search__button--primary:hover {
-  color: #0f172a;
-  background: #f8fafc;
-  border-color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .matrix {
@@ -211,13 +48,15 @@
 }
 
 /* Local scroll only: cells and rail live inside .matrix-grid, so they scroll
-   together and stay aligned. margin-inline:auto centers when there is room and
-   collapses to 0 when overflowing, keeping the start reachable. */
+   together and stay aligned. The row keeps the full width so a scrollbar only
+   appears when the cells genuinely do not fit; padding-inline absorbs the
+   sub-pixel overflow from the pointer transforms. */
 .matrix-scroll {
   box-sizing: border-box;
-  max-width: 100%;
-  padding-block: 0.3rem;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* Sizes to the cells row so the pointer rail shares its exact column metrics. */
