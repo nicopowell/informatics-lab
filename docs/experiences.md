@@ -2,8 +2,7 @@
 
 An experience is the interactive screen for a single concept (Bubble Sort,
 Binary Search, ...). This document records the conventions the current
-implementation already follows, so new experiences stay consistent and the
-shared pieces can be extracted from evidence rather than guessed.
+implementation follows, so new experiences stay consistent.
 
 ## Folder contract
 
@@ -12,22 +11,42 @@ name is the experience id in kebab-case.
 
 ```
 src/algorithms/bubble-sort/
-  BubbleSortPage.tsx        page: shell, playback state and handlers
+  BubbleSortPage.tsx        page: playback state, handlers and layout wiring
   bubbleSort.ts             pure algorithm logic and step generation
   bubbleSort.test.ts        tests for the pure logic
   visualFrames.ts           steps -> visual frames, pure and tested
   visualFrames.test.ts
   ArrayBars.tsx             the visualization for this concept
-  PlaybackControls.tsx      controls for this concept
+  PlaybackControls.tsx      the controls for this concept
   bubbleSortReference.ts    reference snippets grouped by language
   description.md            static explanation, imported with `?raw`
-  bubbleSort.css            styles scoped to this experience
+  bubbleSort.css            styles specific to this concept
 ```
 
 The experience id is the folder name and the last URL segment
 (`/algorithms/sorting/bubble-sort`). The catalogue in `src/modules/modules.ts`
 lists the experience with the same id, and `src/routes/experiences.ts` maps that
 id to its page component.
+
+## Shared shell
+
+The page frame, layout, playback controls and reference code panel are shared
+between experiences in `src/experience/`:
+
+- **`experience.css`** — page shell, visualization/controls/description layout,
+  control band, sliders, counters and the code panel. Classes use the
+  `experience__*`, `code-panel*` and `code-toggle*` namespaces.
+- **`CodePanel.tsx`** — the collapsible reference panel with the language
+  dropdown. Pass it the experience's `ReferenceLanguage[]` and an `open` flag.
+- **`CodeToggle.tsx`** — the "View code / Hide code" button.
+- **`PlaybackIcon.tsx`**, **`HighlightedCode.tsx`**, **`LanguageIcon.tsx`** —
+  shared presentation pieces.
+
+A page root must carry the `experience` class (plus `experience--with-code`
+when the panel is open) and import `experience.css` before its own stylesheet.
+Anything that differs per algorithm — the visualization, the frame-to-text
+narration, the playback timing and the controls' extra inputs — stays in the
+experience folder.
 
 ## Required pieces
 
@@ -37,8 +56,7 @@ id to its page component.
   `?raw` and pass it as `source`.
 - **`<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
   in different languages (pseudocode, Python, JavaScript, C++). Each entry has
-  `id`, `label`, `color` and `code`. The code panel renders one entry at a time
-  through `HighlightedCode.tsx`.
+  `id`, `label`, `color` and `code`. The type lives in `src/experience/CodePanel.tsx`.
 
 ## Navigation
 
@@ -49,10 +67,3 @@ builders) and has no React. A new experience only needs to be added to
 route resolves automatically.
 
 Deep links require the host to serve `index.html` for unknown paths.
-
-## Pending extraction
-
-The experience shell (layout, code toggle, panel and language selector) currently
-exists only in Bubble Sort. It will be extracted when a second experience reuses
-this layout (adapting Binary Search is the planned trigger). Until then, keep the
-per-experience files explicit rather than generalising from a single example.
