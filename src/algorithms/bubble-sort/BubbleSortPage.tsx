@@ -38,10 +38,10 @@ function describeFrame(frame: BubbleSortFrame): string {
 }
 
 type BubbleSortPageProps = {
-  onBack: () => void
+  backTo: string
 }
 
-function BubbleSortPage({ onBack }: BubbleSortPageProps) {
+function BubbleSortPage({ backTo }: BubbleSortPageProps) {
   const [size, setSize] = useState(INITIAL_SIZE)
   const [values, setValues] = useState(() => createRandomArray(INITIAL_SIZE))
   const [frameIndex, setFrameIndex] = useState(0)
@@ -128,7 +128,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
           : 'experience bubble-sort'
       }
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
-      back={{ label: '← Experiences', onClick: onBack }}
+      back={{ label: '← Experiences', to: backTo }}
     >
       <div className="experience__layout">
         <div className="experience__stage">

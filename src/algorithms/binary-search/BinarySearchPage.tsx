@@ -77,10 +77,10 @@ function describeFrame(frame: BinarySearchFrame, values: number[]): string {
 }
 
 type BinarySearchPageProps = {
-  onBack: () => void
+  backTo: string
 }
 
-function BinarySearchPage({ onBack }: BinarySearchPageProps) {
+function BinarySearchPage({ backTo }: BinarySearchPageProps) {
   const [search, setSearch] = useState(() => createSearchState(INITIAL_SIZE))
   const [frameIndex, setFrameIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -171,7 +171,7 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
           : 'experience binary-search'
       }
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
-      back={{ label: '← Experiences', onClick: onBack }}
+      back={{ label: '← Experiences', to: backTo }}
     >
       <div className="experience__layout">
         <div className="experience__stage">

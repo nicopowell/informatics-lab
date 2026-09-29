@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 
 function LogoMark() {
   return (
@@ -43,14 +44,14 @@ function PageHeader({ action }: PageHeaderProps) {
 
 type PageHeaderBackProps = {
   label: string
-  onClick: () => void
+  to: string
 }
 
-function PageHeaderBack({ label, onClick }: PageHeaderBackProps) {
+function PageHeaderBack({ label, to }: PageHeaderBackProps) {
   return (
-    <button type="button" className="page-header__back" onClick={onClick}>
+    <Link to={to} className="page-header__back">
       {label}
-    </button>
+    </Link>
   )
 }
 

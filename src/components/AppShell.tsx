@@ -4,7 +4,7 @@ import './app-shell.css'
 
 type AppShellBack = {
   label: string
-  onClick: () => void
+  to: string
 }
 
 type AppShellProps = {
@@ -29,7 +29,7 @@ function AppShell({ className, style, back, footer, children }: AppShellProps) {
       <PageHeader
         action={
           back ? (
-            <PageHeaderBack label={back.label} onClick={back.onClick} />
+            <PageHeaderBack label={back.label} to={back.to} />
           ) : undefined
         }
       />
