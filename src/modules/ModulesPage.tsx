@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import PageHeader from './PageHeader'
+import AppShell from '../components/AppShell'
 import { MODULES } from './modules'
 import './modules.css'
 
@@ -107,9 +107,7 @@ type ModulesPageProps = {
 
 function ModulesPage({ onSelectModule }: ModulesPageProps) {
   return (
-    <main className="modules">
-      <PageHeader />
-
+    <AppShell footer="© 2026 Informatics Lab">
       <section className="modules__main">
         <h1 className="modules__title">
           Explore{' '}
@@ -136,9 +134,7 @@ function ModulesPage({ onSelectModule }: ModulesPageProps) {
           ))}
         </div>
       </section>
-
-      <footer className="modules__footer">© 2026 Informatics Lab</footer>
-    </main>
+    </AppShell>
   )
 }
 

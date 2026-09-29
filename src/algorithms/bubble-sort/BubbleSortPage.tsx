@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import PageHeader, { PageHeaderBack } from '../../modules/PageHeader'
+import AppShell from '../../components/AppShell'
 import MarkdownDescription from '../../modules/MarkdownDescription'
 import CodePanel from '../../experience/CodePanel'
 import CodeToggle from '../../experience/CodeToggle'
@@ -121,18 +121,15 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
   }
 
   return (
-    <main
+    <AppShell
       className={
         showCode
           ? 'experience experience--with-code bubble-sort'
           : 'experience bubble-sort'
       }
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
+      back={{ label: '← Experiences', onClick: onBack }}
     >
-      <PageHeader
-        action={<PageHeaderBack label="← Experiences" onClick={onBack} />}
-      />
-
       <div className="experience__layout">
         <div className="experience__stage">
           <section className="experience__visualization">
@@ -186,7 +183,7 @@ function BubbleSortPage({ onBack }: BubbleSortPageProps) {
 
         <CodePanel languages={BUBBLE_SORT_REFERENCE} open={showCode} />
       </div>
-    </main>
+    </AppShell>
   )
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-import PageHeader, { PageHeaderBack } from '../../modules/PageHeader'
+import AppShell from '../../components/AppShell'
 import MarkdownDescription from '../../modules/MarkdownDescription'
 import CodePanel from '../../experience/CodePanel'
 import CodeToggle from '../../experience/CodeToggle'
@@ -164,18 +164,15 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
   }
 
   return (
-    <main
+    <AppShell
       className={
         showCode
           ? 'experience experience--with-code binary-search'
           : 'experience binary-search'
       }
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
+      back={{ label: '← Experiences', onClick: onBack }}
     >
-      <PageHeader
-        action={<PageHeaderBack label="← Experiences" onClick={onBack} />}
-      />
-
       <div className="experience__layout">
         <div className="experience__stage">
           <section className="experience__visualization">
@@ -244,7 +241,7 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
 
         <CodePanel languages={BINARY_SEARCH_REFERENCE} open={showCode} />
       </div>
-    </main>
+    </AppShell>
   )
 }
 

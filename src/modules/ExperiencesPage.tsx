@@ -1,4 +1,4 @@
-import PageHeader, { PageHeaderBack } from './PageHeader'
+import AppShell from '../components/AppShell'
 import type { ModuleInfo, Topic } from './modules'
 import ExperienceArt from './experienceArt'
 import './modules.css'
@@ -19,9 +19,10 @@ function ExperiencesPage({
   onSelectExperience,
 }: ExperiencesPageProps) {
   return (
-    <main className="modules">
-      <PageHeader action={<PageHeaderBack label="← Topics" onClick={onBack} />} />
-
+    <AppShell
+      back={{ label: '← Topics', onClick: onBack }}
+      footer="© 2026 Informatics Lab"
+    >
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.title}</p>
         <h1 className="modules__title">{topic.title}</h1>
@@ -79,9 +80,7 @@ function ExperiencesPage({
           })}
         </div>
       </section>
-
-      <footer className="modules__footer">© 2026 Informatics Lab</footer>
-    </main>
+    </AppShell>
   )
 }
 

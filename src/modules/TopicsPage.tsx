@@ -1,4 +1,4 @@
-import PageHeader, { PageHeaderBack } from './PageHeader'
+import AppShell from '../components/AppShell'
 import type { ModuleInfo } from './modules'
 import TopicArt from './topicArt'
 import './modules.css'
@@ -11,9 +11,10 @@ type TopicsPageProps = {
 
 function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
   return (
-    <main className="modules">
-      <PageHeader action={<PageHeaderBack label="← Modules" onClick={onBack} />} />
-
+    <AppShell
+      back={{ label: '← Modules', onClick: onBack }}
+      footer="© 2026 Informatics Lab"
+    >
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.subtitle}</p>
         <h1 className="modules__title">{moduleInfo.title}</h1>
@@ -69,9 +70,7 @@ function TopicsPage({ moduleInfo, onBack, onSelectTopic }: TopicsPageProps) {
           })}
         </div>
       </section>
-
-      <footer className="modules__footer">© 2026 Informatics Lab</footer>
-    </main>
+    </AppShell>
   )
 }
 
