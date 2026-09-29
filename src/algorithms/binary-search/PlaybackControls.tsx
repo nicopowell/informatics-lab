@@ -1,12 +1,15 @@
+import PlaybackIcon from '../bubble-sort/PlaybackIcon'
+
+const MIN_SPEED = 1
+const MAX_SPEED = 10
+
 type PlaybackControlsProps = {
   isPlaying: boolean
   atStart: boolean
   atEnd: boolean
   comparisons: number
-  progress: number
+  totalComparisons: number
   speed: number
-  minSpeed: number
-  maxSpeed: number
   onPlayPause: () => void
   onStepForward: () => void
   onStepBackward: () => void
@@ -19,10 +22,8 @@ function PlaybackControls({
   atStart,
   atEnd,
   comparisons,
-  progress,
+  totalComparisons,
   speed,
-  minSpeed,
-  maxSpeed,
   onPlayPause,
   onStepForward,
   onStepBackward,
@@ -31,64 +32,71 @@ function PlaybackControls({
 }: PlaybackControlsProps) {
   return (
     <div className="binary-search__playback">
-      <div className="binary-search__controls">
-        <button
-          type="button"
-          className="binary-search__button"
-          onClick={onReset}
-          disabled={atStart}
-        >
-          Reset
-        </button>
-        <button
-          type="button"
-          className="binary-search__button"
-          onClick={onStepBackward}
-          disabled={atStart}
-        >
-          Step back
-        </button>
-        <button
-          type="button"
-          className="binary-search__button"
-          onClick={onPlayPause}
-          disabled={!isPlaying && atEnd}
-        >
-          {isPlaying ? 'Pause' : 'Play'}
-        </button>
-        <button
-          type="button"
-          className="binary-search__button binary-search__button--primary"
-          onClick={onStepForward}
-          disabled={atEnd}
-        >
-          Step forward
-        </button>
+      <div className="binary-search__playback-group">
+        <div className="binary-search__playback-buttons">
+          <button
+            type="button"
+            className="binary-search__icon-button"
+            aria-label="Reset"
+            title="Reset"
+            onClick={onReset}
+            disabled={atStart}
+          >
+            <PlaybackIcon name="reset" />
+          </button>
+          <button
+            type="button"
+            className="binary-search__icon-button"
+            aria-label="Step back"
+            title="Step back"
+            onClick={onStepBackward}
+            disabled={atStart}
+          >
+            <PlaybackIcon name="step-back" />
+          </button>
+          <button
+            type="button"
+            className="binary-search__icon-button binary-search__icon-button--primary"
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+            title={isPlaying ? 'Pause' : 'Play'}
+            onClick={onPlayPause}
+            disabled={atEnd}
+          >
+            <PlaybackIcon name={isPlaying ? 'pause' : 'play'} />
+          </button>
+          <button
+            type="button"
+            className="binary-search__icon-button"
+            aria-label="Step forward"
+            title="Step forward"
+            onClick={onStepForward}
+            disabled={atEnd}
+          >
+            <PlaybackIcon name="step-forward" />
+          </button>
+        </div>
+
+        <label className="binary-search__slider">
+          <span className="binary-search__slider-label">Speed</span>
+          <input
+            type="range"
+            aria-label="Speed"
+            aria-valuetext={`Speed ${speed} of ${MAX_SPEED}`}
+            min={MIN_SPEED}
+            max={MAX_SPEED}
+            value={speed}
+            onChange={(event) => onSpeedChange(Number(event.target.value))}
+          />
+        </label>
       </div>
 
-      <label className="binary-search__speed">
-        Speed
-        <input
-          type="range"
-          aria-label="Speed"
-          min={minSpeed}
-          max={maxSpeed}
-          value={speed}
-          onChange={(event) => onSpeedChange(Number(event.target.value))}
-        />
-        <span>{speed}</span>
-      </label>
-
-      <div className="binary-search__progress">
-        <span className="binary-search__progress-count">
-          Comparisons {comparisons}
+      <div className="binary-search__counts">
+        <span className="binary-search__count">
+          <span className="binary-search__count-label">Comparisons</span>
+          <span className="binary-search__count-value">
+            {comparisons} / {totalComparisons}
+          </span>
         </span>
-        <div className="binary-search__progress-track" aria-hidden="true">
-          <div
-            className="binary-search__progress-fill"
-            style={{ width: `${progress * 100}%` }}
-          />
-        </div>
       </div>
     </div>
   )

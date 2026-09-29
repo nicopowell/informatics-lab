@@ -11,32 +11,126 @@
   --accent: var(--color-comparing);
   --found: var(--color-success);
   --pointer: #cbd5e1;
+  --step-duration: 0.32s;
 
+  display: flex;
+  flex-direction: column;
   min-height: 100svh;
   box-sizing: border-box;
-  color: var(--text);
-  padding: 2rem max(1.5rem, calc((100% - 64rem) / 2)) 4rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  padding: 1.75rem max(1.5rem, calc((100% - 72rem) / 2)) 2rem;
 }
 
-.binary-search__header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 3rem;
+/* Same grain as the navigation views so the shell reads as one application. */
+.binary-search::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-.binary-search__header h1 {
-  font-size: 1.75rem;
-  letter-spacing: -0.01em;
+.binary-search__layout {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
+  gap: 0;
+  flex: 1 1 auto;
+  transition: grid-template-columns 0.28s ease;
 }
 
-.binary-search__button {
+.binary-search--with-code .binary-search__layout {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 3.5fr);
+}
+
+/* Flatten the corners that meet at the seam so the join has no curve. */
+.binary-search--with-code .binary-search__stage {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.binary-search--with-code .binary-search__code {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Buttons follow the same quiet style as the navigation views. Cells are
+   excluded: they are buttons too, but their state colors must win. */
+.binary-search button:not(.cell) {
   font: inherit;
-  padding: 0.4rem 0.85rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
   cursor: pointer;
-  color: var(--text-muted);
+  color: var(--color-text-muted);
   background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.binary-search button:not(.cell):hover {
+  color: var(--color-text);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.binary-search button:not(.cell):disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* One bordered block; the bands inside are divided by hairlines, not gaps. */
+.binary-search__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.binary-search__visualization {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 22rem;
+  padding: 3rem 1.75rem 1.5rem;
+}
+
+.binary-search__status {
+  min-height: 1.4rem;
+  margin: 0 0 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--color-comparing);
+  font-variant-numeric: tabular-nums;
+}
+
+.binary-search__code-toggle {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   transition:
     color 0.15s ease,
@@ -44,162 +138,414 @@
     background-color 0.15s ease;
 }
 
-.binary-search__button:hover {
-  color: var(--text);
-  border-color: rgba(148, 163, 184, 0.6);
-}
-
-.binary-search__button:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.binary-search__stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2.5rem;
-  margin-bottom: 3rem;
-}
-
-.binary-search__prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.85rem;
-}
-
-.binary-search__description {
-  min-height: 1.5rem;
-  max-width: 40rem;
-  margin: 0;
-  text-align: center;
-  font-size: 1.05rem;
-}
-
-.binary-search__search {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-}
-
-.binary-search__search-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--text-faint);
-}
-
-.binary-search__key-input {
-  width: 5ch;
-  padding: 0.1rem 0.25rem 0.2rem;
-  font-family: var(--font-mono);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  text-align: center;
-  color: var(--text);
+.binary-search__code-toggle:hover {
+  color: var(--color-text);
+  border-color: rgba(255, 255, 255, 0.3);
   background: transparent;
-  border: none;
-  border-bottom: 2px solid rgba(148, 163, 184, 0.35);
 }
 
-.binary-search__key-input:focus {
-  border-color: var(--text);
+.binary-search__code-toggle-icon {
+  color: var(--color-comparing);
+  font-weight: 600;
 }
 
-.binary-search__panel {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.12);
+.binary-search__code-toggle--active {
+  color: var(--color-text);
 }
 
-.binary-search__settings {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem 1.5rem;
-}
-
-.binary-search__field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.binary-search__field input[type='range'] {
-  width: 10rem;
+.binary-search__code-toggle--active:hover {
+  color: var(--color-text);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .binary-search__controls {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.6rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border-top: 1px solid var(--color-border);
 }
 
 .binary-search__playback {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.9rem;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  width: 100%;
 }
 
-.binary-search__speed {
+.binary-search__playback-group {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.binary-search__playback-buttons {
+  display: flex;
   gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
 }
 
-.binary-search__speed input[type='range'] {
-  width: 8rem;
-}
-
-.binary-search__progress {
-  display: flex;
+.binary-search button.binary-search__icon-button {
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  color: var(--color-text);
 }
 
-.binary-search__progress-track {
-  width: 12rem;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.2);
-  overflow: hidden;
+.binary-search button.binary-search__icon-button svg {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
-.binary-search__progress-fill {
-  height: 100%;
-  background: var(--text-muted);
-  transition: width var(--step-duration, 0.32s) ease;
+.binary-search button.binary-search__icon-button:disabled {
+  color: var(--color-text-muted);
 }
 
-.binary-search__button.binary-search__button--primary {
+/* Play/Pause is the single primary action of the control band. */
+.binary-search button.binary-search__icon-button--primary {
   color: #0f172a;
-  background: var(--text);
-  border-color: var(--text);
-  font-weight: 600;
+  background: var(--color-text);
+  border-color: var(--color-text);
 }
 
-.binary-search__button.binary-search__button--primary:hover {
+.binary-search button.binary-search__icon-button--primary:hover {
   color: #0f172a;
   background: #f8fafc;
   border-color: #f8fafc;
+}
+
+/* At the end the run is finished, so the primary action recedes instead of
+   looking clickable. Reset restarts it. */
+.binary-search button.binary-search__icon-button--primary:disabled {
+  color: var(--color-text-muted);
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.binary-search__slider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.binary-search__slider-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+}
+
+.binary-search__slider input[type='range'] {
+  width: 7rem;
+}
+
+.binary-search__input .binary-search__slider input[type='range'] {
+  width: 9rem;
+}
+
+.binary-search__key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.binary-search__key-input {
+  width: 5ch;
+  padding: 0.05rem 0.25rem 0.1rem;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.binary-search__key-input:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.binary-search__counts {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.binary-search__count {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+}
+
+.binary-search__count-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+}
+
+.binary-search__count-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.binary-search__input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+/* Shared range styling so both sliders read as part of the same control bar. */
+.binary-search__slider input[type='range'] {
+  appearance: none;
+  height: 1.2rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.binary-search__slider input[type='range']::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.binary-search__slider input[type='range']::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.binary-search__slider input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: -0.34rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: none;
+}
+
+.binary-search__slider input[type='range']::-moz-range-thumb {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--color-text);
+  border: none;
+}
+
+.binary-search__slider input[type='range']:focus-visible {
+  outline: none;
+}
+
+.binary-search__slider input[type='range']:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.35);
+}
+
+.binary-search__slider input[type='range']:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(248, 250, 252, 0.35);
+}
+
+.binary-search__explanation {
+  padding: 1rem 1.1rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.binary-search__code {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 22rem;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(0.75rem);
+  transition:
+    visibility 0s linear 0.28s,
+    opacity 0.24s ease,
+    transform 0.28s ease;
+}
+
+/* The panel stays mounted when closed so opening it animates from zero width. */
+.binary-search__code--open {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    visibility 0s,
+    opacity 0.24s ease,
+    transform 0.28s ease;
+}
+
+.binary-search__code-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.binary-search__language {
+  position: relative;
+}
+
+.binary-search__language-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.binary-search__language-trigger:hover {
+  color: var(--color-text);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.binary-search__language-icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.binary-search__language-icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.binary-search__language-chevron {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  transition: transform 0.18s ease;
+}
+
+.binary-search__language-chevron--open {
+  transform: rotate(180deg);
+}
+
+.binary-search__language-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 3;
+  min-width: 11rem;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7);
+}
+
+.binary-search__language-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.45rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+}
+
+.binary-search__language-option:hover {
+  color: var(--color-text);
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.binary-search__language-option--active {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.binary-search__code-body {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 1rem 0;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: #cbd5e1;
+  counter-reset: code-line;
+}
+
+/* Each line is a gutter + code row, so the panel reads like an editor. */
+.binary-search__code-body .code-line {
+  display: block;
+  padding: 0 1.15rem 0 3rem;
+  position: relative;
+  white-space: pre;
+}
+
+.binary-search__code-body .code-line::before {
+  counter-increment: code-line;
+  content: counter(code-line);
+  position: absolute;
+  left: 0;
+  width: 2.2rem;
+  text-align: right;
+  color: #4b5563;
+  user-select: none;
+}
+
+.binary-search__code-body .code-token--keyword {
+  color: #c084fc;
+}
+
+.binary-search__code-body .code-token--string {
+  color: #86efac;
+}
+
+.binary-search__code-body .code-token--number {
+  color: #fbbf24;
+}
+
+.binary-search__code-body .code-token--comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+.binary-search__code-body .code-token--type {
+  color: #38bdf8;
+}
+
+.binary-search__code-body .code-token--operator {
+  color: #f472b6;
 }
 
 .matrix {
@@ -211,13 +557,15 @@
 }
 
 /* Local scroll only: cells and rail live inside .matrix-grid, so they scroll
-   together and stay aligned. margin-inline:auto centers when there is room and
-   collapses to 0 when overflowing, keeping the start reachable. */
+   together and stay aligned. The row keeps the full width so a scrollbar only
+   appears when the cells genuinely do not fit; padding-inline absorbs the
+   sub-pixel overflow from the pointer transforms. */
 .matrix-scroll {
   box-sizing: border-box;
-  max-width: 100%;
-  padding-block: 0.3rem;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* Sizes to the cells row so the pointer rail shares its exact column metrics. */
@@ -420,4 +768,59 @@
 
 .binary-search .legend__swatch--found {
   background: var(--found);
+}
+
+@media (max-width: 960px) {
+  /* Stacking cannot animate smoothly; the code simply sits below the lab. */
+  .binary-search__layout {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 1rem;
+    transition: none;
+  }
+
+  .binary-search--with-code .binary-search__layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* No room for a side drawer, so the reference code is always shown below. */
+  .binary-search__code-toggle {
+    display: none;
+  }
+
+  .binary-search__language-menu {
+    min-width: 9rem;
+  }
+
+  .binary-search__code {
+    min-height: 18rem;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .binary-search__controls {
+    justify-content: flex-start;
+  }
+
+  .binary-search__playback {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .binary-search__playback-group {
+    width: 100%;
+  }
+
+  .binary-search__input {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .binary-search__input .binary-search__slider input[type='range'] {
+    width: 6rem;
+  }
 }

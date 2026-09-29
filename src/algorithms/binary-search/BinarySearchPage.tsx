@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
+import PageHeader, { PageHeaderBack } from '../../modules/PageHeader'
+import MarkdownDescription from '../../modules/MarkdownDescription'
 import ArrayCells from './ArrayCells'
 import PlaybackControls from './PlaybackControls'
 import { createSortedArray, generateBinarySearchSteps } from './binarySearch'
 import { createReadyFrame, toVisualFrames } from './visualFrames'
 import type { BinarySearchFrame } from './visualFrames'
+import { BINARY_SEARCH_REFERENCE } from './binarySearchReference'
+import LanguageIcon from '../bubble-sort/LanguageIcon'
+import HighlightedCode from '../bubble-sort/HighlightedCode'
+import description from './description.md?raw'
 import './binarySearch.css'
 
 const MIN_SIZE = 5
@@ -78,6 +84,11 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
   const [frameIndex, setFrameIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
+  const [showCode, setShowCode] = useState(false)
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const [referenceLanguage, setReferenceLanguage] = useState(
+    BINARY_SEARCH_REFERENCE[0].id,
+  )
 
   const frames = useMemo(
     () => [
@@ -88,8 +99,12 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
   )
   const frame = frames[frameIndex]
   const lastFrameIndex = frames.length - 1
+  const totalComparisons = frames[lastFrameIndex].comparisons
   const delay = frameDelay(speed)
   const transition = Math.min(delay, MAX_TRANSITION)
+  const reference =
+    BINARY_SEARCH_REFERENCE.find((entry) => entry.id === referenceLanguage) ??
+    BINARY_SEARCH_REFERENCE[0]
 
   useEffect(() => {
     if (!isPlaying) {
@@ -154,92 +169,174 @@ function BinarySearchPage({ onBack }: BinarySearchPageProps) {
     setFrameIndex((index) => Math.max(index - 1, 0))
   }
 
-  const progress = lastFrameIndex === 0 ? 1 : frameIndex / lastFrameIndex
-
   return (
     <main
-      className="binary-search"
+      className={
+        showCode ? 'binary-search binary-search--with-code' : 'binary-search'
+      }
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
     >
-      <header className="binary-search__header">
-        <button
-          type="button"
-          className="binary-search__button"
-          onClick={onBack}
-        >
-          Back
-        </button>
-        <h1>Binary Search</h1>
-      </header>
+      <PageHeader
+        action={<PageHeaderBack label="← Experiences" onClick={onBack} />}
+      />
 
-      <section className="binary-search__stage">
-        <div className="binary-search__prompt">
-          <div className="binary-search__search">
-            <label
-              className="binary-search__search-label"
-              htmlFor="binary-search-key"
+      <div className="binary-search__layout">
+        <div className="binary-search__stage">
+          <section className="binary-search__visualization">
+            <p className="binary-search__status" aria-live="polite">
+              {describeFrame(frame, search.values)}
+            </p>
+            <ArrayCells
+              key={search.values.join(',')}
+              values={search.values}
+              frame={frame}
+              onSelectCell={handleSelectValue}
+            />
+            <button
+              type="button"
+              className={
+                showCode
+                  ? 'binary-search__code-toggle binary-search__code-toggle--active'
+                  : 'binary-search__code-toggle'
+              }
+              aria-pressed={showCode}
+              onClick={() => setShowCode((open) => !open)}
             >
-              Searching for
-            </label>
-            <input
-              id="binary-search-key"
-              className="binary-search__key-input"
-              type="number"
-              value={search.keyInput}
-              onChange={(event) => handleKeyInput(event.target.value)}
+              <span
+                className="binary-search__code-toggle-icon"
+                aria-hidden="true"
+              >
+                {'</>'}
+              </span>
+              {showCode ? 'Hide code' : 'View code'}
+            </button>
+          </section>
+
+          <div className="binary-search__controls">
+            <PlaybackControls
+              isPlaying={isPlaying}
+              atStart={frameIndex === 0}
+              atEnd={frameIndex >= lastFrameIndex}
+              comparisons={frame.comparisons}
+              totalComparisons={totalComparisons}
+              speed={speed}
+              onPlayPause={handlePlayPause}
+              onStepForward={handleStepForward}
+              onStepBackward={handleStepBackward}
+              onReset={restart}
+              onSpeedChange={setSpeed}
             />
+            <div className="binary-search__input">
+              <label
+                className="binary-search__key"
+                htmlFor="binary-search-key"
+              >
+                <span className="binary-search__slider-label">Searching for</span>
+                <input
+                  id="binary-search-key"
+                  className="binary-search__key-input"
+                  type="number"
+                  value={search.keyInput}
+                  onChange={(event) => handleKeyInput(event.target.value)}
+                />
+              </label>
+              <label className="binary-search__slider">
+                <span className="binary-search__slider-label">Size</span>
+                <input
+                  type="range"
+                  aria-label="Size"
+                  aria-valuetext={`${search.values.length} values`}
+                  min={MIN_SIZE}
+                  max={MAX_SIZE}
+                  value={search.values.length}
+                  onChange={(event) => handleSizeChange(event.target.value)}
+                />
+                <span className="binary-search__count-value">
+                  {search.values.length}
+                </span>
+              </label>
+              <button type="button" onClick={handleRandomize}>
+                Randomize
+              </button>
+            </div>
           </div>
-          <p className="binary-search__description" aria-live="polite">
-            {describeFrame(frame, search.values)}
-          </p>
+
+          <div className="binary-search__explanation">
+            <MarkdownDescription source={description} />
+          </div>
         </div>
 
-        <ArrayCells
-          key={search.values.join(',')}
-          values={search.values}
-          frame={frame}
-          onSelectCell={handleSelectValue}
-        />
-      </section>
+        <aside
+          className={
+            showCode
+              ? 'binary-search__code binary-search__code--open'
+              : 'binary-search__code'
+          }
+        >
+          <div className="binary-search__code-header">
+            <div className="binary-search__language">
+              <button
+                type="button"
+                className="binary-search__language-trigger"
+                aria-haspopup="listbox"
+                aria-expanded={languageMenuOpen}
+                onClick={() => setLanguageMenuOpen((open) => !open)}
+              >
+                <span
+                  className="binary-search__language-icon"
+                  style={{ color: reference.color }}
+                >
+                  <LanguageIcon id={reference.id} />
+                </span>
+                {reference.label}
+                <span
+                  className={
+                    languageMenuOpen
+                      ? 'binary-search__language-chevron binary-search__language-chevron--open'
+                      : 'binary-search__language-chevron'
+                  }
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
+              </button>
 
-      <div className="binary-search__panel">
-        <div className="binary-search__settings">
-          <label className="binary-search__field">
-            Size
-            <input
-              type="range"
-              aria-label="Size"
-              min={MIN_SIZE}
-              max={MAX_SIZE}
-              value={search.values.length}
-              onChange={(event) => handleSizeChange(event.target.value)}
-            />
-            <span>{search.values.length}</span>
-          </label>
-          <button
-            type="button"
-            className="binary-search__button"
-            onClick={handleRandomize}
-          >
-            Randomize
-          </button>
-        </div>
-
-        <PlaybackControls
-          isPlaying={isPlaying}
-          atStart={frameIndex === 0}
-          atEnd={frameIndex >= lastFrameIndex}
-          comparisons={frame.comparisons}
-          progress={progress}
-          speed={speed}
-          minSpeed={MIN_SPEED}
-          maxSpeed={MAX_SPEED}
-          onPlayPause={handlePlayPause}
-          onStepForward={handleStepForward}
-          onStepBackward={handleStepBackward}
-          onReset={restart}
-          onSpeedChange={setSpeed}
-        />
+              {languageMenuOpen && (
+                <ul className="binary-search__language-menu" role="listbox">
+                  {BINARY_SEARCH_REFERENCE.map((entry) => (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={entry.id === referenceLanguage}
+                        className={
+                          entry.id === referenceLanguage
+                            ? 'binary-search__language-option binary-search__language-option--active'
+                            : 'binary-search__language-option'
+                        }
+                        onClick={() => {
+                          setReferenceLanguage(entry.id)
+                          setLanguageMenuOpen(false)
+                        }}
+                      >
+                        <span
+                          className="binary-search__language-icon"
+                          style={{ color: entry.color }}
+                        >
+                          <LanguageIcon id={entry.id} />
+                        </span>
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+          <pre className="binary-search__code-body">
+            <HighlightedCode language={reference.id} code={reference.code} />
+          </pre>
+        </aside>
       </div>
     </main>
   )
