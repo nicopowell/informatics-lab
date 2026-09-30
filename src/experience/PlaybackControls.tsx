@@ -45,7 +45,7 @@ function PlaybackControls({
         <div className="experience__playback-buttons">
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Reset"
             title="Reset"
             onClick={onReset}
@@ -55,7 +55,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Step back"
             title="Step back"
             onClick={onStepBackward}
@@ -65,7 +65,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button icon-button--primary"
+            className="ui-button icon-button icon-button--primary"
             aria-label={isPlaying ? 'Pause' : 'Play'}
             title={isPlaying ? 'Pause' : 'Play'}
             onClick={onPlayPause}
@@ -75,7 +75,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Step forward"
             title="Step forward"
             onClick={onStepForward}

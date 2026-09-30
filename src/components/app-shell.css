@@ -59,7 +59,12 @@
   text-transform: uppercase;
 }
 
-.page-header__back {
+/*
+ * The quiet secondary action shared by the whole application: the header
+ * back link, the experience inputs and the playback buttons. Works for
+ * buttons and for links styled as buttons.
+ */
+.ui-button {
   font: inherit;
   font-size: 0.7rem;
   letter-spacing: 0.16em;
@@ -76,9 +81,14 @@
     border-color 0.15s ease;
 }
 
-.page-header__back:hover {
+.ui-button:hover {
   color: var(--color-text);
   border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ui-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .app-shell__footer {

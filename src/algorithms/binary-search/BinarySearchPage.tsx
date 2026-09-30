@@ -201,7 +201,7 @@ function BinarySearchPage({ backTo }: BinarySearchPageProps) {
                   {search.values.length}
                 </span>
               </label>
-              <button type="button" onClick={handleRandomize}>
+              <button type="button" className="ui-button" onClick={handleRandomize}>
                 Randomize
               </button>
             </div>

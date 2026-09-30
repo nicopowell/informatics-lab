@@ -49,7 +49,7 @@ type PageHeaderBackProps = {
 
 function PageHeaderBack({ label, to }: PageHeaderBackProps) {
   return (
-    <Link to={to} className="page-header__back">
+    <Link to={to} className="ui-button">
       {label}
     </Link>
   )

@@ -147,7 +147,7 @@ function BubbleSortPage({ backTo }: BubbleSortPageProps) {
                 />
                 <span className="experience__count-value">{size}</span>
               </label>
-              <button type="button" onClick={handleRandomize}>
+              <button type="button" className="ui-button" onClick={handleRandomize}>
                 Randomize
               </button>
             </div>
