@@ -6,26 +6,39 @@ implementation follows, so new experiences stay consistent.
 
 ## Folder contract
 
-Each experience lives in `src/algorithms/<experience-id>/`, where the folder
-name is the experience id in kebab-case.
+Each experience lives in `src/experiences/<module-id>/<topic-id>/<experience-id>/`,
+where the folder names mirror the catalogue ids in `src/modules/modules.ts` and
+the URL (`/algorithms/sorting/bubble-sort`). The experience id (the folder name,
+kebab-case) must be unique across the whole application.
 
 ```
-src/algorithms/bubble-sort/
-  BubbleSortPage.tsx        page: input state, playback wiring and layout
-  bubbleSort.ts             pure algorithm logic and step generation
-  bubbleSort.test.ts        tests for the pure logic
-  visualFrames.ts           steps -> visual frames, pure and tested
-  visualFrames.test.ts
-  ArrayBars.tsx             the visualization for this concept
-  bubbleSortReference.ts    reference snippets grouped by language
-  description.md            static explanation, imported with `?raw`
+src/experiences/algorithms/sorting/bubble-sort/
+  BubbleSortPage.tsx        page (entry point): input state, playback wiring and layout
   bubbleSort.css            styles specific to this concept
+  logic/
+    bubbleSort.ts           pure algorithm logic and step generation
+    bubbleSort.test.ts      tests for the pure logic
+    visualFrames.ts         steps -> visual frames, pure and tested
+    visualFrames.test.ts
+  visualization/
+    ArrayBars.tsx           the visualization for this concept
+  content/
+    description.md          static explanation, imported with `?raw`
+    bubbleSortReference.ts  reference snippets grouped by language
 ```
 
-The experience id is the folder name and the last URL segment
-(`/algorithms/sorting/bubble-sort`). The catalogue in `src/modules/modules.ts`
-lists the experience with the same id, and `src/routes/experiences.ts` maps that
-id to its page component.
+The page and its stylesheet stay at the experience root; the rest is grouped by
+responsibility, and every test lives next to the file it covers.
+
+Imports follow two rules: shared machinery is always reached through the `@/`
+alias (`@/experience/usePlayback`, `@/components/AppShell`), while code inside
+an experience uses short relative paths (`./logic/bubbleSort`,
+`../logic/visualFrames`). An experience is then free to move within the tree
+without touching other files.
+
+The catalogue in `src/modules/modules.ts` lists the experience with the same
+id, and `src/routes/experiences.ts` maps that id to its page component. It is
+the only file that knows where an implementation lives.
 
 ## Shared shell
 
@@ -65,11 +78,11 @@ experience folder.
 
 ## Required pieces
 
-- **`description.md`** — the explanation shown below the visualization. It uses
+- **`content/description.md`** — the explanation shown below the visualization. It uses
   a small subset of Markdown (heading, paragraphs, `- ` lists, `**bold**`)
   rendered by `src/experience/MarkdownDescription.tsx`. Import it with
   `?raw` and pass it as `source`.
-- **`<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
+- **`content/<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
   in different languages (pseudocode, Python, JavaScript, C++). Each entry has
   `id`, `label`, `color` and `code`. The type lives in `src/experience/CodePanel.tsx`.
 
