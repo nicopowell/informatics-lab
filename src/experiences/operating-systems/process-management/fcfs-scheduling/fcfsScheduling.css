@@ -1,0 +1,205 @@
+.fcfs-scheduling {
+  --step-duration: 0.2s;
+}
+
+/* Process identity hues, applied per element; state keeps the role tokens. */
+.fcfs-scheduling--hue-1 {
+  --process-color: var(--color-process-1);
+}
+.fcfs-scheduling--hue-2 {
+  --process-color: var(--color-process-2);
+}
+.fcfs-scheduling--hue-3 {
+  --process-color: var(--color-process-3);
+}
+.fcfs-scheduling--hue-4 {
+  --process-color: var(--color-process-4);
+}
+.fcfs-scheduling--hue-5 {
+  --process-color: var(--color-process-5);
+}
+.fcfs-scheduling--hue-6 {
+  --process-color: var(--color-process-6);
+}
+
+.fcfs-scheduling__board {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.75rem;
+}
+
+/* Gantt ------------------------------------------------------------------ */
+
+.fcfs-scheduling__cells,
+.fcfs-scheduling__axis {
+  display: grid;
+  grid-template-columns: repeat(var(--gantt-units), minmax(0, 1fr));
+  gap: 2px;
+}
+
+.fcfs-scheduling__cells {
+  height: clamp(3.25rem, 11vh, 4.5rem);
+}
+
+.fcfs-scheduling__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  border-radius: 4px;
+  background: var(--process-color, var(--color-neutral));
+  color: #0b0c0e;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.fcfs-scheduling__cell--idle {
+  background: transparent;
+  border: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.fcfs-scheduling__cell--ghost {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.07);
+}
+
+/* The amber ring is the same "current focus" role the status line uses. */
+.fcfs-scheduling__cell--active {
+  outline: 2px solid var(--color-comparing);
+  outline-offset: 1px;
+}
+
+.fcfs-scheduling__tick {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  padding-left: 1px;
+}
+
+/* CPU and ready queue ----------------------------------------------------- */
+
+.fcfs-scheduling__tracks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2.5rem;
+}
+
+.fcfs-scheduling__track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fcfs-scheduling__track-label {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+}
+
+.fcfs-scheduling__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  border: 1px solid var(--process-color, var(--color-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--process-color, transparent) 16%, transparent);
+}
+
+.fcfs-scheduling__chip--focus {
+  outline: 2px solid var(--color-comparing);
+  outline-offset: 1px;
+}
+
+.fcfs-scheduling__chip--empty {
+  border-style: dashed;
+  border-color: var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.fcfs-scheduling__chip-note {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Process metrics --------------------------------------------------------- */
+
+.fcfs-scheduling__table {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.fcfs-scheduling__table th {
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.fcfs-scheduling__table td {
+  padding: 0.3rem 0.5rem;
+  text-align: right;
+  border-top: 1px solid var(--color-border);
+  font-variant-numeric: tabular-nums;
+}
+
+.fcfs-scheduling__table th:first-child,
+.fcfs-scheduling__table td:first-child {
+  text-align: left;
+}
+
+.fcfs-scheduling__process {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.fcfs-scheduling__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--process-color);
+}
+
+.fcfs-scheduling__status--done {
+  color: var(--color-success);
+}
+
+.fcfs-scheduling__status--running {
+  color: var(--color-comparing);
+}
+
+.fcfs-scheduling__status--waiting {
+  color: var(--color-text);
+}
+
+.fcfs-scheduling__status--pending {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 720px) {
+  .fcfs-scheduling__tracks {
+    gap: 0.75rem 1.5rem;
+  }
+
+  .fcfs-scheduling__table {
+    font-size: 0.72rem;
+  }
+}

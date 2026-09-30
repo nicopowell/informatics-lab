@@ -170,6 +170,39 @@ function SequentialSearchArt() {
   )
 }
 
+function FcfsSchedulingArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      <g fill="currentColor">
+        <rect x="28" y="52" width="26" height="20" rx="3" opacity="0.9" />
+        <rect x="58" y="52" width="16" height="20" rx="3" opacity="0.6" />
+        <rect x="78" y="52" width="30" height="20" rx="3" opacity="0.35" />
+      </g>
+      <line
+        x1="24"
+        y1="76"
+        x2="118"
+        y2="76"
+        stroke="rgba(255, 255, 255, 0.22)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <g stroke="currentColor" strokeWidth="1.4" opacity="0.6">
+        <rect x="140" y="40" width="14" height="14" rx="3" />
+        <rect x="158" y="40" width="14" height="14" rx="3" />
+        <rect x="176" y="40" width="14" height="14" rx="3" />
+      </g>
+      <path
+        d="M140 62 H122 M122 62 l6 -4 M122 62 l6 4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 const ART: Record<string, ReactNode> = {
   'bubble-sort': <BubbleSortArt />,
   'selection-sort': <SelectionSortArt />,
@@ -177,6 +210,7 @@ const ART: Record<string, ReactNode> = {
   'merge-sort': <MergeSortArt />,
   'binary-search': <BinarySearchArt />,
   'sequential-search': <SequentialSearchArt />,
+  'fcfs-scheduling': <FcfsSchedulingArt />,
 }
 
 type ExperienceArtProps = {
