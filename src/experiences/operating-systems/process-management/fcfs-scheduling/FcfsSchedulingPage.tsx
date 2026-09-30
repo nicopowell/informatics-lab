@@ -26,6 +26,8 @@ const INITIAL_PROCESSES = 4
 const INITIAL_SPEED = 5
 const SLOWEST_DELAY = 1400
 const FASTEST_DELAY = 90
+// Movement should not drag when playing at a slow speed.
+const MAX_TRANSITION = 500
 
 // A geometric ramp keeps the low speeds genuinely slow and the high speeds
 // genuinely fast, with a comfortable pace around the default.
@@ -98,6 +100,7 @@ function FcfsSchedulingPage() {
   )
   const makespan = frames[frames.length - 1].time
   const delay = frameDelay(speed)
+  const transition = Math.min(delay, MAX_TRANSITION)
 
   const playback = usePlayback(frames.length, delay)
   const frame = frames[playback.frameIndex]
@@ -147,7 +150,7 @@ function FcfsSchedulingPage() {
           ? 'experience experience--with-code fcfs-scheduling'
           : 'experience fcfs-scheduling'
       }
-      style={{ '--step-duration': `${delay}ms` } as CSSProperties}
+      style={{ '--step-duration': `${transition}ms` } as CSSProperties}
     >
       <div className="experience__layout">
         <div className="experience__stage">

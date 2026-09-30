@@ -12,15 +12,4 @@
   --color-border: rgba(255, 255, 255, 0.08);
   --color-text-muted: #8b93a1;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  /*
-   * Process identity hues for the CPU scheduling experiences. These colors
-   * name processes, never states: the role tokens above keep that meaning.
-   */
-  --color-process-1: #38bdf8;
-  --color-process-2: #a78bfa;
-  --color-process-3: #2dd4bf;
-  --color-process-4: #fb7185;
-  --color-process-5: #e879f9;
-  --color-process-6: #facc15;
 }

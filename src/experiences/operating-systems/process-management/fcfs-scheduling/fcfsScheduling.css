@@ -1,5 +1,18 @@
 .fcfs-scheduling {
   --step-duration: 0.2s;
+
+  /*
+   * Process identity hues for this lab. They name processes, never states:
+   * the shared role tokens (--color-comparing, --color-success,
+   * --color-neutral) keep encoding what is happening. If a second scheduling
+   * experience needs the same role, promote these to src/theme.css.
+   */
+  --color-process-1: #38bdf8;
+  --color-process-2: #a78bfa;
+  --color-process-3: #2dd4bf;
+  --color-process-4: #fb7185;
+  --color-process-5: #e879f9;
+  --color-process-6: #facc15;
 }
 
 /* Process identity hues, applied per element; state keeps the role tokens. */
