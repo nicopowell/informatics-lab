@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import type { BinarySearchFrame } from './visualFrames'
+import type { BinarySearchFrame } from '../logic/visualFrames'
 
 type ArrayCellsProps = {
   values: number[]

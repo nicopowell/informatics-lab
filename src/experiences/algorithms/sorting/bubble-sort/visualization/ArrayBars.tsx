@@ -1,4 +1,4 @@
-import type { BubbleSortFrame, FrameMovement } from './visualFrames'
+import type { BubbleSortFrame, FrameMovement } from '../logic/visualFrames'
 
 type ArrayBarsProps = {
   frame: BubbleSortFrame
