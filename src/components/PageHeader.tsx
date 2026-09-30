@@ -1,3 +1,5 @@
+import { Link } from 'react-router'
+
 function LogoMark() {
   return (
     <svg className="page-header__logo" viewBox="0 0 28 28" fill="none" aria-hidden="true">
@@ -26,10 +28,10 @@ function LogoMark() {
 function PageHeader() {
   return (
     <header className="page-header">
-      <div className="page-header__brand">
+      <Link className="page-header__brand" to="/">
         <LogoMark />
         <span className="page-header__wordmark">Informatics Lab</span>
-      </div>
+      </Link>
     </header>
   )
 }
