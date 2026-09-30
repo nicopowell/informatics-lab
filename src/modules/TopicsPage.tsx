@@ -11,10 +11,7 @@ type TopicsPageProps = {
 
 function TopicsPage({ moduleInfo }: TopicsPageProps) {
   return (
-    <AppShell
-      back={{ label: '← Modules', to: '/' }}
-      footer="© 2026 Informatics Lab"
-    >
+    <AppShell footer="© 2026 Informatics Lab">
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.subtitle}</p>
         <h1 className="modules__title">{moduleInfo.title}</h1>

@@ -62,3 +62,42 @@ export function experiencePath(
 ): string {
   return `/${moduleId}/${topicId}/${experienceId}`
 }
+
+export type BreadcrumbItem = {
+  label: string
+  to: string
+}
+
+/*
+ * The breadcrumb mirrors the URL hierarchy: Home, then every segment that
+ * resolves against the catalogue. The last item is the page currently shown.
+ */
+export function breadcrumbTrail(
+  params: RouteParams,
+  modules: ModuleInfo[],
+): BreadcrumbItem[] {
+  const trail: BreadcrumbItem[] = [{ label: 'Home', to: '/' }]
+
+  const moduleInfo = resolveModule(params, modules)
+  if (!moduleInfo) {
+    return trail
+  }
+  trail.push({ label: moduleInfo.title, to: modulePath(moduleInfo.id) })
+
+  const topic = resolveTopic(params, modules)
+  if (!topic) {
+    return trail
+  }
+  trail.push({ label: topic.title, to: topicPath(moduleInfo.id, topic.id) })
+
+  const experience = resolveExperience(params, modules)
+  if (!experience) {
+    return trail
+  }
+  trail.push({
+    label: experience.title,
+    to: experiencePath(moduleInfo.id, topic.id, experience.id),
+  })
+
+  return trail
+}

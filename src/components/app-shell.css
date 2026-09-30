@@ -30,19 +30,22 @@
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  /* The back button is slightly taller than the brand. Fixing the height
-     keeps the header identical with and without an action, so navigating
-     from the home page no longer shifts the logo and the content below. */
-  min-height: 2.1rem;
-  margin-bottom: 4.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .page-header__brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.page-header__brand:hover {
+  opacity: 0.75;
 }
 
 .page-header__logo {
@@ -57,6 +60,54 @@
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
+}
+
+/*
+ * Navigation trail for the current page, under the header. Ancestors are
+ * links; the last item marks where the reader is.
+ */
+.breadcrumb {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 3.25rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumb__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.breadcrumb__link {
+  cursor: pointer;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.breadcrumb__link:hover {
+  color: var(--color-text);
+}
+
+.breadcrumb__separator {
+  color: var(--color-neutral);
+}
+
+.breadcrumb__current {
+  color: var(--color-text);
 }
 
 /*
@@ -101,6 +152,10 @@
 
 @media (max-width: 720px) {
   .page-header {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb {
+    margin-bottom: 2rem;
   }
 }

@@ -1,6 +1,6 @@
 import AppShell from '../components/AppShell'
 import CatalogueCard from '../components/CatalogueCard'
-import { experiencePath, modulePath } from '../router'
+import { experiencePath } from '../router'
 import type { ModuleInfo, Topic } from './modules'
 import ExperienceArt from './experienceArt'
 import './modules.css'
@@ -17,10 +17,7 @@ function ExperiencesPage({
   implementedExperiences,
 }: ExperiencesPageProps) {
   return (
-    <AppShell
-      back={{ label: '← Topics', to: modulePath(moduleInfo.id) }}
-      footer="© 2026 Informatics Lab"
-    >
+    <AppShell footer="© 2026 Informatics Lab">
       <section className="modules__main">
         <p className="modules__kicker">{moduleInfo.title}</p>
         <h1 className="modules__title">{topic.title}</h1>

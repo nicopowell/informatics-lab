@@ -75,11 +75,7 @@ function describeFrame(frame: BinarySearchFrame, values: number[]): string {
   return `Comparing ${value} with ${frame.key}: ${value} > ${frame.key}, so the key must be to the left.`
 }
 
-type BinarySearchPageProps = {
-  backTo: string
-}
-
-function BinarySearchPage({ backTo }: BinarySearchPageProps) {
+function BinarySearchPage() {
   const [search, setSearch] = useState(() => createSearchState(INITIAL_SIZE))
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
@@ -145,7 +141,6 @@ function BinarySearchPage({ backTo }: BinarySearchPageProps) {
           : 'experience binary-search'
       }
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
-      back={{ label: '← Experiences', to: backTo }}
     >
       <div className="experience__layout">
         <div className="experience__stage">
