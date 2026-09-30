@@ -328,8 +328,9 @@ The project currently contains:
 * A shared application shell (`AppShell`, `PageHeader`) used by every screen,
   with catalogue cards (`CatalogueCard`) that navigate through real links.
 * A three-level catalogue for navigation: Modules → Topics → Experiences.
-* Two interactive experiences: a Bubble Sort visualization and a Binary Search
-  visualization.
+* Three interactive experiences: a Bubble Sort visualization, a Binary Search
+  visualization, and an FCFS CPU Scheduling visualization (the first concept
+  outside Algorithms and Data Structures).
 * Pure, deterministic algorithm logic and step generation, covered by tests.
 * Shared experience machinery in `src/experience/`: the layout, playback
   controls, the `usePlayback` frame hook and the reference code panel.
@@ -338,15 +339,16 @@ The project currently contains:
   conventions in `docs/experiences.md`.
 
 The catalogue lists several modules (Algorithms and Data Structures, Numerical
-Methods, Computer Networks) and their topics. Only the experiences that exist in
-code are offered as available; everything else is shown as "coming soon" based
-on a single source of truth in `src/routes/experiences.ts`.
+Methods, Computer Networks, Operating Systems) and their topics. Only the
+experiences that exist in code are offered as available; everything else is
+shown as "coming soon" based on a single source of truth in
+`src/routes/experiences.ts`.
 
-Both experiences follow the intended experience layout: the visualization is the
-protagonist, playback controls and input configuration sit below it, a static
-description explains the concept and its complexity, and a collapsible panel
-shows the reference implementation in pseudocode, Python, JavaScript and C++
-with syntax highlighting.
+All three experiences follow the intended experience layout: the visualization
+is the protagonist, playback controls and input configuration sit below it, a
+static description explains the concept and its complexity, and a collapsible
+panel shows the reference implementation in pseudocode, Python, JavaScript and
+C++ with syntax highlighting.
 
 The Bubble Sort experience lets the user generate an array, run the algorithm,
 pause, move forward and backward, control the speed, and read a description of
@@ -358,8 +360,18 @@ play it at a configurable speed, and read why each step narrows the search
 space. It shows both outcomes: the element being found and the element not
 being present.
 
-The shared playback controls, playback state and experience shell have now been
-extracted from two concrete implementations. The next step is adding further
-concepts from the curriculum (for example Selection Sort) following the
-conventions in `docs/experiences.md`, and letting them confirm that the shared
-shell fits a third experience without changes.
+The FCFS Scheduling experience steps a set of processes (arrival and burst
+times) through the CPU one time unit at a time, showing the classic Gantt
+timeline under a sliding time cursor, the ready queue where the convoy effect
+becomes visible, and per-process waiting and turnaround times that accumulate
+as the simulation runs. The user can randomize the workload or load the
+convoy-effect preset and compare the resulting average waiting times.
+
+The shared playback controls, playback state and experience shell were
+extracted from two concrete implementations and have now carried a third — a
+time-stepped simulation with a scrolling timeline — without any change to the
+shared code in `src/experience/`. The next step is adding further concepts
+(for example Selection Sort, or another scheduling algorithm such as SJF or
+Round Robin) following the conventions in `docs/experiences.md`; a second
+scheduling experience would also show whether the process identity colors of
+FCFS deserve to become shared tokens.

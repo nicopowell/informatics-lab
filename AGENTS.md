@@ -4,7 +4,7 @@
 
 Informatics Lab is an interactive web application for exploring and visualizing concepts from Informatics.
 
-The current implementation focuses on Algorithms and Data Structures. See `docs/project.md` for the project's broader context, goals, scope, and current direction.
+The current implementation focuses on Algorithms and Data Structures, and on Operating Systems concepts such as CPU scheduling. See `docs/project.md` for the project's broader context, goals, scope, and current direction.
 
 ## Development principles
 
