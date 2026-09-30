@@ -1,4 +1,4 @@
-import { Navigate, useNavigate, useParams } from 'react-router'
+import { Navigate, useParams } from 'react-router'
 import { MODULES } from '../modules/modules'
 import {
   modulePath,
@@ -12,7 +12,6 @@ import { EXPERIENCES } from './experiences'
 
 function ExperienceScreen() {
   const params = useParams<RouteParams>()
-  const navigate = useNavigate()
   const moduleInfo = resolveModule(params, MODULES)
   const topic = resolveTopic(params, MODULES)
   const experience = resolveExperience(params, MODULES)
@@ -31,7 +30,7 @@ function ExperienceScreen() {
     return <Navigate to={topicPath(moduleInfo.id, topic.id)} replace />
   }
 
-  return <Page onBack={() => navigate(topicPath(moduleInfo.id, topic.id))} />
+  return <Page backTo={topicPath(moduleInfo.id, topic.id)} />
 }
 
 export default ExperienceScreen

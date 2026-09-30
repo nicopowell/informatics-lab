@@ -8,7 +8,7 @@ function CodeToggle({ open, onToggle }: CodeToggleProps) {
     <button
       type="button"
       className={
-        open ? 'code-toggle code-toggle--active' : 'code-toggle'
+        open ? 'ui-button code-toggle code-toggle--active' : 'ui-button code-toggle'
       }
       aria-pressed={open}
       onClick={onToggle}

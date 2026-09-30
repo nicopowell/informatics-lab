@@ -11,13 +11,12 @@ name is the experience id in kebab-case.
 
 ```
 src/algorithms/bubble-sort/
-  BubbleSortPage.tsx        page: playback state, handlers and layout wiring
+  BubbleSortPage.tsx        page: input state, playback wiring and layout
   bubbleSort.ts             pure algorithm logic and step generation
   bubbleSort.test.ts        tests for the pure logic
   visualFrames.ts           steps -> visual frames, pure and tested
   visualFrames.test.ts
   ArrayBars.tsx             the visualization for this concept
-  PlaybackControls.tsx      the controls for this concept
   bubbleSortReference.ts    reference snippets grouped by language
   description.md            static explanation, imported with `?raw`
   bubbleSort.css            styles specific to this concept
@@ -30,15 +29,30 @@ id to its page component.
 
 ## Shared shell
 
-The page frame, layout, playback controls and reference code panel are shared
-between experiences in `src/experience/`:
+The page frame and header come from `src/components/AppShell.tsx` (see below),
+and the experience layout, playback controls and reference code panel are shared
+in `src/experience/`:
 
-- **`experience.css`** — page shell, visualization/controls/description layout,
-  control band, sliders, counters and the code panel. Classes use the
-  `experience__*`, `code-panel*` and `code-toggle*` namespaces.
+- **`AppShell.tsx`** (`src/components/`) — the page frame, header and grain used
+  by every screen. Pass the experience scope classes through `className`, the
+  `--step-duration` custom property through `style`, and the return path
+  through `back={{ label, to }}`.
+- **`experience.css`** — visualization/controls/description layout, control
+  band, sliders, counters and the code panel. Classes use the `experience__*`,
+  `code-panel*` and `code-toggle*` namespaces. The quiet base look of buttons
+  and links comes from the shared `.ui-button` (`app-shell.css`); buttons opt
+  in through that class instead of a blanket selector.
+- **`PlaybackControls.tsx`** — the playback band: reset, step back, play/pause,
+  step forward, the speed slider and a `counts` list. Each experience decides
+  which counters to show and how to format them. `MIN_SPEED` and `MAX_SPEED`
+  are exported from here.
+- **`usePlayback.ts`** — hook owning the frame index, the playing state, the
+  auto-advance timer and the play/step/reset actions. Pass an `onNavigate`
+  callback when the visualization needs the pair of frames involved in a move.
 - **`CodePanel.tsx`** — the collapsible reference panel with the language
   dropdown. Pass it the experience's `ReferenceLanguage[]` and an `open` flag.
 - **`CodeToggle.tsx`** — the "View code / Hide code" button.
+- **`MarkdownDescription.tsx`** — renders the experience's `description.md`.
 - **`PlaybackIcon.tsx`**, **`HighlightedCode.tsx`**, **`LanguageIcon.tsx`** —
   shared presentation pieces.
 
@@ -52,7 +66,7 @@ experience folder.
 
 - **`description.md`** — the explanation shown below the visualization. It uses
   a small subset of Markdown (heading, paragraphs, `- ` lists, `**bold**`)
-  rendered by `src/modules/MarkdownDescription.tsx`. Import it with
+  rendered by `src/experience/MarkdownDescription.tsx`. Import it with
   `?raw` and pass it as `source`.
 - **`<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
   in different languages (pseudocode, Python, JavaScript, C++). Each entry has

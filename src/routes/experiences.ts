@@ -3,7 +3,7 @@ import BinarySearchPage from '../algorithms/binary-search/BinarySearchPage'
 import BubbleSortPage from '../algorithms/bubble-sort/BubbleSortPage'
 
 export type ExperiencePageProps = {
-  onBack: () => void
+  backTo: string
 }
 
 // Implemented experiences. This map is the single source of truth for what the

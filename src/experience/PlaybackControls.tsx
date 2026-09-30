@@ -1,16 +1,19 @@
-import PlaybackIcon from '../../experience/PlaybackIcon'
+import type { ReactNode } from 'react'
+import PlaybackIcon from './PlaybackIcon'
 
-const MIN_SPEED = 1
-const MAX_SPEED = 10
+export const MIN_SPEED = 1
+export const MAX_SPEED = 10
+
+export type PlaybackCount = {
+  label: string
+  value: ReactNode
+}
 
 type PlaybackControlsProps = {
   isPlaying: boolean
   atStart: boolean
   atEnd: boolean
-  comparison: number
-  totalComparisons: number
-  swaps: number
-  isDone: boolean
+  counts: PlaybackCount[]
   speed: number
   onPlayPause: () => void
   onStepForward: () => void
@@ -19,14 +22,16 @@ type PlaybackControlsProps = {
   onSpeedChange: (speed: number) => void
 }
 
+/*
+ * Shared playback band: reset, step back, play/pause, step forward, the speed
+ * slider and the run counters. Each experience decides which counters to
+ * display and how their values are formatted.
+ */
 function PlaybackControls({
   isPlaying,
   atStart,
   atEnd,
-  comparison,
-  totalComparisons,
-  swaps,
-  isDone,
+  counts,
   speed,
   onPlayPause,
   onStepForward,
@@ -40,7 +45,7 @@ function PlaybackControls({
         <div className="experience__playback-buttons">
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Reset"
             title="Reset"
             onClick={onReset}
@@ -50,7 +55,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Step back"
             title="Step back"
             onClick={onStepBackward}
@@ -60,7 +65,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button icon-button--primary"
+            className="ui-button icon-button icon-button--primary"
             aria-label={isPlaying ? 'Pause' : 'Play'}
             title={isPlaying ? 'Pause' : 'Play'}
             onClick={onPlayPause}
@@ -70,7 +75,7 @@ function PlaybackControls({
           </button>
           <button
             type="button"
-            className="icon-button"
+            className="ui-button icon-button"
             aria-label="Step forward"
             title="Step forward"
             onClick={onStepForward}
@@ -80,7 +85,7 @@ function PlaybackControls({
           </button>
         </div>
 
-        <label className="experience__slider experience__slider--speed">
+        <label className="experience__slider">
           <span className="experience__slider-label">Speed</span>
           <input
             type="range"
@@ -95,18 +100,12 @@ function PlaybackControls({
       </div>
 
       <div className="experience__counts">
-        <span className="experience__count">
-          <span className="experience__count-label">Comparisons</span>
-          <span className="experience__count-value">
-            {isDone ? totalComparisons : comparison} / {totalComparisons}
+        {counts.map((count) => (
+          <span key={count.label} className="experience__count">
+            <span className="experience__count-label">{count.label}</span>
+            <span className="experience__count-value">{count.value}</span>
           </span>
-        </span>
-        <span className="experience__count">
-          <span className="experience__count-label">Swaps</span>
-          <span className="experience__count-value bubble-sort__swaps">
-            {swaps}
-          </span>
-        </span>
+        ))}
       </div>
     </div>
   )

@@ -1,30 +1,11 @@
 /*
- * Shared experience shell: page frame, visualization/controls/description
- * layout, playback controls and the reference code panel. Extracted from the
- * point where Bubble Sort and Binary Search matched exactly. Anything that
- * differs per algorithm stays in that experiment's own stylesheet.
+ * Shared experience content: visualization/controls/description layout,
+ * playback controls and the reference code panel. The page frame, header and
+ * footer live in the shared application shell (src/components/app-shell.css);
+ * the `experience` root class remains as the namespace for the rules below.
+ * Anything that differs per algorithm stays in that experiment's own
+ * stylesheet.
  */
-
-.experience {
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
-  box-sizing: border-box;
-  color: var(--color-text);
-  background: var(--color-bg);
-  padding: 1.75rem max(1.5rem, calc((100% - 72rem) / 2)) 2rem;
-}
-
-/* Same grain as the navigation views so the shell reads as one application. */
-.experience::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 
 .experience__layout {
   position: relative;
@@ -82,58 +63,21 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Buttons follow the same quiet style as the navigation views. */
-.experience button:not(.cell) {
-  font: inherit;
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 0.45rem 0.9rem;
-  cursor: pointer;
-  color: var(--color-text-muted);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
+/*
+ * The quiet base, hover and disabled states come from the shared `.ui-button`
+ * (src/components/app-shell.css); the markup opts in explicitly. These rules
+ * only adapt that base to each control.
+ */
 
-.experience button:not(.cell):hover {
-  color: var(--color-text);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.experience button:not(.cell):disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.code-toggle {
+/* The monospaced label marks the toggle as a code action. */
+.experience .code-toggle {
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.45rem 0.9rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  color: var(--color-text-muted);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background-color 0.15s ease;
-}
-
-.code-toggle:hover {
-  color: var(--color-text);
-  border-color: rgba(255, 255, 255, 0.3);
-  background: transparent;
 }
 
 .code-toggle__icon {
@@ -141,13 +85,9 @@
   font-weight: 600;
 }
 
-.code-toggle--active {
+/* An open panel is a state, so the label reads as active text. */
+.experience .code-toggle--active {
   color: var(--color-text);
-}
-
-.code-toggle--active:hover {
-  color: var(--color-text);
-  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .experience__controls {
@@ -386,6 +326,10 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .code-panel__language-trigger:hover {
@@ -443,11 +387,14 @@
   background: transparent;
   border: none;
   border-radius: 7px;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .code-panel__language-option:hover {
   color: var(--color-text);
-  border-color: transparent;
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -525,7 +472,7 @@
   }
 
   /* No room for a side drawer, so the reference code is always shown below. */
-  .code-toggle {
+  .experience .code-toggle {
     display: none;
   }
 
