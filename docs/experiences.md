@@ -33,10 +33,11 @@ The page frame and header come from `src/components/AppShell.tsx` (see below),
 and the experience layout, playback controls and reference code panel are shared
 in `src/experience/`:
 
-- **`AppShell.tsx`** (`src/components/`) — the page frame, header and grain used
-  by every screen. Pass the experience scope classes through `className`, the
-  `--step-duration` custom property through `style`, and the return path
-  through `back={{ label, to }}`.
+- **`AppShell.tsx`** (`src/components/`) — the page frame, header, breadcrumb and
+  grain used by every screen. Pass the experience scope classes through
+  `className` and the `--step-duration` custom property through `style`. The
+  breadcrumb (`Breadcrumb.tsx`) derives the navigation trail from the URL, so
+  screens do not wire navigation.
 - **`experience.css`** — visualization/controls/description layout, control
   band, sliders, counters and the code panel. Classes use the `experience__*`,
   `code-panel*` and `code-toggle*` namespaces. The quiet base look of buttons
@@ -75,8 +76,10 @@ experience folder.
 ## Navigation
 
 Routing is handled by React Router with `BrowserRouter` in `main.tsx`.
-`src/router.ts` keeps the catalogue logic as pure functions (resolvers and path
-builders) and has no React. A new experience only needs to be added to
+`src/router.ts` keeps the catalogue logic as pure functions (resolvers, path
+builders and the breadcrumb trail) and has no React. The breadcrumb shown on
+every screen is derived from the current URL, so navigation needs no per-screen
+configuration. A new experience only needs to be added to
 `src/routes/experiences.ts`; the catalogue then offers it as available and its
 route resolves automatically.
 

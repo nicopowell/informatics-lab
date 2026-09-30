@@ -30,7 +30,7 @@ function ExperienceScreen() {
     return <Navigate to={topicPath(moduleInfo.id, topic.id)} replace />
   }
 
-  return <Page backTo={topicPath(moduleInfo.id, topic.id)} />
+  return <Page />
 }
 
 export default ExperienceScreen
