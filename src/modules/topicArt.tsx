@@ -282,6 +282,37 @@ function TransportArt() {
   )
 }
 
+function ProcessManagementArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      <g fill="currentColor">
+        <rect x="28" y="20" width="34" height="13" rx="5" opacity="0.8" />
+        <rect x="28" y="44" width="34" height="13" rx="5" opacity="0.5" />
+        <rect x="28" y="68" width="34" height="13" rx="5" opacity="0.3" />
+      </g>
+      <path
+        d="M76 50 H104 M104 50 l-6 -4 M104 50 l-6 4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.7"
+      />
+      <rect
+        x="114"
+        y="34"
+        width="44"
+        height="32"
+        rx="8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.85"
+      />
+      <circle cx="136" cy="50" r="4" fill="currentColor" />
+    </svg>
+  )
+}
+
 const ART: Record<string, ReactNode> = {
   sorting: <SortingArt />,
   searching: <SearchingArt />,
@@ -294,6 +325,7 @@ const ART: Record<string, ReactNode> = {
   layers: <LayersArt />,
   routing: <RoutingArt />,
   transport: <TransportArt />,
+  'process-management': <ProcessManagementArt />,
 }
 
 type TopicArtProps = {
