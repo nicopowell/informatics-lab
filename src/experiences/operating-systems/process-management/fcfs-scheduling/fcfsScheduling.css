@@ -32,6 +32,20 @@
 
 /* Gantt ------------------------------------------------------------------ */
 
+/* Units never drop below a readable width; the row scrolls instead, so the
+   timeline keeps its meaning on small screens. The scroll container gets the
+   top padding because overflow-x also clips vertically. */
+.fcfs-scheduling__gantt-scroll {
+  overflow-x: auto;
+  padding-top: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.fcfs-scheduling__gantt {
+  position: relative;
+  min-width: calc(var(--gantt-units) * 1.75rem);
+}
+
 .fcfs-scheduling__cells,
 .fcfs-scheduling__axis {
   display: grid;
@@ -55,6 +69,19 @@
   font-weight: 600;
 }
 
+/* A cell only mounts when its unit is first played, so this animation runs
+   on growth and stays silent while stepping through frames of the same unit. */
+@keyframes fcfs-scheduling-cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
+.fcfs-scheduling__cell:not(.fcfs-scheduling__cell--ghost) {
+  animation: fcfs-scheduling-cell-in var(--step-duration) ease;
+}
+
 .fcfs-scheduling__cell--idle {
   background: transparent;
   border: 1px dashed var(--color-border);
@@ -67,10 +94,29 @@
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
-/* The amber ring is the same "current focus" role the status line uses. */
-.fcfs-scheduling__cell--active {
-  outline: 2px solid var(--color-comparing);
-  outline-offset: 1px;
+/* The time cursor: one continuous marker that slides from unit to unit on
+   every frame, so the Gantt reads as a moving timeline. Kept faint on
+   purpose; its small solid head carries the position. */
+.fcfs-scheduling__cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--color-comparing) 55%, transparent);
+  transition: left var(--step-duration) ease;
+  pointer-events: none;
+}
+
+.fcfs-scheduling__cursor::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-comparing);
+  opacity: 0.85;
 }
 
 .fcfs-scheduling__tick {
@@ -115,6 +161,19 @@
   background: color-mix(in srgb, var(--process-color, transparent) 16%, transparent);
 }
 
+/* A chip enters when the process joins the queue or the CPU; half the unit
+   duration so it never lags behind the Gantt cell it points at. */
+@keyframes fcfs-scheduling-chip-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.4rem);
+  }
+}
+
+.fcfs-scheduling__chip {
+  animation: fcfs-scheduling-chip-in calc(var(--step-duration) / 2) ease;
+}
+
 .fcfs-scheduling__chip--focus {
   outline: 2px solid var(--color-comparing);
   outline-offset: 1px;
@@ -134,6 +193,13 @@
 }
 
 /* Process metrics --------------------------------------------------------- */
+
+/* Safety net: if a narrow screen cannot fit even the compressed table, it
+   scrolls instead of losing the Turnaround column. */
+.fcfs-scheduling__metrics {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
 
 .fcfs-scheduling__table {
   width: 100%;
@@ -165,6 +231,11 @@
   text-align: left;
 }
 
+/* Full header names on wide screens; short labels below (mobile). */
+.fcfs-scheduling__th-narrow {
+  display: none;
+}
+
 .fcfs-scheduling__process {
   display: inline-flex;
   align-items: center;
@@ -194,12 +265,95 @@
   color: var(--color-text-muted);
 }
 
+.fcfs-scheduling__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.fcfs-scheduling__legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.fcfs-scheduling__legend-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+}
+
+.fcfs-scheduling__legend-swatch--cursor {
+  width: 2px;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--color-comparing) 55%, transparent);
+}
+
+.fcfs-scheduling__legend-swatch--idle {
+  border: 1px dashed var(--color-border);
+}
+
 @media (max-width: 720px) {
+  .fcfs-scheduling__board {
+    gap: 1.25rem;
+  }
+
   .fcfs-scheduling__tracks {
     gap: 0.75rem 1.5rem;
   }
 
+  /* Time units keep a readable width; the row scrolls and follows the cursor. */
+  .fcfs-scheduling__gantt {
+    min-width: calc(var(--gantt-units) * 2.15rem);
+  }
+
+  /* The code toggle is not shown here, so the band can use the space. */
+  .fcfs-scheduling .experience__visualization {
+    padding: 2.25rem 1rem 1rem;
+  }
+
   .fcfs-scheduling__table {
-    font-size: 0.72rem;
+    font-size: 0.68rem;
+  }
+
+  .fcfs-scheduling__table th {
+    padding: 0.25rem 0.3rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.02em;
+  }
+
+  .fcfs-scheduling__table td {
+    padding: 0.25rem 0.3rem;
+  }
+
+  .fcfs-scheduling__th-wide {
+    display: none;
+  }
+
+  .fcfs-scheduling__th-narrow {
+    display: inline;
+  }
+
+  /* Counters stack label over value so none of them wraps mid-number. */
+  .fcfs-scheduling .experience__counts {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+
+  .fcfs-scheduling .experience__count {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .fcfs-scheduling .experience__count-value {
+    white-space: nowrap;
   }
 }

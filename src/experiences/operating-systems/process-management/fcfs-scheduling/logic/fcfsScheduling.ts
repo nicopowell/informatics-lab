@@ -34,11 +34,11 @@ type RunningState = {
 }
 
 const MIN_BURST = 2
-const MAX_BURST = 8
+const MAX_BURST = 5
 const MAX_ARRIVAL_GAP = 3
 
 const CONVOY: FcfsProcess[] = [
-  { id: 'P1', arrival: 0, burst: 10 },
+  { id: 'P1', arrival: 0, burst: 6 },
   { id: 'P2', arrival: 2, burst: 1 },
   { id: 'P3', arrival: 3, burst: 1 },
   { id: 'P4', arrival: 4, burst: 1 },

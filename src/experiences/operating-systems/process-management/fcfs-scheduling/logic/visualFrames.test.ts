@@ -185,7 +185,7 @@ describe('toVisualFrames', () => {
     // count of the current unit.
     expect(p2Arrival).toMatchObject({
       time: 2,
-      running: { id: 'P1', unitsLeft: 8, waiting: 0 },
+      running: { id: 'P1', unitsLeft: 4, waiting: 0 },
       queue: ['P2'],
       cells: ['P1', 'P1'],
     })
@@ -198,11 +198,11 @@ describe('toVisualFrames', () => {
     )
 
     expect(p1Complete).toMatchObject({
-      time: 10,
+      time: 6,
       running: { id: 'P1', unitsLeft: 0, waiting: 0 },
       queue: ['P2', 'P3', 'P4', 'P5'],
-      cells: Array(10).fill('P1'),
-      completed: [{ id: 'P1', finish: 10, waiting: 0, turnaround: 10 }],
+      cells: Array(6).fill('P1'),
+      completed: [{ id: 'P1', finish: 6, waiting: 0, turnaround: 6 }],
     })
   })
 
@@ -229,20 +229,20 @@ describe('toVisualFrames', () => {
     expect(done.time).toBe(4)
   })
 
-  it('ends the convoy run with every short process waiting eight units', () => {
+  it('ends the convoy run with every short process waiting four units', () => {
     const frames = framesFor(createConvoyProcesses())
     const done = frames[frames.length - 1]
 
-    expect(frames).toHaveLength(26)
+    expect(frames).toHaveLength(22)
     expect(done.kind).toBe('done')
-    expect(done.time).toBe(14)
+    expect(done.time).toBe(10)
     expect(done.queue).toEqual([])
-    expect(done.cells).toHaveLength(14)
+    expect(done.cells).toHaveLength(10)
     expect(done.completed.map((process) => process.waiting)).toEqual([
-      0, 8, 8, 8, 8,
+      0, 4, 4, 4, 4,
     ])
     expect(done.completed.map((process) => process.turnaround)).toEqual([
-      10, 9, 9, 9, 9,
+      6, 5, 5, 5, 5,
     ])
   })
 

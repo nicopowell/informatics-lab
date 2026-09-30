@@ -194,7 +194,7 @@ describe('createRandomProcesses', () => {
       expect(processes[index].id).toBe(`P${index + 1}`)
       expect(Number.isInteger(processes[index].burst)).toBe(true)
       expect(processes[index].burst).toBeGreaterThanOrEqual(2)
-      expect(processes[index].burst).toBeLessThanOrEqual(8)
+      expect(processes[index].burst).toBeLessThanOrEqual(5)
       if (index > 0) {
         expect(processes[index].arrival).toBeGreaterThanOrEqual(processes[index - 1].arrival)
       }
@@ -207,7 +207,7 @@ describe('createRandomProcesses', () => {
     expect(processes).toEqual([
       { id: 'P1', arrival: 0, burst: 2 },
       { id: 'P2', arrival: 2, burst: 3 },
-      { id: 'P3', arrival: 5, burst: 7 },
+      { id: 'P3', arrival: 5, burst: 5 },
     ])
   })
 })
@@ -222,8 +222,12 @@ describe('createConvoyProcesses', () => {
     const steps = generateFcfsSteps(createConvoyProcesses())
     const last = steps[steps.length - 1]
 
-    expect(steps).toHaveLength(14)
-    expect(last.completed.map((process) => process.waiting)).toEqual([0, 8, 8, 8, 8])
-    expect(last.completed.map((process) => process.turnaround)).toEqual([10, 9, 9, 9, 9])
+    expect(steps).toHaveLength(10)
+    expect(last.completed.map((process) => process.waiting)).toEqual([
+      0, 4, 4, 4, 4,
+    ])
+    expect(last.completed.map((process) => process.turnaround)).toEqual([
+      6, 5, 5, 5, 5,
+    ])
   })
 })

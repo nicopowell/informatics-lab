@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
+import CodePanel from '@/experience/CodePanel'
+import CodeToggle from '@/experience/CodeToggle'
+import MarkdownDescription from '@/experience/MarkdownDescription'
 import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
 import { usePlayback } from '@/experience/usePlayback'
 import SchedulingBoard from './visualization/SchedulingBoard'
@@ -12,6 +15,8 @@ import {
 import type { FcfsProcess } from './logic/fcfsScheduling'
 import { createReadyFrame, toVisualFrames } from './logic/visualFrames'
 import type { FcfsVisualFrame } from './logic/visualFrames'
+import { FCFS_SCHEDULING_REFERENCE } from './content/fcfsSchedulingReference'
+import description from './content/description.md?raw'
 import '@/experience/experience.css'
 import './fcfsScheduling.css'
 
@@ -85,6 +90,7 @@ function FcfsSchedulingPage() {
     createRandomProcesses(INITIAL_PROCESSES),
   )
   const [speed, setSpeed] = useState(INITIAL_SPEED)
+  const [showCode, setShowCode] = useState(false)
 
   const frames = useMemo(
     () => [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))],
@@ -136,7 +142,11 @@ function FcfsSchedulingPage() {
 
   return (
     <AppShell
-      className="experience fcfs-scheduling"
+      className={
+        showCode
+          ? 'experience experience--with-code fcfs-scheduling'
+          : 'experience fcfs-scheduling'
+      }
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
     >
       <div className="experience__layout">
@@ -146,6 +156,7 @@ function FcfsSchedulingPage() {
               {describeFrame(frame, processes)}
             </p>
             <SchedulingBoard frame={frame} processes={processes} makespan={makespan} />
+            <CodeToggle open={showCode} onToggle={() => setShowCode((o) => !o)} />
           </section>
 
           <div className="experience__controls">
@@ -183,7 +194,13 @@ function FcfsSchedulingPage() {
               </button>
             </div>
           </div>
+
+          <div className="experience__explanation">
+            <MarkdownDescription source={description} />
+          </div>
         </div>
+
+        <CodePanel languages={FCFS_SCHEDULING_REFERENCE} open={showCode} />
       </div>
     </AppShell>
   )
