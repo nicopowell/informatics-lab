@@ -62,12 +62,17 @@
      vertical rounding (or the horizontal bar stealing height) then spawns a
      second scrollbar; clip keeps this a one-axis scroll container. */
   overflow-y: clip;
-  padding-top: 0.5rem;
+  /* The bands of padding host the cursor's symmetric overhang above and
+     below the timeline. */
+  padding: 0.5rem 0;
   scrollbar-width: thin;
 }
 
 .fcfs-scheduling__gantt {
   position: relative;
+  /* Shared so the cursor can center on the cell row itself, not on the
+     Gantt box (which also holds the axis labels underneath). */
+  --gantt-cell-height: clamp(3.25rem, 11vh, 4.5rem);
   min-width: calc(var(--gantt-units) * 1.75rem);
 }
 
@@ -79,7 +84,7 @@
 }
 
 .fcfs-scheduling__cells {
-  height: clamp(3.25rem, 11vh, 4.5rem);
+  height: var(--gantt-cell-height);
 }
 
 .fcfs-scheduling__cell {
@@ -120,17 +125,25 @@
 }
 
 /* The time cursor: one continuous marker that slides from unit to unit on
-   every frame, so the Gantt reads as a moving timeline. Kept faint on
-   purpose; the board clamps its left offset one pixel short of the end, so
-   it never adds scrollable overflow to the row. */
+   every frame, so the Gantt reads as a moving timeline. It is centered on
+   the cell row with the same 6 px overhang above and below (inside the
+   scroll band's padding and the axis gap, so it is never clipped and never
+   crosses the time labels); the board clamps its left offset by its own
+   width at the end, so it never adds scrollable overflow. */
 .fcfs-scheduling__cursor {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: color-mix(in srgb, var(--color-comparing) 55%, transparent);
+  top: -6px;
+  height: calc(var(--gantt-cell-height) + 12px);
+  width: 3px;
+  background: var(--color-comparing);
   transition: left var(--step-duration) ease;
   pointer-events: none;
+}
+
+.fcfs-scheduling__axis {
+  /* Clearance for the cursor's 6 px lower overhang, so the line stops
+     before the time labels start. */
+  margin-top: 0.5rem;
 }
 
 .fcfs-scheduling__tick {
@@ -305,9 +318,10 @@
 }
 
 .fcfs-scheduling__legend-swatch--cursor {
-  width: 2px;
+  width: 3px;
+  height: 1rem;
   border-radius: 0;
-  background: color-mix(in srgb, var(--color-comparing) 55%, transparent);
+  background: var(--color-comparing);
 }
 
 .fcfs-scheduling__legend-swatch--idle {
