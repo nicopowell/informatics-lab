@@ -35,6 +35,14 @@
   --process-color: var(--color-process-6);
 }
 
+/* Range inputs are flex items by default and can be squeezed when sibling
+   content grows (an unusual zoom, a substitute font, a wider button set);
+   pinning their CSS length keeps both sliders the same size at every
+   workload value. */
+.fcfs-scheduling .experience__slider input[type='range'] {
+  flex-shrink: 0;
+}
+
 .fcfs-scheduling__board {
   display: flex;
   flex: 1 1 auto;
