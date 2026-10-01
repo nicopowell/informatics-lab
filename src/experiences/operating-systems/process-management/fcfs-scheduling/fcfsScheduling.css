@@ -58,6 +58,10 @@
    top padding because overflow-x also clips vertically. */
 .fcfs-scheduling__gantt-scroll {
   overflow-x: auto;
+  /* overflow-x: auto alone coerces overflow-y to auto, and a single pixel of
+     vertical rounding (or the horizontal bar stealing height) then spawns a
+     second scrollbar; clip keeps this a one-axis scroll container. */
+  overflow-y: clip;
   padding-top: 0.5rem;
   scrollbar-width: thin;
 }
@@ -117,7 +121,8 @@
 
 /* The time cursor: one continuous marker that slides from unit to unit on
    every frame, so the Gantt reads as a moving timeline. Kept faint on
-   purpose; its small solid head carries the position. */
+   purpose; the board clamps its left offset one pixel short of the end, so
+   it never adds scrollable overflow to the row. */
 .fcfs-scheduling__cursor {
   position: absolute;
   top: 0;
@@ -126,18 +131,6 @@
   background: color-mix(in srgb, var(--color-comparing) 55%, transparent);
   transition: left var(--step-duration) ease;
   pointer-events: none;
-}
-
-.fcfs-scheduling__cursor::before {
-  content: '';
-  position: absolute;
-  top: -4px;
-  left: -2px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-comparing);
-  opacity: 0.85;
 }
 
 .fcfs-scheduling__tick {
@@ -219,6 +212,7 @@
    scrolls instead of losing the Turnaround column. */
 .fcfs-scheduling__metrics {
   overflow-x: auto;
+  overflow-y: clip;
   scrollbar-width: thin;
 }
 

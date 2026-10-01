@@ -87,7 +87,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
           </div>
           <div
             className="fcfs-scheduling__cursor"
-            style={{ left: `${timeRatio * 100}%` }}
+            style={{ left: `min(${timeRatio * 100}%, calc(100% - 1px))` }}
             aria-hidden="true"
           />
         </div>
