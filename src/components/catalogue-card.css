@@ -141,6 +141,10 @@
   color: #2dd4bf;
 }
 
+.module-art--operating-systems {
+  color: #fb7185;
+}
+
 /* Per-module accent: colors the card artwork and the hover border. Every
    card carries the class of the module it belongs to, hero cards included. */
 .catalogue-card--algorithms {
@@ -153,4 +157,8 @@
 
 .catalogue-card--networks {
   --card-accent: #2dd4bf;
+}
+
+.catalogue-card--operating-systems {
+  --card-accent: #fb7185;
 }

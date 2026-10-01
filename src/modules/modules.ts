@@ -150,4 +150,24 @@ export const MODULES: ModuleInfo[] = [
       },
     ],
   },
+  {
+    id: 'operating-systems',
+    title: 'Operating Systems',
+    subtitle: 'Processes, scheduling and resource management',
+    topics: [
+      {
+        id: 'process-management',
+        title: 'Process Management',
+        description: 'Processes, CPU scheduling and their timing.',
+        available: true,
+        experiences: [
+          {
+            id: 'fcfs-scheduling',
+            title: 'FCFS Scheduling',
+            description: 'Dispatch processes in arrival order and watch them wait.',
+          },
+        ],
+      },
+    ],
+  },
 ]

@@ -92,10 +92,56 @@ function NetworksArt() {
   )
 }
 
+function OperatingSystemsArt() {
+  return (
+    <svg
+      className="module-art--operating-systems"
+      viewBox="0 0 320 200"
+      fill="none"
+      aria-hidden="true"
+    >
+      <g stroke="currentColor" strokeWidth="1.4">
+        <rect x="170" y="70" width="68" height="60" rx="12" />
+      </g>
+      <g stroke="currentColor" strokeWidth="1.4" opacity="0.55">
+        <line x1="186" y1="58" x2="186" y2="70" />
+        <line x1="204" y1="58" x2="204" y2="70" />
+        <line x1="222" y1="58" x2="222" y2="70" />
+        <line x1="186" y1="130" x2="186" y2="142" />
+        <line x1="204" y1="130" x2="204" y2="142" />
+        <line x1="222" y1="130" x2="222" y2="142" />
+      </g>
+      <circle cx="204" cy="100" r="7" fill="currentColor" opacity="0.9" />
+      <g fill="currentColor">
+        <rect x="40" y="92" width="24" height="16" rx="5" opacity="0.85" />
+        <rect x="72" y="92" width="24" height="16" rx="5" opacity="0.55" />
+        <rect x="104" y="92" width="24" height="16" rx="5" opacity="0.35" />
+      </g>
+      <path
+        d="M136 100 H156 M156 100 l-6 -4 M156 100 l-6 4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.8"
+      />
+      <path
+        d="M250 100 H272"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.4"
+      />
+      <circle cx="281" cy="100" r="4" fill="currentColor" opacity="0.35" />
+    </svg>
+  )
+}
+
 const ART: Record<string, ReactNode> = {
   algorithms: <AlgorithmsArt />,
   numerical: <NumericalArt />,
   networks: <NetworksArt />,
+  'operating-systems': <OperatingSystemsArt />,
 }
 
 type ModuleArtProps = {
