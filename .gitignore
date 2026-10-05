@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Agent working notes (task checklists, not project documentation).
+# The project-facing status lives in docs/project.md.
+odd/
