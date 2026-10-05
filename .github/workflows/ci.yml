@@ -1,0 +1,45 @@
+# Minimal continuous integration: every change that lands on main or goes through a
+# pull request must pass the same three checks the project already runs locally.
+# The workflow only reads the repository, so the token is scoped to read-only.
+name: CI
+
+on:
+  # Runs after a change is merged into main, and before a pull request is merged.
+  # Deliberately not every branch push: a branch that is open as a pull request is
+  # already checked by the pull_request event, so this avoids running it twice.
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, test and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the commit under test
+        uses: actions/checkout@v7
+
+      - name: Set up Node 22 and restore the npm cache
+        uses: actions/setup-node@v7
+        with:
+          # Pinned to the major version used in development, so CI cannot behave
+          # differently from a local run because the runner image changed.
+          node-version: '22'
+          cache: npm
+
+      # `npm ci` installs exactly what package-lock.json says. `npm install`
+      # would be allowed to resolve a different tree.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
