@@ -122,4 +122,10 @@ registered there, not because anything else marks it available. Each new id
 also needs a card in `src/modules/experienceArt.tsx`, because `ExperienceArt`
 falls back to a dashed placeholder when an id has no dedicated art.
 
-Deep links require the host to serve `index.html` for unknown paths.
+Deep links require the host to serve `index.html` for unknown paths. On Vercel
+this is satisfied by the catch-all rewrite in `vercel.json` at the repository
+root, so it belongs to the project and not to dashboard settings nobody can
+review: without that file, any shared URL or browser refresh answers 404 before
+the app is downloaded. `vite dev` and `vite preview` hide the problem, because
+both already fall back to `index.html` — the bug only ever appears on a real
+deployment.
