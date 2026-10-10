@@ -114,10 +114,12 @@ languages.
 Do not add one by default. A simulation teaches the consequence of a rule, not
 the rule's source text, and the panel carries a cost the visualization does not:
 the snippets are strings, so no test covers them, they ship to the browser, and
-they drift silently from the implementation they claim to show. That is what
-happened to the scheduling panels: the FCFS snippet computed each start time in
-closed form with `max(clock, arrival)`, a shortcut the time-stepped board on the
-same screen never takes.
+they drift silently from the implementation they claim to show. The scheduling
+panels had already drifted — the FCFS snippet computed each start time in closed
+form with `max(clock, arrival)`, a shortcut the time-stepped board on the same
+screen never takes — which is what `git show dee1db4^:src/experiences/
+operating-systems/process-management/fcfs-scheduling/content/fcfsSchedulingReference.ts`
+still shows. The example outlived the file on purpose.
 
 Anything a panel would be the only place to say belongs in `description.md`
 instead, where it is short, reviewable and actually read. The SJF dispatch order
