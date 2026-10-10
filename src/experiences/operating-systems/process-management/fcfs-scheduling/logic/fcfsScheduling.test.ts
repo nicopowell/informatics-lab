@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   createConvoyProcesses,
   createRandomProcesses,
+  createStarvationProcesses,
 } from '../../workloads'
 import type { Process } from '../../workloads'
 import { generateFcfsSteps } from './fcfsScheduling'
@@ -181,6 +182,44 @@ describe('generateFcfsSteps', () => {
         expect(counts.get(process.id)).toBe(process.burst)
       }
     }
+  })
+})
+
+describe('FCFS on the starvation workload', () => {
+  it('makes the short arrivals wait behind the long process that reached the queue first', () => {
+    // The workload the SJF page offers as its own preset. FCFS reaches the same
+    // makespan (27) but pays for it in waiting time: P2 arrives at 1 with a
+    // burst of 20, so it is already at the head of the queue when the CPU frees
+    // at 2, and every one-unit job that arrives while it runs waits for it.
+    const processes = createStarvationProcesses()
+    const steps = generateFcfsSteps(processes)
+    const last = steps[steps.length - 1]
+
+    expect(steps).toHaveLength(27)
+    expect(last.completed.map((process) => process.id)).toEqual([
+      'P1',
+      'P2',
+      'P3',
+      'P4',
+      'P5',
+      'P6',
+      'P7',
+    ])
+    expect(last.completed.map((process) => process.waiting)).toEqual([
+      0, 1, 20, 20, 20, 20, 20,
+    ])
+    expect(last.completed.map((process) => process.turnaround)).toEqual([
+      2, 21, 21, 21, 21, 21, 21,
+    ])
+
+    // The number the comparison with SJF is built on: 101 units of waiting here
+    // against 6 on the same processes, at the same makespan. Asserted here as
+    // well as in the SJF test so the two policies cannot drift apart silently.
+    const totalWaiting = last.completed.reduce(
+      (sum, process) => sum + process.waiting,
+      0,
+    )
+    expect(totalWaiting).toBe(101)
   })
 })
 
