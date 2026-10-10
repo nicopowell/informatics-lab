@@ -47,6 +47,29 @@ export function resolveExperience(
   return topic.experiences.find((entry) => entry.id === params.experienceId) ?? null
 }
 
+/*
+ * Availability is derived, not stored: a hand-maintained flag drifts apart
+ * from what is actually implemented, so callers pass the registered
+ * experience ids instead and the predicates look at real entries.
+ */
+export function topicIsAvailable(
+  topic: Topic,
+  implementedExperiences: Set<string>,
+): boolean {
+  return topic.experiences.some((experience) =>
+    implementedExperiences.has(experience.id),
+  )
+}
+
+export function moduleIsAvailable(
+  moduleInfo: ModuleInfo,
+  implementedExperiences: Set<string>,
+): boolean {
+  return moduleInfo.topics.some((topic) =>
+    topicIsAvailable(topic, implementedExperiences),
+  )
+}
+
 export function modulePath(moduleId: string): string {
   return `/${moduleId}`
 }
