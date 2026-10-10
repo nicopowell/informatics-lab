@@ -328,9 +328,9 @@ The project currently contains:
 * A shared application shell (`AppShell`, `PageHeader`) used by every screen,
   with catalogue cards (`CatalogueCard`) that navigate through real links.
 * A three-level catalogue for navigation: Modules → Topics → Experiences.
-* Three interactive experiences: a Bubble Sort visualization, a Binary Search
-  visualization, and an FCFS CPU Scheduling visualization (the first concept
-  outside Algorithms and Data Structures).
+* Four interactive experiences: a Bubble Sort visualization, a Binary Search
+  visualization, and two CPU Scheduling visualizations in Operating Systems —
+  FCFS (the first concept outside Algorithms and Data Structures) and SJF.
 * Pure, deterministic algorithm logic and step generation, covered by tests.
 * Shared experience machinery in `src/experience/`: the layout, playback
   controls, the `usePlayback` frame hook and the reference code panel.
@@ -344,7 +344,7 @@ experiences that exist in code are offered as available; everything else is
 shown as "coming soon" based on a single source of truth in
 `src/routes/experiences.ts`.
 
-All three experiences follow the intended experience layout: the visualization
+All four experiences follow the intended experience layout: the visualization
 is the protagonist, playback controls and input configuration sit below it, a
 static description explains the concept and its complexity, and a collapsible
 panel shows the reference implementation in pseudocode, Python, JavaScript and
@@ -367,11 +367,42 @@ becomes visible, and per-process waiting and turnaround times that accumulate
 as the simulation runs. The user can randomize the workload or load the
 convoy-effect preset and compare the resulting average waiting times.
 
+The SJF Scheduling experience (Shortest-Job-First) uses the same processes
+and the same board, and shows the result of a different dispatch rule: it
+dispatches the shortest burst among the processes that have already
+arrived, tie-breaking by arrival time and then queue order. It needs burst
+knowledge, which real systems can only estimate, and it starves long jobs
+when short ones keep arriving.
+
+The comparison between the two experiences is informative because it varies
+one variable: the workloads (`workloads.ts`) and the board
+(`SchedulingBoard.tsx`) are shared at topic level in
+`src/experiences/operating-systems/process-management/`, so what each
+experience keeps to itself is only the policy and the narration around it.
+
 The shared playback controls, playback state and experience shell were
-extracted from two concrete implementations and have now carried a third — a
-time-stepped simulation with a scrolling timeline — without any change to the
-shared code in `src/experience/`. The next step is adding further concepts
-(for example Selection Sort, or another scheduling algorithm such as SJF or
-Round Robin) following the conventions in `docs/experiences.md`; a second
-scheduling experience would also show whether the process identity colors of
-FCFS deserve to become shared tokens.
+extracted from two concrete implementations and have now carried four — the
+latest addition being a second time-stepped simulation with a scrolling
+timeline — without a single change to the shared code in `src/experience/`.
+The same pattern is now visible between
+the two scheduling experiences: the shared rendering and the separate policy
+were not designed up front, they were found by building FCFS and SJF
+concretely and measuring where they coincide and where they differ.
+
+The measurement also answered the convoy question: on the convoy workload,
+non-preemptive SJF does not fix the convoy effect, because the long process
+already owns the CPU and nothing displaces it — its schedule is identical
+to FCFS's. On the starvation workload it cuts the total waiting time from
+101 to 6 units at the same makespan (27), at the cost of the long process,
+whose waiting time is the only one that grows. A preemptive policy (Round
+Robin or SRTF) is therefore the interesting next scheduling candidate:
+preemption is what changes those schedules, not novelty per se.
+
+The process identity colors settle the question raised earlier: they ended up
+shared at topic level (`.scheduling-board--hue-*` in `schedulingBoard.css`,
+assigned by index) instead of promoted to the application-wide tokens in
+`src/theme.css`, because "process 1..6" is scheduling vocabulary rather
+than an application-wide color palette. The limitation is that the mapping
+is index-based, so it assumes the process ids arrive in stable input order.
+The next step is adding further concepts (for example Selection Sort)
+following the conventions in `docs/experiences.md`.
