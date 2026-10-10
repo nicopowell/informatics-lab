@@ -11,10 +11,10 @@ import {
   createRandomProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
+import { createReadyFrame, toVisualFrames } from '../schedule'
+import type { SchedulingFrame } from '../schedule'
 import SchedulingBoard from './visualization/SchedulingBoard'
 import { generateFcfsSteps } from './logic/fcfsScheduling'
-import { createReadyFrame, toVisualFrames } from './logic/visualFrames'
-import type { FcfsVisualFrame } from './logic/visualFrames'
 import { FCFS_SCHEDULING_REFERENCE } from './content/fcfsSchedulingReference'
 import description from './content/description.md?raw'
 import '@/experience/experience.css'
@@ -36,7 +36,7 @@ function frameDelay(speed: number): number {
   return Math.round(SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio))
 }
 
-function describeFrame(frame: FcfsVisualFrame, processes: Process[]): string {
+function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
   switch (frame.kind) {
     case 'ready':
       return `Ready to schedule ${processes.length} processes.`

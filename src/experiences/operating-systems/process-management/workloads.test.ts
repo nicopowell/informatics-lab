@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   createConvoyProcesses,
   createRandomProcesses,
+  createStarvationProcesses,
 } from './workloads'
 
 function rngFrom(values: number[]): () => number {
@@ -41,5 +42,12 @@ describe('createConvoyProcesses', () => {
   it('returns a fresh copy of the convoy workload', () => {
     expect(createConvoyProcesses()).not.toBe(createConvoyProcesses())
     expect(createConvoyProcesses()).toHaveLength(5)
+  })
+})
+
+describe('createStarvationProcesses', () => {
+  it('returns a fresh copy of the starvation workload', () => {
+    expect(createStarvationProcesses()).not.toBe(createStarvationProcesses())
+    expect(createStarvationProcesses()).toHaveLength(7)
   })
 })
