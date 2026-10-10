@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import type { Process } from '../../workloads'
-import type { SchedulingFrame } from '../../schedule'
+import type { Process } from './workloads'
+import type { SchedulingFrame } from './schedule'
 
 type SchedulingBoardProps = {
   frame: SchedulingFrame

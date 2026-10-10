@@ -13,12 +13,12 @@ import {
 import type { Process } from '../workloads'
 import { createReadyFrame, toVisualFrames } from '../schedule'
 import type { SchedulingFrame } from '../schedule'
-import SchedulingBoard from './visualization/SchedulingBoard'
+import SchedulingBoard from '../SchedulingBoard'
 import { generateFcfsSteps } from './logic/fcfsScheduling'
 import { FCFS_SCHEDULING_REFERENCE } from './content/fcfsSchedulingReference'
 import description from './content/description.md?raw'
 import '@/experience/experience.css'
-import './fcfsScheduling.css'
+import '../schedulingBoard.css'
 
 const MIN_PROCESSES = 3
 const MAX_PROCESSES = 6
