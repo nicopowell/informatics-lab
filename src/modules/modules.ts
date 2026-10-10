@@ -153,6 +153,11 @@ export const MODULES: ModuleInfo[] = [
             title: 'FCFS Scheduling',
             description: 'Dispatch processes in arrival order and watch them wait.',
           },
+          {
+            id: 'sjf-scheduling',
+            title: 'SJF Scheduling',
+            description: 'Run the shortest burst first and watch the long jobs wait.',
+          },
         ],
       },
     ],

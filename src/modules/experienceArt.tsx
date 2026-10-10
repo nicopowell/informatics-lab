@@ -203,6 +203,65 @@ function FcfsSchedulingArt() {
   )
 }
 
+function SjfSchedulingArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      <g fill="currentColor">
+        <rect x="28" y="52" width="12" height="20" rx="3" opacity="0.9" />
+        <rect x="46" y="52" width="22" height="20" rx="3" opacity="0.6" />
+        <rect x="74" y="52" width="40" height="20" rx="3" opacity="0.35" />
+      </g>
+      <line
+        x1="24"
+        y1="76"
+        x2="176"
+        y2="76"
+        stroke="rgba(255, 255, 255, 0.22)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* Hollow block: the long job that keeps waiting while short ones run. */}
+      <rect
+        x="118"
+        y="52"
+        width="52"
+        height="20"
+        rx="3"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        opacity="0.25"
+      />
+      <path
+        d="M24 40 H40 M40 40 l-5 -4 M40 40 l-5 8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.6"
+      />
+    </svg>
+  )
+}
+
+function FallbackExperienceArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      <rect
+        x="62"
+        y="38"
+        width="76"
+        height="24"
+        rx="6"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="5 6"
+        opacity="0.35"
+      />
+      <rect x="94" y="46" width="12" height="12" rx="3" fill="currentColor" opacity="0.5" />
+    </svg>
+  )
+}
+
 const ART: Record<string, ReactNode> = {
   'bubble-sort': <BubbleSortArt />,
   'selection-sort': <SelectionSortArt />,
@@ -211,6 +270,7 @@ const ART: Record<string, ReactNode> = {
   'binary-search': <BinarySearchArt />,
   'sequential-search': <SequentialSearchArt />,
   'fcfs-scheduling': <FcfsSchedulingArt />,
+  'sjf-scheduling': <SjfSchedulingArt />,
 }
 
 type ExperienceArtProps = {
@@ -218,7 +278,9 @@ type ExperienceArtProps = {
 }
 
 function ExperienceArt({ id }: ExperienceArtProps) {
-  return <>{ART[id]}</>
+  // A new catalogue entry without an ART key would otherwise render an empty
+  // card slot silently, so fall back to a "not drawn yet" placeholder.
+  return <>{ART[id] ?? <FallbackExperienceArt />}</>
 }
 
 export default ExperienceArt
