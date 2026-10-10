@@ -147,8 +147,8 @@ function FcfsSchedulingPage() {
     <AppShell
       className={
         showCode
-          ? 'experience experience--with-code fcfs-scheduling'
-          : 'experience fcfs-scheduling'
+          ? 'experience experience--with-code scheduling-board'
+          : 'experience scheduling-board'
       }
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
     >
