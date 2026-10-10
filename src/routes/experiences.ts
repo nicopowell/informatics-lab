@@ -10,3 +10,9 @@ export const EXPERIENCES: Record<string, ComponentType> = {
   'binary-search': BinarySearchPage,
   'fcfs-scheduling': FcfsSchedulingPage,
 }
+
+/*
+ * The registered ids, derived here once so every screen reads the same view of
+ * what is implemented instead of rebuilding a set and drifting apart.
+ */
+export const IMPLEMENTED_EXPERIENCES = new Set(Object.keys(EXPERIENCES))
