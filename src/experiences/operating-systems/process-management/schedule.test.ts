@@ -1,12 +1,20 @@
 import { describe, expect, it } from 'vitest'
-import { createConvoyProcesses } from './workloads'
+import {
+  createConvoyProcesses,
+  createStarvationProcesses,
+} from './workloads'
 import type { Process } from './workloads'
 import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
+import { generateSjfSteps } from './sjf-scheduling/logic/sjfScheduling'
 import { createReadyFrame, toVisualFrames } from './schedule'
 import type { SchedulingFrame } from './schedule'
 
 function framesFor(processes: Process[]): SchedulingFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))]
+}
+
+function sjfFramesFor(processes: Process[]): SchedulingFrame[] {
+  return [createReadyFrame(), ...toVisualFrames(generateSjfSteps(processes))]
 }
 
 function summarize(frame: SchedulingFrame) {
@@ -261,5 +269,81 @@ describe('toVisualFrames', () => {
       expect(current.length).toBeGreaterThanOrEqual(previous.length)
       expect(current.slice(0, previous.length)).toEqual(previous)
     }
+  })
+})
+
+// The builder is shared by both policies, so these frames come from the SJF
+// generator. They cover what only a non-FIFO dispatch can show: a process that
+// queued first is not the process that runs next.
+describe('toVisualFrames under SJF', () => {
+  it('lets the shorter arrival take the CPU ahead of a queued process', () => {
+    const frames = sjfFramesFor(createStarvationProcesses())
+
+    // P2 arrived at t=1 and is still waiting; P3 arrives at t=2 with burst 1
+    // and is dispatched by the same unit it arrives in.
+    const arriveIndex = frames.findIndex(
+      (frame) => frame.kind === 'arrive' && frame.time === 2,
+    )
+    const arrive = frames.filter(
+      (frame) => frame.kind === 'arrive' && frame.time === 2,
+    )
+    expect(arrive).toHaveLength(1)
+    expect(arrive[0].processId).toBe('P3')
+    expect(arrive[0].running).toBeNull()
+    expect(arrive[0].queue).toEqual(['P2', 'P3'])
+    expect(arrive[0].cells).toEqual(['P1', 'P1'])
+
+    const dispatch = frames[arriveIndex + 1]
+    expect(dispatch.kind).toBe('run')
+    expect(dispatch.time).toBe(2)
+    expect(dispatch.processId).toBe('P3')
+    expect(dispatch.queue).toEqual(['P2'])
+    expect(dispatch.cells).toEqual(['P1', 'P1', 'P3'])
+  })
+
+  it('reports completions in the order the policy chose', () => {
+    const frames = sjfFramesFor(createStarvationProcesses())
+    const done = frames[frames.length - 1]
+
+    expect(
+      frames
+        .filter((frame) => frame.kind === 'complete')
+        .map((frame) => frame.processId),
+    ).toEqual(['P1', 'P3', 'P4', 'P5', 'P6', 'P7', 'P2'])
+    expect(summarize(done).completed).toEqual([
+      'P1:0/2',
+      'P3:0/1',
+      'P4:0/1',
+      'P5:0/1',
+      'P6:0/1',
+      'P7:0/1',
+      'P2:6/26',
+    ])
+  })
+
+  it('keeps the starved process as one contiguous block in the Gantt', () => {
+    const frames = sjfFramesFor(createStarvationProcesses())
+    const done = frames[frames.length - 1]
+
+    expect(done.cells).toEqual([
+      'P1',
+      'P1',
+      'P3',
+      'P4',
+      'P5',
+      'P6',
+      'P7',
+      ...Array.from({ length: 20 }, () => 'P2'),
+    ])
+    expect(done.time).toBe(27)
+  })
+
+  it('produces identical frames for both policies on the convoy workload', () => {
+    const processes = createConvoyProcesses()
+
+    expect(sjfFramesFor(processes)).toEqual(framesFor(processes))
+    // The FCFS suite pins the same 22-frame count for this workload, so the
+    // equality above also says SJF adds no frame of its own here.
+    expect(framesFor(processes)).toHaveLength(22)
   })
 })
