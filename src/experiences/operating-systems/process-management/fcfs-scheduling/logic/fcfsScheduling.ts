@@ -1,27 +1,9 @@
 import type { Process } from '../../workloads'
-
-export type CompletedFcfsProcess = {
-  id: string
-  finish: number
-  waiting: number
-  turnaround: number
-}
-
-export type RunningFcfsProcess = {
-  id: string
-  unitsLeft: number
-  waiting: number
-}
-
-export type FcfsScheduleStep = {
-  kind: 'run' | 'idle'
-  time: number
-  arrivedIds: string[]
-  running: RunningFcfsProcess | null
-  completedId: string | null
-  queue: string[]
-  completed: CompletedFcfsProcess[]
-}
+import type {
+  CompletedProcess,
+  RunningProcess,
+  ScheduleStep,
+} from '../../schedule'
 
 type RunningState = {
   process: Process
@@ -35,12 +17,12 @@ type RunningState = {
 // one unit of its burst. A process that finishes during a unit is reported as
 // `completedId` of that same unit, with `finish = time + 1`, and the next
 // process is dispatched at the start of the following unit.
-export function generateFcfsSteps(processes: Process[]): FcfsScheduleStep[] {
+export function generateFcfsSteps(processes: Process[]): ScheduleStep[] {
   // Stable sort: processes arriving at the same time keep their input order.
   const byArrival = [...processes].sort((a, b) => a.arrival - b.arrival)
-  const steps: FcfsScheduleStep[] = []
+  const steps: ScheduleStep[] = []
   const queue: Process[] = []
-  const completed: CompletedFcfsProcess[] = []
+  const completed: CompletedProcess[] = []
   let nextIndex = 0
   let running: RunningState | null = null
   let time = 0
@@ -65,7 +47,7 @@ export function generateFcfsSteps(processes: Process[]): FcfsScheduleStep[] {
     }
 
     let completedId: string | null = null
-    const active: RunningFcfsProcess | null = running
+    const active: RunningProcess | null = running
       ? {
           id: running.process.id,
           unitsLeft: running.unitsLeft,

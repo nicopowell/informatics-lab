@@ -1,27 +1,9 @@
 import type { Process } from '../../workloads'
-
-export type CompletedSjfProcess = {
-  id: string
-  finish: number
-  waiting: number
-  turnaround: number
-}
-
-export type RunningSjfProcess = {
-  id: string
-  unitsLeft: number
-  waiting: number
-}
-
-export type SjfScheduleStep = {
-  kind: 'run' | 'idle'
-  time: number
-  arrivedIds: string[]
-  running: RunningSjfProcess | null
-  completedId: string | null
-  queue: string[]
-  completed: CompletedSjfProcess[]
-}
+import type {
+  CompletedProcess,
+  RunningProcess,
+  ScheduleStep,
+} from '../../schedule'
 
 type RunningState = {
   process: Process
@@ -54,12 +36,12 @@ function selectShortestIndex(queue: Process[]): number {
 // finishes during a unit is reported as `completedId` of that same unit, with
 // `finish = time + 1`, and the next dispatch happens at the start of the
 // following unit.
-export function generateSjfSteps(processes: Process[]): SjfScheduleStep[] {
+export function generateSjfSteps(processes: Process[]): ScheduleStep[] {
   // Stable sort: processes arriving at the same time keep their input order.
   const byArrival = [...processes].sort((a, b) => a.arrival - b.arrival)
-  const steps: SjfScheduleStep[] = []
+  const steps: ScheduleStep[] = []
   const queue: Process[] = []
-  const completed: CompletedSjfProcess[] = []
+  const completed: CompletedProcess[] = []
   let nextIndex = 0
   let running: RunningState | null = null
   let time = 0
@@ -83,7 +65,7 @@ export function generateSjfSteps(processes: Process[]): SjfScheduleStep[] {
     }
 
     let completedId: string | null = null
-    const active: RunningSjfProcess | null = running
+    const active: RunningProcess | null = running
       ? {
           id: running.process.id,
           unitsLeft: running.unitsLeft,

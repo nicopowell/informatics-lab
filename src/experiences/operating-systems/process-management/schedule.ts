@@ -1,20 +1,41 @@
-import type {
-  CompletedFcfsProcess,
-  FcfsScheduleStep,
-  RunningFcfsProcess,
-} from './fcfsScheduling'
+// Shared step/frame vocabulary for the scheduling policies in this topic.
+// Each policy keeps its own step generator, but every generator produces the
+// same `ScheduleStep` shape and shares this frame builder.
 
-export type FcfsVisualFrame = {
+export type CompletedProcess = {
+  id: string
+  finish: number
+  waiting: number
+  turnaround: number
+}
+
+export type RunningProcess = {
+  id: string
+  unitsLeft: number
+  waiting: number
+}
+
+export type ScheduleStep = {
+  kind: 'run' | 'idle'
+  time: number
+  arrivedIds: string[]
+  running: RunningProcess | null
+  completedId: string | null
+  queue: string[]
+  completed: CompletedProcess[]
+}
+
+export type SchedulingFrame = {
   kind: 'ready' | 'arrive' | 'run' | 'idle' | 'complete' | 'done'
   time: number
   processId: string | null
-  running: RunningFcfsProcess | null
+  running: RunningProcess | null
   queue: string[]
   cells: (string | null)[]
-  completed: CompletedFcfsProcess[]
+  completed: CompletedProcess[]
 }
 
-export function createReadyFrame(): FcfsVisualFrame {
+export function createReadyFrame(): SchedulingFrame {
   return {
     kind: 'ready',
     time: 0,
@@ -35,10 +56,10 @@ export function createReadyFrame(): FcfsVisualFrame {
  * segment with the frozen metrics; dispatch is left to the following unit so
  * each frame changes exactly one thing.
  */
-export function toVisualFrames(steps: FcfsScheduleStep[]): FcfsVisualFrame[] {
-  const frames: FcfsVisualFrame[] = []
+export function toVisualFrames(steps: ScheduleStep[]): SchedulingFrame[] {
+  const frames: SchedulingFrame[] = []
   const cells: (string | null)[] = []
-  let previous: FcfsScheduleStep | null = null
+  let previous: ScheduleStep | null = null
 
   for (const step of steps) {
     const continuing =

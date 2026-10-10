@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { createConvoyProcesses } from '../../workloads'
-import type { Process } from '../../workloads'
-import { generateFcfsSteps } from './fcfsScheduling'
-import { createReadyFrame, toVisualFrames } from './visualFrames'
-import type { FcfsVisualFrame } from './visualFrames'
+import { createConvoyProcesses } from './workloads'
+import type { Process } from './workloads'
+import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
+import { createReadyFrame, toVisualFrames } from './schedule'
+import type { SchedulingFrame } from './schedule'
 
-function framesFor(processes: Process[]): FcfsVisualFrame[] {
+function framesFor(processes: Process[]): SchedulingFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))]
 }
 
-function summarize(frame: FcfsVisualFrame) {
+function summarize(frame: SchedulingFrame) {
   return {
     kind: frame.kind,
     time: frame.time,
