@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import type { Process } from '../../workloads'
-import type { SchedulingFrame } from '../../schedule'
+import type { Process } from './workloads'
+import type { SchedulingFrame } from './schedule'
 
 type SchedulingBoardProps = {
   frame: SchedulingFrame
@@ -16,7 +16,7 @@ const CURSOR_MIN = 0.12
 const CURSOR_MAX = 0.72
 
 function hueClassName(index: number): string {
-  return `fcfs-scheduling--hue-${(index % HUE_COUNT) + 1}`
+  return `scheduling-board--hue-${(index % HUE_COUNT) + 1}`
 }
 
 function pluralUnits(units: number): string {
@@ -50,17 +50,17 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
   }, [timeRatio, frame.time, frame.kind, processes])
 
   return (
-    <div className="fcfs-scheduling__board">
-      <div className="fcfs-scheduling__gantt-scroll" ref={scrollRef}>
+    <div className="scheduling-board__board">
+      <div className="scheduling-board__gantt-scroll" ref={scrollRef}>
         <div
-          className="fcfs-scheduling__gantt"
+          className="scheduling-board__gantt"
           style={{ '--gantt-units': makespan } as CSSProperties}
         >
-          <div className="fcfs-scheduling__cells">
+          <div className="scheduling-board__cells">
             {frame.cells.map((id, index) => {
-              const classes = ['fcfs-scheduling__cell']
+              const classes = ['scheduling-board__cell']
               if (id === null) {
-                classes.push('fcfs-scheduling__cell--idle')
+                classes.push('scheduling-board__cell--idle')
               } else {
                 classes.push(hueOf(id))
               }
@@ -73,59 +73,59 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
             {Array.from({ length: ghostCells }, (_, offset) => (
               <div
                 key={`ghost-${offset}`}
-                className="fcfs-scheduling__cell fcfs-scheduling__cell--ghost"
+                className="scheduling-board__cell scheduling-board__cell--ghost"
                 aria-hidden="true"
               />
             ))}
           </div>
-          <div className="fcfs-scheduling__axis" aria-hidden="true">
+          <div className="scheduling-board__axis" aria-hidden="true">
             {Array.from({ length: makespan }, (_, time) => (
-              <span key={time} className="fcfs-scheduling__tick">
+              <span key={time} className="scheduling-board__tick">
                 {time % 5 === 0 ? time : ''}
               </span>
             ))}
           </div>
           <div
-            className="fcfs-scheduling__cursor"
+            className="scheduling-board__cursor"
             style={{ left: `min(${timeRatio * 100}%, calc(100% - 3px))` }}
             aria-hidden="true"
           />
         </div>
       </div>
 
-      <div className="fcfs-scheduling__tracks">
-        <div className="fcfs-scheduling__track">
-          <span className="fcfs-scheduling__track-label">CPU</span>
+      <div className="scheduling-board__tracks">
+        <div className="scheduling-board__track">
+          <span className="scheduling-board__track-label">CPU</span>
           {frame.running ? (
             <span
-              className={`fcfs-scheduling__chip fcfs-scheduling__chip--focus ${hueOf(frame.running.id)}`}
+              className={`scheduling-board__chip scheduling-board__chip--focus ${hueOf(frame.running.id)}`}
             >
               {frame.running.id}
-              <span className="fcfs-scheduling__chip-note">
+              <span className="scheduling-board__chip-note">
                 {frame.kind === 'complete'
                   ? 'finished'
                   : pluralUnits(frame.running.unitsLeft)}
               </span>
             </span>
           ) : (
-            <span className="fcfs-scheduling__chip fcfs-scheduling__chip--empty">
+            <span className="scheduling-board__chip scheduling-board__chip--empty">
               {frame.kind === 'ready' ? 'waiting to start' : 'free'}
             </span>
           )}
         </div>
 
-        <div className="fcfs-scheduling__track">
-          <span className="fcfs-scheduling__track-label">Ready queue</span>
+        <div className="scheduling-board__track">
+          <span className="scheduling-board__track-label">Ready queue</span>
           {frame.queue.length === 0 ? (
-            <span className="fcfs-scheduling__chip fcfs-scheduling__chip--empty">empty</span>
+            <span className="scheduling-board__chip scheduling-board__chip--empty">empty</span>
           ) : (
             frame.queue.map((id) => {
               const process = processById.get(id)
               const waiting = process ? frame.time - process.arrival : 0
               return (
-                <span key={id} className={`fcfs-scheduling__chip ${hueOf(id)}`}>
+                <span key={id} className={`scheduling-board__chip ${hueOf(id)}`}>
                   {id}
-                  <span className="fcfs-scheduling__chip-note">+{waiting}</span>
+                  <span className="scheduling-board__chip-note">+{waiting}</span>
                 </span>
               )
             })
@@ -133,27 +133,27 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
         </div>
       </div>
 
-      <div className="fcfs-scheduling__metrics">
-        <table className="fcfs-scheduling__table">
+      <div className="scheduling-board__metrics">
+        <table className="scheduling-board__table">
           <thead>
             <tr>
               <th>Process</th>
               <th>
-                <span className="fcfs-scheduling__th-wide">Arrival</span>
-                <span className="fcfs-scheduling__th-narrow">Arr</span>
+                <span className="scheduling-board__th-wide">Arrival</span>
+                <span className="scheduling-board__th-narrow">Arr</span>
               </th>
               <th>Burst</th>
               <th>
-                <span className="fcfs-scheduling__th-wide">Status</span>
-                <span className="fcfs-scheduling__th-narrow">State</span>
+                <span className="scheduling-board__th-wide">Status</span>
+                <span className="scheduling-board__th-narrow">State</span>
               </th>
               <th>
-                <span className="fcfs-scheduling__th-wide">Waiting</span>
-                <span className="fcfs-scheduling__th-narrow">Wait</span>
+                <span className="scheduling-board__th-wide">Waiting</span>
+                <span className="scheduling-board__th-narrow">Wait</span>
               </th>
               <th>
-                <span className="fcfs-scheduling__th-wide">Turnaround</span>
-                <span className="fcfs-scheduling__th-narrow">Turn</span>
+                <span className="scheduling-board__th-wide">Turnaround</span>
+                <span className="scheduling-board__th-narrow">Turn</span>
               </th>
             </tr>
           </thead>
@@ -182,15 +182,15 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
               return (
                 <tr key={process.id}>
                   <td>
-                    <span className={`fcfs-scheduling__process ${hueOf(process.id)}`}>
-                      <span className="fcfs-scheduling__dot" />
+                    <span className={`scheduling-board__process ${hueOf(process.id)}`}>
+                      <span className="scheduling-board__dot" />
                       {process.id}
                     </span>
                   </td>
                   <td>{process.arrival}</td>
                   <td>{process.burst}</td>
                   <td>
-                    <span className={`fcfs-scheduling__status fcfs-scheduling__status--${status}`}>
+                    <span className={`scheduling-board__status scheduling-board__status--${status}`}>
                       {status}
                     </span>
                   </td>
@@ -203,13 +203,13 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
         </table>
       </div>
 
-      <ul className="fcfs-scheduling__legend">
+      <ul className="scheduling-board__legend">
         <li>
-          <span className="fcfs-scheduling__legend-swatch fcfs-scheduling__legend-swatch--cursor" />
+          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--cursor" />
           Current time
         </li>
         <li>
-          <span className="fcfs-scheduling__legend-swatch fcfs-scheduling__legend-swatch--idle" />
+          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--idle" />
           CPU idle
         </li>
       </ul>

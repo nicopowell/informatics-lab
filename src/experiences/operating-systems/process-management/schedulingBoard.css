@@ -1,4 +1,4 @@
-.fcfs-scheduling {
+.scheduling-board {
   --step-duration: 0.2s;
 
   /*
@@ -16,22 +16,22 @@
 }
 
 /* Process identity hues, applied per element; state keeps the role tokens. */
-.fcfs-scheduling--hue-1 {
+.scheduling-board--hue-1 {
   --process-color: var(--color-process-1);
 }
-.fcfs-scheduling--hue-2 {
+.scheduling-board--hue-2 {
   --process-color: var(--color-process-2);
 }
-.fcfs-scheduling--hue-3 {
+.scheduling-board--hue-3 {
   --process-color: var(--color-process-3);
 }
-.fcfs-scheduling--hue-4 {
+.scheduling-board--hue-4 {
   --process-color: var(--color-process-4);
 }
-.fcfs-scheduling--hue-5 {
+.scheduling-board--hue-5 {
   --process-color: var(--color-process-5);
 }
-.fcfs-scheduling--hue-6 {
+.scheduling-board--hue-6 {
   --process-color: var(--color-process-6);
 }
 
@@ -39,11 +39,11 @@
    content grows (an unusual zoom, a substitute font, a wider button set);
    pinning their CSS length keeps both sliders the same size at every
    workload value. */
-.fcfs-scheduling .experience__slider input[type='range'] {
+.scheduling-board .experience__slider input[type='range'] {
   flex-shrink: 0;
 }
 
-.fcfs-scheduling__board {
+.scheduling-board__board {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -56,7 +56,7 @@
 /* Units never drop below a readable width; the row scrolls instead, so the
    timeline keeps its meaning on small screens. The scroll container gets the
    top padding because overflow-x also clips vertically. */
-.fcfs-scheduling__gantt-scroll {
+.scheduling-board__gantt-scroll {
   overflow-x: auto;
   /* overflow-x: auto alone coerces overflow-y to auto, and a single pixel of
      vertical rounding (or the horizontal bar stealing height) then spawns a
@@ -68,7 +68,7 @@
   scrollbar-width: thin;
 }
 
-.fcfs-scheduling__gantt {
+.scheduling-board__gantt {
   position: relative;
   /* Shared so the cursor can center on the cell row itself, not on the
      Gantt box (which also holds the axis labels underneath). */
@@ -76,18 +76,18 @@
   min-width: calc(var(--gantt-units) * 1.75rem);
 }
 
-.fcfs-scheduling__cells,
-.fcfs-scheduling__axis {
+.scheduling-board__cells,
+.scheduling-board__axis {
   display: grid;
   grid-template-columns: repeat(var(--gantt-units), minmax(0, 1fr));
   gap: 2px;
 }
 
-.fcfs-scheduling__cells {
+.scheduling-board__cells {
   height: var(--gantt-cell-height);
 }
 
-.fcfs-scheduling__cell {
+.scheduling-board__cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,25 +101,25 @@
 
 /* A cell only mounts when its unit is first played, so this animation runs
    on growth and stays silent while stepping through frames of the same unit. */
-@keyframes fcfs-scheduling-cell-in {
+@keyframes scheduling-board-cell-in {
   from {
     opacity: 0;
     transform: scale(0.82);
   }
 }
 
-.fcfs-scheduling__cell:not(.fcfs-scheduling__cell--ghost) {
-  animation: fcfs-scheduling-cell-in var(--step-duration) ease;
+.scheduling-board__cell:not(.scheduling-board__cell--ghost) {
+  animation: scheduling-board-cell-in var(--step-duration) ease;
 }
 
-.fcfs-scheduling__cell--idle {
+.scheduling-board__cell--idle {
   background: transparent;
   border: 1px dashed var(--color-border);
   color: var(--color-text-muted);
   font-weight: 400;
 }
 
-.fcfs-scheduling__cell--ghost {
+.scheduling-board__cell--ghost {
   background: transparent;
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
@@ -130,7 +130,7 @@
    scroll band's padding and the axis gap, so it is never clipped and never
    crosses the time labels); the board clamps its left offset by its own
    width at the end, so it never adds scrollable overflow. */
-.fcfs-scheduling__cursor {
+.scheduling-board__cursor {
   position: absolute;
   top: -6px;
   height: calc(var(--gantt-cell-height) + 12px);
@@ -140,13 +140,13 @@
   pointer-events: none;
 }
 
-.fcfs-scheduling__axis {
+.scheduling-board__axis {
   /* Clearance for the cursor's 6 px lower overhang, so the line stops
      before the time labels start. */
   margin-top: 0.5rem;
 }
 
-.fcfs-scheduling__tick {
+.scheduling-board__tick {
   font-size: 0.6rem;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
@@ -155,28 +155,28 @@
 
 /* CPU and ready queue ----------------------------------------------------- */
 
-.fcfs-scheduling__tracks {
+.scheduling-board__tracks {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem 2.5rem;
 }
 
-.fcfs-scheduling__track {
+.scheduling-board__track {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.fcfs-scheduling__track-label {
+.scheduling-board__track-label {
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.68rem;
 }
 
-.fcfs-scheduling__chip {
+.scheduling-board__chip {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -190,30 +190,30 @@
 
 /* A chip enters when the process joins the queue or the CPU; half the unit
    duration so it never lags behind the Gantt cell it points at. */
-@keyframes fcfs-scheduling-chip-in {
+@keyframes scheduling-board-chip-in {
   from {
     opacity: 0;
     transform: translateX(-0.4rem);
   }
 }
 
-.fcfs-scheduling__chip {
-  animation: fcfs-scheduling-chip-in calc(var(--step-duration) / 2) ease;
+.scheduling-board__chip {
+  animation: scheduling-board-chip-in calc(var(--step-duration) / 2) ease;
 }
 
-.fcfs-scheduling__chip--focus {
+.scheduling-board__chip--focus {
   outline: 2px solid var(--color-comparing);
   outline-offset: 1px;
 }
 
-.fcfs-scheduling__chip--empty {
+.scheduling-board__chip--empty {
   border-style: dashed;
   border-color: var(--color-border);
   background: transparent;
   color: var(--color-text-muted);
 }
 
-.fcfs-scheduling__chip-note {
+.scheduling-board__chip-note {
   font-size: 0.68rem;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
@@ -223,13 +223,13 @@
 
 /* Safety net: if a narrow screen cannot fit even the compressed table, it
    scrolls instead of losing the Turnaround column. */
-.fcfs-scheduling__metrics {
+.scheduling-board__metrics {
   overflow-x: auto;
   overflow-y: clip;
   scrollbar-width: thin;
 }
 
-.fcfs-scheduling__table {
+.scheduling-board__table {
   width: 100%;
   max-width: 34rem;
   margin: 0 auto;
@@ -237,7 +237,7 @@
   font-size: 0.78rem;
 }
 
-.fcfs-scheduling__table th {
+.scheduling-board__table th {
   padding: 0.3rem 0.5rem;
   text-align: right;
   text-transform: uppercase;
@@ -247,53 +247,53 @@
   color: var(--color-text-muted);
 }
 
-.fcfs-scheduling__table td {
+.scheduling-board__table td {
   padding: 0.3rem 0.5rem;
   text-align: right;
   border-top: 1px solid var(--color-border);
   font-variant-numeric: tabular-nums;
 }
 
-.fcfs-scheduling__table th:first-child,
-.fcfs-scheduling__table td:first-child {
+.scheduling-board__table th:first-child,
+.scheduling-board__table td:first-child {
   text-align: left;
 }
 
 /* Full header names on wide screens; short labels below (mobile). */
-.fcfs-scheduling__th-narrow {
+.scheduling-board__th-narrow {
   display: none;
 }
 
-.fcfs-scheduling__process {
+.scheduling-board__process {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
 }
 
-.fcfs-scheduling__dot {
+.scheduling-board__dot {
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
   background: var(--process-color);
 }
 
-.fcfs-scheduling__status--done {
+.scheduling-board__status--done {
   color: var(--color-success);
 }
 
-.fcfs-scheduling__status--running {
+.scheduling-board__status--running {
   color: var(--color-comparing);
 }
 
-.fcfs-scheduling__status--waiting {
+.scheduling-board__status--waiting {
   color: var(--color-text);
 }
 
-.fcfs-scheduling__status--pending {
+.scheduling-board__status--pending {
   color: var(--color-text-muted);
 }
 
-.fcfs-scheduling__legend {
+.scheduling-board__legend {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -305,84 +305,84 @@
   color: var(--color-text-muted);
 }
 
-.fcfs-scheduling__legend li {
+.scheduling-board__legend li {
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.fcfs-scheduling__legend-swatch {
+.scheduling-board__legend-swatch {
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 2px;
 }
 
-.fcfs-scheduling__legend-swatch--cursor {
+.scheduling-board__legend-swatch--cursor {
   width: 3px;
   height: 1rem;
   border-radius: 0;
   background: var(--color-comparing);
 }
 
-.fcfs-scheduling__legend-swatch--idle {
+.scheduling-board__legend-swatch--idle {
   border: 1px dashed var(--color-border);
 }
 
 @media (max-width: 720px) {
-  .fcfs-scheduling__board {
+  .scheduling-board__board {
     gap: 1.25rem;
   }
 
-  .fcfs-scheduling__tracks {
+  .scheduling-board__tracks {
     gap: 0.75rem 1.5rem;
   }
 
   /* Time units keep a readable width; the row scrolls and follows the cursor. */
-  .fcfs-scheduling__gantt {
+  .scheduling-board__gantt {
     min-width: calc(var(--gantt-units) * 2.15rem);
   }
 
   /* The code toggle is not shown here, so the band can use the space. */
-  .fcfs-scheduling .experience__visualization {
+  .scheduling-board .experience__visualization {
     padding: 2.25rem 1rem 1rem;
   }
 
-  .fcfs-scheduling__table {
+  .scheduling-board__table {
     font-size: 0.68rem;
   }
 
-  .fcfs-scheduling__table th {
+  .scheduling-board__table th {
     padding: 0.25rem 0.3rem;
     font-size: 0.58rem;
     letter-spacing: 0.02em;
   }
 
-  .fcfs-scheduling__table td {
+  .scheduling-board__table td {
     padding: 0.25rem 0.3rem;
   }
 
-  .fcfs-scheduling__th-wide {
+  .scheduling-board__th-wide {
     display: none;
   }
 
-  .fcfs-scheduling__th-narrow {
+  .scheduling-board__th-narrow {
     display: inline;
   }
 
   /* Counters stack label over value so none of them wraps mid-number. */
-  .fcfs-scheduling .experience__counts {
+  .scheduling-board .experience__counts {
     width: 100%;
     justify-content: space-between;
     gap: 0.5rem 1rem;
   }
 
-  .fcfs-scheduling .experience__count {
+  .scheduling-board .experience__count {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.15rem;
   }
 
-  .fcfs-scheduling .experience__count-value {
+  .scheduling-board .experience__count-value {
     white-space: nowrap;
   }
 }

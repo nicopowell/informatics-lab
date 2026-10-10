@@ -9,13 +9,14 @@ import { usePlayback } from '@/experience/usePlayback'
 import {
   createConvoyProcesses,
   createRandomProcesses,
+  createStarvationProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
 import { createReadyFrame, toVisualFrames } from '../schedule'
 import type { SchedulingFrame } from '../schedule'
 import SchedulingBoard from '../SchedulingBoard'
-import { generateFcfsSteps } from './logic/fcfsScheduling'
-import { FCFS_SCHEDULING_REFERENCE } from './content/fcfsSchedulingReference'
+import { generateSjfSteps } from './logic/sjfScheduling'
+import { SJF_SCHEDULING_REFERENCE } from './content/sjfSchedulingReference'
 import description from './content/description.md?raw'
 import '@/experience/experience.css'
 import '../schedulingBoard.css'
@@ -44,17 +45,32 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
       const waiting = frame.queue.length
       if (frame.running) {
         const left = frame.running.unitsLeft
-        return `${frame.processId} arrives. ${frame.running.id} keeps the CPU with ${left} more ${
+        return `${frame.processId} arrives, but the CPU is not preempted: ${frame.running.id} keeps running with ${left} more ${
           left === 1 ? 'unit' : 'units'
-        } to run, so it joins ${waiting === 1 ? '1 process' : `${waiting} processes`} waiting.`
+        } left, and ${waiting === 1 ? '1 process is' : `${waiting} processes are`} waiting.`
       }
       if (waiting > 1) {
-        return `${frame.processId} arrives and queues behind ${frame.queue[0]}.`
+        return `${frame.processId} arrives and the CPU is free: the shortest burst of the ${waiting} processes waiting will run next.`
       }
       return `${frame.processId} arrives and finds the CPU free.`
     }
     case 'run': {
       const left = frame.running ? frame.running.unitsLeft : 1
+      const process = processes.find((candidate) => candidate.id === frame.processId)
+      if (process && frame.running && frame.running.unitsLeft === process.burst) {
+        // First unit of this burst, so this is the dispatch frame. The queue in
+        // a run frame is already the post-dispatch one, so its length counts the
+        // processes this one was chosen over - the choice was between them plus
+        // it. A completed process never re-enters, so this stays one block.
+        const beaten = frame.queue.length
+        const burst = `${process.burst} ${process.burst === 1 ? 'unit' : 'units'} of burst`
+        if (beaten === 0) {
+          return `${frame.processId} runs its ${burst} — the only process waiting when the CPU came free.`
+        }
+        return `${frame.processId} runs its ${burst} — the shortest burst of the ${
+          beaten + 1
+        } waiting, with ${beaten === 1 ? '1 process' : `${beaten} processes`} queued behind it.`
+      }
       return left === 1
         ? `${frame.processId} runs its last burst unit.`
         : `${frame.processId} runs on the CPU — ${left} units of its burst left.`
@@ -68,9 +84,16 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
       const metrics = finished
         ? ` waited ${finished.waiting} and finished with a turnaround of ${finished.turnaround}.`
         : '.'
-      const nextId = frame.queue[0]
+      // Never name the next process here. A complete frame sits at the finish
+      // instant, and the dispatch happens at the start of the next unit, after
+      // that unit's arrivals - so a process arriving then can still win. On the
+      // starvation preset P1 completes with only P2 queued, and P3 takes the CPU
+      // anyway. FCFS can name the successor because its queue order decides; SJF
+      // has to state the rule and let the dispatch frame name the winner.
       return `${frame.processId} finished at t=${frame.time}.${metrics}${
-        nextId ? ` ${nextId} is next in the queue.` : ''
+        frame.queue.length > 0
+          ? ' The CPU is free: the next process to run is the shortest burst among those waiting.'
+          : ' The CPU is free and no process is waiting.'
       }`
     }
     case 'done': {
@@ -86,7 +109,7 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
   }
 }
 
-function FcfsSchedulingPage() {
+function SjfSchedulingPage() {
   const [count, setCount] = useState(INITIAL_PROCESSES)
   const [processes, setProcesses] = useState(() =>
     createRandomProcesses(INITIAL_PROCESSES),
@@ -95,7 +118,7 @@ function FcfsSchedulingPage() {
   const [showCode, setShowCode] = useState(false)
 
   const frames = useMemo(
-    () => [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))],
+    () => [createReadyFrame(), ...toVisualFrames(generateSjfSteps(processes))],
     [processes],
   )
   const makespan = frames[frames.length - 1].time
@@ -125,6 +148,12 @@ function FcfsSchedulingPage() {
     const convoy = createConvoyProcesses()
     setCount(convoy.length)
     restartWith(convoy)
+  }
+
+  function handleStarvation() {
+    const starvation = createStarvationProcesses()
+    setCount(starvation.length)
+    restartWith(starvation)
   }
 
   const totalWaiting = frame.completed.reduce(
@@ -195,6 +224,9 @@ function FcfsSchedulingPage() {
               <button type="button" className="ui-button" onClick={handleConvoy}>
                 Convoy effect
               </button>
+              <button type="button" className="ui-button" onClick={handleStarvation}>
+                Starvation
+              </button>
             </div>
           </div>
 
@@ -203,10 +235,10 @@ function FcfsSchedulingPage() {
           </div>
         </div>
 
-        <CodePanel languages={FCFS_SCHEDULING_REFERENCE} open={showCode} />
+        <CodePanel languages={SJF_SCHEDULING_REFERENCE} open={showCode} />
       </div>
     </AppShell>
   )
 }
 
-export default FcfsSchedulingPage
+export default SjfSchedulingPage
