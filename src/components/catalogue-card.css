@@ -40,10 +40,12 @@
   height: 100%;
 }
 
+/* Left aligned so the status reads as the title's eyebrow on every page that
+   uses this card; right aligned it detached from the text it qualifies. */
 .catalogue-card__meta {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 1rem;
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -88,19 +90,45 @@
 .catalogue-card--hero {
   position: relative;
   justify-content: flex-end;
-  min-height: 21rem;
+  min-height: 20rem;
   padding: 0;
   overflow: hidden;
 }
 
+/* Anchor the artwork to a band at the top of the card. Filling the whole card
+   (inset: 0) made the SVG centre its drawing in the leftover height, which
+   pushed it down against the title; sizing it from the viewBox instead
+   (height: auto) ties the scale to the card width, so wide cards overflow the
+   band and get cropped by overflow: hidden. A fixed top band keeps the
+   contained "meet" scaling, so the drawing is never cropped at any width. */
 .catalogue-card--hero .catalogue-card__art {
   position: absolute;
-  inset: 0;
-  height: auto;
+  inset: 0 0 auto 0;
+  height: 68%;
   margin-bottom: 0;
 }
 
-/* Fades the artwork into the card so the overlaid text stays readable. */
+/* The status label belongs to the text block, not to the card edge: in the
+   hero variant the card itself has no padding, so the meta row landed on the
+   border and floated in the middle of the artwork. The body keeps no top
+   padding of its own so the gap between label and title comes from the card's
+   single flex gap. */
+.catalogue-card--hero .catalogue-card__meta {
+  position: relative;
+  z-index: 1;
+  padding: 0 1.5rem;
+}
+
+.catalogue-card--hero .catalogue-card__body {
+  position: relative;
+  z-index: 1;
+  gap: 0.45rem;
+  padding: 0 1.5rem 1.6rem;
+}
+
+/* Fades the artwork into the card so the text block stays readable. The stops
+   sit below the artwork band on purpose: the art ends around 55% of the card,
+   and a fade starting at 30% was dimming the middle of every diagram. */
 .catalogue-card--hero::after {
   content: '';
   position: absolute;
@@ -108,16 +136,9 @@
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    transparent 30%,
-    var(--color-surface) 88%
+    transparent 58%,
+    var(--color-surface) 94%
   );
-}
-
-.catalogue-card--hero .catalogue-card__body {
-  position: relative;
-  z-index: 1;
-  gap: 0.45rem;
-  padding: 1.4rem 1.5rem 1.6rem;
 }
 
 .catalogue-card--hero .catalogue-card__title {
