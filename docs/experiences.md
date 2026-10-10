@@ -36,6 +36,22 @@ an experience uses short relative paths (`./logic/bubbleSort`,
 `../logic/visualFrames`). An experience is then free to move within the tree
 without touching other files.
 
+A topic may also hold shared modules directly under
+`src/experiences/<module-id>/<topic-id>/`, outside any experience folder, but
+only once more than one experience in that topic needs the identical thing —
+never on the first consumer's hunch. In
+`operating-systems/process-management`, `workloads.ts`, `schedule.ts`,
+`SchedulingBoard.tsx` and `schedulingBoard.css` live at that level because
+both scheduling experiences consume them unchanged: what is shared is the
+data shape (`Process`, `ScheduleStep`, `SchedulingFrame`) and the rendering
+of that shape on the Gantt board. What stays per-experience is the policy
+(`fcfs-scheduling/logic/fcfsScheduling.ts`,
+`sjf-scheduling/logic/sjfScheduling.ts`) and the page narration. This is a
+plain module, not a framework: nothing discovers or registers these files,
+the experiences import them with explicit relative paths (`../workloads`,
+`../SchedulingBoard`), and a first consumer keeps its own copies until a
+second real one exists.
+
 The catalogue in `src/modules/modules.ts` lists the experience with the same
 id, and `src/routes/experiences.ts` maps that id to its page component. It is
 the only file that knows where an implementation lives.
@@ -97,5 +113,9 @@ configuration. A new experience only needs to be added to
 `src/router.ts` — a topic is available when at least one of its experiences is
 registered in `IMPLEMENTED_EXPERIENCES`, and a module is available when at least
 one of its topics is available — and its route resolves automatically.
+Registration is everything: an experience is reachable because it is
+registered there, not because anything else marks it available. Each new id
+also needs a card in `src/modules/experienceArt.tsx`, because `ExperienceArt`
+falls back to a dashed placeholder when an id has no dedicated art.
 
 Deep links require the host to serve `index.html` for unknown paths.
