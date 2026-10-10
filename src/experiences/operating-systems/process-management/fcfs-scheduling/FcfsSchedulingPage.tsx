@@ -6,13 +6,13 @@ import CodeToggle from '@/experience/CodeToggle'
 import MarkdownDescription from '@/experience/MarkdownDescription'
 import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
 import { usePlayback } from '@/experience/usePlayback'
-import SchedulingBoard from './visualization/SchedulingBoard'
 import {
   createConvoyProcesses,
   createRandomProcesses,
-  generateFcfsSteps,
-} from './logic/fcfsScheduling'
-import type { FcfsProcess } from './logic/fcfsScheduling'
+} from '../workloads'
+import type { Process } from '../workloads'
+import SchedulingBoard from './visualization/SchedulingBoard'
+import { generateFcfsSteps } from './logic/fcfsScheduling'
 import { createReadyFrame, toVisualFrames } from './logic/visualFrames'
 import type { FcfsVisualFrame } from './logic/visualFrames'
 import { FCFS_SCHEDULING_REFERENCE } from './content/fcfsSchedulingReference'
@@ -36,7 +36,7 @@ function frameDelay(speed: number): number {
   return Math.round(SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio))
 }
 
-function describeFrame(frame: FcfsVisualFrame, processes: FcfsProcess[]): string {
+function describeFrame(frame: FcfsVisualFrame, processes: Process[]): string {
   switch (frame.kind) {
     case 'ready':
       return `Ready to schedule ${processes.length} processes.`
@@ -106,7 +106,7 @@ function FcfsSchedulingPage() {
   const frame = frames[playback.frameIndex]
 
   // A new input invalidates the current position in the execution.
-  function restartWith(nextProcesses: FcfsProcess[]) {
+  function restartWith(nextProcesses: Process[]) {
     setProcesses(nextProcesses)
     playback.reset()
   }

@@ -1,13 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createConvoyProcesses,
-  generateFcfsSteps,
-} from './fcfsScheduling'
-import type { FcfsProcess } from './fcfsScheduling'
+import { createConvoyProcesses } from '../../workloads'
+import type { Process } from '../../workloads'
+import { generateFcfsSteps } from './fcfsScheduling'
 import { createReadyFrame, toVisualFrames } from './visualFrames'
 import type { FcfsVisualFrame } from './visualFrames'
 
-function framesFor(processes: FcfsProcess[]): FcfsVisualFrame[] {
+function framesFor(processes: Process[]): FcfsVisualFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))]
 }
 
@@ -31,7 +29,7 @@ function summarize(frame: FcfsVisualFrame) {
   }
 }
 
-const SMALL_WORKLOAD: FcfsProcess[] = [
+const SMALL_WORKLOAD: Process[] = [
   { id: 'P1', arrival: 0, burst: 2 },
   { id: 'P2', arrival: 1, burst: 1 },
 ]

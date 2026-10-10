@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
-import type { FcfsProcess } from '../logic/fcfsScheduling'
+import type { Process } from '../../workloads'
 import type { FcfsVisualFrame } from '../logic/visualFrames'
 
 type SchedulingBoardProps = {
   frame: FcfsVisualFrame
-  processes: FcfsProcess[]
+  processes: Process[]
   makespan: number
 }
 
