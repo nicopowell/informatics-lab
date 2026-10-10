@@ -24,9 +24,14 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   (`src/experiences/operating-systems/process-management/fcfs-scheduling`): step a
   set of processes through the CPU one time unit at a time and follow the Gantt
   timeline, the ready queue, and the waiting and turnaround times that accumulate
-  as the simulation runs. Randomize the workload or load the convoy-effect preset
-  to see how one long process at the head of the queue makes every short process
-  that arrives behind it wait for all of it.
+  as the simulation runs. Randomize the workload, or load the convoy-effect
+  preset to see how one long process at the head of the queue makes every short
+  process that arrives behind it wait for all of it, or the starvation preset to
+  see five one-unit jobs wait the full burst of a long one behind them.
+
+  Both presets are the same workloads the SJF experience offers, and that is the
+  point: the two pages share their processes and their board at topic level, so
+  running the same workload on both compares the dispatch rule and nothing else.
 
 - **SJF Scheduling**
   (`src/experiences/operating-systems/process-management/sjf-scheduling`): the same
