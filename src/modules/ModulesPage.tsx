@@ -13,7 +13,7 @@ function ModulesPage({
   implementedExperiences,
 }: {
   modules: ModuleInfo[]
-  implementedExperiences: Set<string>
+  implementedExperiences: ReadonlySet<string>
 }) {
   return (
     <AppShell footer="© 2026 Informatics Lab">

@@ -8,7 +8,7 @@ import './modules.css'
 type ExperiencesPageProps = {
   moduleInfo: ModuleInfo
   topic: Topic
-  implementedExperiences: Set<string>
+  implementedExperiences: ReadonlySet<string>
 }
 
 function ExperiencesPage({

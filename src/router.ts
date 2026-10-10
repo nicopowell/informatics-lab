@@ -50,11 +50,13 @@ export function resolveExperience(
 /*
  * Availability is derived, not stored: a hand-maintained flag drifts apart
  * from what is actually implemented, so callers pass the registered
- * experience ids instead and the predicates look at real entries.
+ * experience ids instead and the predicates look at real entries. The
+ * predicates only test membership, so they take the read-only view and the
+ * exported registry cannot be mutated through them.
  */
 export function topicIsAvailable(
   topic: Topic,
-  implementedExperiences: Set<string>,
+  implementedExperiences: ReadonlySet<string>,
 ): boolean {
   return topic.experiences.some((experience) =>
     implementedExperiences.has(experience.id),
@@ -63,7 +65,7 @@ export function topicIsAvailable(
 
 export function moduleIsAvailable(
   moduleInfo: ModuleInfo,
-  implementedExperiences: Set<string>,
+  implementedExperiences: ReadonlySet<string>,
 ): boolean {
   return moduleInfo.topics.some((topic) =>
     topicIsAvailable(topic, implementedExperiences),

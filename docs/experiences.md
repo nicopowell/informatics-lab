@@ -112,7 +112,11 @@ configuration. A new experience only needs to be added to
 `src/routes/experiences.ts`: availability is then derived by the rules in
 `src/router.ts` — a topic is available when at least one of its experiences is
 registered in `IMPLEMENTED_EXPERIENCES`, and a module is available when at least
-one of its topics is available — and its route resolves automatically.
+one of its topics is available — and its route resolves automatically. That set
+is exported as `ReadonlySet<string>` on purpose: it is derived from the registry
+and is the only source of availability, so screens read membership and cannot
+add or remove ids (the predicates in `src/router.ts` take the same read-only
+type).
 Registration is everything: an experience is reachable because it is
 registered there, not because anything else marks it available. Each new id
 also needs a card in `src/modules/experienceArt.tsx`, because `ExperienceArt`

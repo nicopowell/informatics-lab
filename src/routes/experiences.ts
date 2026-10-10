@@ -16,5 +16,14 @@ export const EXPERIENCES: Record<string, ComponentType> = {
 /*
  * The registered ids, derived here once so every screen reads the same view of
  * what is implemented instead of rebuilding a set and drifting apart.
+ *
+ * The type is the guard. Availability is derived from this one binding, so a
+ * single stray `add` or `delete` in any screen would silently change what the
+ * whole catalogue offers as available. `ReadonlySet` removes that ability at
+ * compile time: consumers keep the membership test they need and lose the
+ * mutators that nothing should own. Object.freeze is not a substitute — it does
+ * not seal a Set's contents.
  */
-export const IMPLEMENTED_EXPERIENCES = new Set(Object.keys(EXPERIENCES))
+export const IMPLEMENTED_EXPERIENCES: ReadonlySet<string> = new Set(
+  Object.keys(EXPERIENCES),
+)
