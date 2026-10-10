@@ -98,9 +98,31 @@ experience folder.
   a small subset of Markdown (heading, paragraphs, `- ` lists, `**bold**`)
   rendered by `src/experience/MarkdownDescription.tsx`. Import it with
   `?raw` and pass it as `source`.
-- **`content/<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
-  in different languages (pseudocode, Python, JavaScript, C++). Each entry has
-  `id`, `label`, `color` and `code`. The type lives in `src/experience/CodePanel.tsx`.
+## Optional pieces
+
+- **`content/<name>Reference.ts`** — export a `ReferenceLanguage[]`, one entry per
+  language with `id`, `label`, `color` and `code`. The type lives in
+  `src/experience/CodePanel.tsx`, which renders the panel with
+  `src/experience/CodeToggle.tsx`.
+
+Not every concept teaches code, so an experience is not incomplete for lacking a
+reference panel. Add one when reading implementations is part of what the
+concept is about — for Bubble Sort and Binary Search it is, because the loop
+nesting and the swap are the thing being studied and they change shape across
+languages.
+
+Do not add one by default. A simulation teaches the consequence of a rule, not
+the rule's source text, and the panel carries a cost the visualization does not:
+the snippets are strings, so no test covers them, they ship to the browser, and
+they drift silently from the implementation they claim to show. That is what
+happened to the scheduling panels: the FCFS snippet computed each start time in
+closed form with `max(clock, arrival)`, a shortcut the time-stepped board on the
+same screen never takes.
+
+Anything a panel would be the only place to say belongs in `description.md`
+instead, where it is short, reviewable and actually read. The SJF dispatch order
+(smallest burst, then earliest arrival, then queue order) is a rule of the
+concept, not an implementation detail, so it is prose.
 
 ## Navigation
 

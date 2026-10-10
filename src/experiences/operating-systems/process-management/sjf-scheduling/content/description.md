@@ -1,7 +1,10 @@
 # Shortest-Job-First Scheduling
 
 Shortest-Job-First dispatches, whenever the CPU becomes free, the waiting
-process with the smallest burst. It keeps the **non-preemptive** rule of FCFS:
+process with the smallest burst. When two waiting processes have the same burst
+the tie is broken by arrival time, and then by the order they reached the queue,
+so the rule is total: the same workload always produces the same schedule.
+It keeps the **non-preemptive** rule of FCFS:
 a running process is never displaced, so choosing among jobs only happens at
 dispatch time.
 
