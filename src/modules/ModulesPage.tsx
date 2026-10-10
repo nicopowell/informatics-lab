@@ -1,11 +1,20 @@
 import AppShell from '../components/AppShell'
 import CatalogueCard from '../components/CatalogueCard'
-import { modulePath } from '../router'
+import {
+  moduleIsAvailable,
+  modulePath,
+} from '../router'
 import type { ModuleInfo } from './modules'
 import ModuleArt from './moduleArt'
 import './modules.css'
 
-function ModulesPage({ modules }: { modules: ModuleInfo[] }) {
+function ModulesPage({
+  modules,
+  implementedExperiences,
+}: {
+  modules: ModuleInfo[]
+  implementedExperiences: Set<string>
+}) {
   return (
     <AppShell footer="© 2026 Informatics Lab">
       <section className="modules__main">
@@ -20,7 +29,11 @@ function ModulesPage({ modules }: { modules: ModuleInfo[] }) {
             <CatalogueCard
               key={module.id}
               hero
-              to={modulePath(module.id)}
+              to={
+                moduleIsAvailable(module, implementedExperiences)
+                  ? modulePath(module.id)
+                  : undefined
+              }
               title={module.title}
               description={module.subtitle}
               art={<ModuleArt id={module.id} />}
