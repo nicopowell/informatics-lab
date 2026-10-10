@@ -115,11 +115,17 @@ Do not add one by default. A simulation teaches the consequence of a rule, not
 the rule's source text, and the panel carries a cost the visualization does not:
 the snippets are strings, so no test covers them, they ship to the browser, and
 they drift silently from the implementation they claim to show. The scheduling
-panels had already drifted — the FCFS snippet computed each start time in closed
-form with `max(clock, arrival)`, a shortcut the time-stepped board on the same
-screen never takes — which is what `git show dee1db4^:src/experiences/
-operating-systems/process-management/fcfs-scheduling/content/fcfsSchedulingReference.ts`
-still shows. The example outlived the file on purpose.
+panels had already drifted. The FCFS snippet skipped the CPU forward per process:
+
+```python
+start = max(clock, arrival)
+clock = start + burst
+```
+
+That is a closed form. The board on the same screen advances one unit at a time,
+with a ready queue and an idle gap whenever nothing has arrived — a shortcut the
+visualization never takes, and nothing could have reported the difference. The
+file was removed in `dee1db4`; the example is kept here on purpose.
 
 Anything a panel would be the only place to say belongs in `description.md`
 instead, where it is short, reviewable and actually read. The SJF dispatch order
