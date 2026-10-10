@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { MODULES } from './modules/modules'
+import type { ModuleInfo, Topic } from './modules/modules'
 import {
+  moduleIsAvailable,
+  topicIsAvailable,
   breadcrumbTrail,
   experiencePath,
   modulePath,
@@ -172,5 +175,86 @@ describe('paths', () => {
     )
 
     expect(resolved?.id).toBe('bubble-sort')
+  })
+})
+
+function makeTopic(experienceIds: string[]): Topic {
+  return {
+    id: 'topic-under-test',
+    title: 'Topic Under Test',
+    description: 'Fixture topic for availability predicates.',
+    experiences: experienceIds.map((id) => ({
+      id,
+      title: id,
+      description: `Fixture experience ${id}.`,
+    })),
+  }
+}
+
+function makeModule(topics: Topic[]): ModuleInfo {
+  return {
+    id: 'module-under-test',
+    title: 'Module Under Test',
+    subtitle: 'Fixture module for availability predicates.',
+    topics,
+  }
+}
+
+describe('topicIsAvailable', () => {
+  it('is true when one experience is implemented', () => {
+    expect(
+      topicIsAvailable(makeTopic(['sorting-fixture']), new Set(['sorting-fixture'])),
+    ).toBe(true)
+  })
+
+  it('is false when every experience is still planned', () => {
+    expect(
+      topicIsAvailable(makeTopic(['planned-a', 'planned-b']), new Set()),
+    ).toBe(false)
+  })
+
+  it('is false when the topic has no experiences yet', () => {
+    expect(topicIsAvailable(makeTopic([]), new Set(['anything']))).toBe(false)
+  })
+
+  it('is true when only the second experience is implemented', () => {
+    expect(
+      topicIsAvailable(
+        makeTopic(['planned-first', 'implemented-second']),
+        new Set(['implemented-second']),
+      ),
+    ).toBe(true)
+  })
+})
+
+describe('moduleIsAvailable', () => {
+  it('is true when its only topic has an implemented experience', () => {
+    const moduleInfo = makeModule([makeTopic(['sorting-fixture'])])
+
+    expect(moduleIsAvailable(moduleInfo, new Set(['sorting-fixture']))).toBe(true)
+  })
+
+  it('is false when no topic has an implemented experience', () => {
+    const topics = [
+      makeTopic(['interpolation-fixture']),
+      makeTopic(['integration-fixture']),
+    ]
+
+    expect(moduleIsAvailable(makeModule(topics), new Set())).toBe(false)
+  })
+
+  it('is false when the module has no topics', () => {
+    expect(moduleIsAvailable(makeModule([]), new Set(['anything']))).toBe(false)
+  })
+
+  it('is true when a later topic provides the implementation', () => {
+    const moduleInfo = makeModule([
+      makeTopic(['planned-first']),
+      makeTopic(['implemented-second']),
+    ])
+
+    expect(moduleIsAvailable(moduleInfo, new Set(['implemented-second']))).toBe(
+      true,
+    )
   })
 })

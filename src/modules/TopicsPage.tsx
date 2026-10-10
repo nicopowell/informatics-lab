@@ -1,15 +1,16 @@
 import AppShell from '../components/AppShell'
 import CatalogueCard from '../components/CatalogueCard'
-import { topicPath } from '../router'
+import { topicIsAvailable, topicPath } from '../router'
 import type { ModuleInfo } from './modules'
 import TopicArt from './topicArt'
 import './modules.css'
 
 type TopicsPageProps = {
   moduleInfo: ModuleInfo
+  implementedExperiences: Set<string>
 }
 
-function TopicsPage({ moduleInfo }: TopicsPageProps) {
+function TopicsPage({ moduleInfo, implementedExperiences }: TopicsPageProps) {
   return (
     <AppShell footer="© 2026 Informatics Lab">
       <section className="modules__main">
@@ -20,7 +21,11 @@ function TopicsPage({ moduleInfo }: TopicsPageProps) {
           {moduleInfo.topics.map((topic) => (
             <CatalogueCard
               key={topic.id}
-              to={topic.available ? topicPath(moduleInfo.id, topic.id) : undefined}
+              to={
+                topicIsAvailable(topic, implementedExperiences)
+                  ? topicPath(moduleInfo.id, topic.id)
+                  : undefined
+              }
               title={topic.title}
               description={topic.description}
               art={<TopicArt id={topic.id} />}

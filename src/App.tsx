@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 import ScrollToTop from './routes/ScrollToTop'
-import ModulesPage from './modules/ModulesPage'
+import ModulesScreen from './routes/ModulesScreen'
 import TopicsScreen from './routes/TopicsScreen'
 import ExperiencesScreen from './routes/ExperiencesScreen'
 import ExperienceScreen from './routes/ExperienceScreen'
@@ -10,7 +10,7 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<ModulesPage />} />
+        <Route path="/" element={<ModulesScreen />} />
         <Route path="/:moduleId" element={<TopicsScreen />} />
         <Route path="/:moduleId/:topicId" element={<ExperiencesScreen />} />
         <Route

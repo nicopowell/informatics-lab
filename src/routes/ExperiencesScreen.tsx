@@ -2,9 +2,7 @@ import { Navigate, useParams } from 'react-router'
 import ExperiencesPage from '../modules/ExperiencesPage'
 import { MODULES } from '../modules/modules'
 import { modulePath, resolveModule, resolveTopic } from '../router'
-import { EXPERIENCES } from './experiences'
-
-const IMPLEMENTED_EXPERIENCES = new Set(Object.keys(EXPERIENCES))
+import { IMPLEMENTED_EXPERIENCES } from './experiences'
 
 function ExperiencesScreen() {
   const params = useParams()

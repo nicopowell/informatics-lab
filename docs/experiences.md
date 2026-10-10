@@ -93,7 +93,9 @@ Routing is handled by React Router with `BrowserRouter` in `main.tsx`.
 builders and the breadcrumb trail) and has no React. The breadcrumb shown on
 every screen is derived from the current URL, so navigation needs no per-screen
 configuration. A new experience only needs to be added to
-`src/routes/experiences.ts`; the catalogue then offers it as available and its
-route resolves automatically.
+`src/routes/experiences.ts`: availability is then derived by the rules in
+`src/router.ts` — a topic is available when at least one of its experiences is
+registered in `IMPLEMENTED_EXPERIENCES`, and a module is available when at least
+one of its topics is available — and its route resolves automatically.
 
 Deep links require the host to serve `index.html` for unknown paths.

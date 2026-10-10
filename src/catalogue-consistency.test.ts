@@ -76,22 +76,4 @@ describe('catalogue consistency', () => {
 
     expect(missing).toEqual([])
   })
-
-  it('marks a topic available only when it lists a registered experience', () => {
-    // Topic availability is hand-maintained in the catalogue while experience
-    // availability is derived from the map. A topic opened with no reachable
-    // experience leads the user to an empty list.
-    const inconsistent = MODULES.flatMap((moduleInfo) =>
-      moduleInfo.topics
-        .filter((topic) => {
-          const implemented = topic.experiences.some(
-            (experience) => experience.id in EXPERIENCES,
-          )
-          return topic.available !== implemented
-        })
-        .map((topic) => `/${moduleInfo.id}/${topic.id}`),
-    )
-
-    expect(inconsistent).toEqual([])
-  })
 })
