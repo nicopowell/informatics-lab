@@ -9,6 +9,7 @@ import { usePlayback } from '@/experience/usePlayback'
 import {
   createConvoyProcesses,
   createRandomProcesses,
+  createStarvationProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
 import { createReadyFrame, toVisualFrames } from '../schedule'
@@ -127,6 +128,14 @@ function FcfsSchedulingPage() {
     restartWith(convoy)
   }
 
+  // The same workload the SJF page offers: the two policies can only be
+  // compared if both can be shown running on identical processes.
+  function handleStarvation() {
+    const starvation = createStarvationProcesses()
+    setCount(starvation.length)
+    restartWith(starvation)
+  }
+
   const totalWaiting = frame.completed.reduce(
     (sum, process) => sum + process.waiting,
     0,
@@ -194,6 +203,9 @@ function FcfsSchedulingPage() {
               </button>
               <button type="button" className="ui-button" onClick={handleConvoy}>
                 Convoy effect
+              </button>
+              <button type="button" className="ui-button" onClick={handleStarvation}>
+                Starvation
               </button>
             </div>
           </div>

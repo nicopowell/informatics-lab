@@ -364,8 +364,10 @@ The FCFS Scheduling experience steps a set of processes (arrival and burst
 times) through the CPU one time unit at a time, showing the classic Gantt
 timeline under a sliding time cursor, the ready queue where the convoy effect
 becomes visible, and per-process waiting and turnaround times that accumulate
-as the simulation runs. The user can randomize the workload or load the
-convoy-effect preset and compare the resulting average waiting times.
+as the simulation runs. The user can randomize the workload or load either the
+convoy-effect or the starvation preset — the same two workloads the SJF page
+offers — so a comparison between the two policies is always a comparison on
+identical input.
 
 The SJF Scheduling experience (Shortest-Job-First) uses the same processes
 and the same board, and shows the result of a different dispatch rule: it
