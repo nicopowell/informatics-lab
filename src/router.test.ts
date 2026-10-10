@@ -183,7 +183,6 @@ function makeTopic(experienceIds: string[]): Topic {
     id: 'topic-under-test',
     title: 'Topic Under Test',
     description: 'Fixture topic for availability predicates.',
-    available: true,
     experiences: experienceIds.map((id) => ({
       id,
       title: id,

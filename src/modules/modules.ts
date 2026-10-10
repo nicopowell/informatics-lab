@@ -8,7 +8,6 @@ export type Topic = {
   id: string
   title: string
   description: string
-  available: boolean
   experiences: Experience[]
 }
 
@@ -29,7 +28,6 @@ export const MODULES: ModuleInfo[] = [
         id: 'sorting',
         title: 'Sorting',
         description: 'Ordering data and comparing strategies.',
-        available: true,
         experiences: [
           {
             id: 'bubble-sort',
@@ -57,7 +55,6 @@ export const MODULES: ModuleInfo[] = [
         id: 'searching',
         title: 'Searching',
         description: 'Locating values in ordered and indexed data.',
-        available: true,
         experiences: [
           {
             id: 'binary-search',
@@ -75,21 +72,18 @@ export const MODULES: ModuleInfo[] = [
         id: 'trees',
         title: 'Trees',
         description: 'Hierarchical structures and traversals.',
-        available: false,
         experiences: [],
       },
       {
         id: 'graphs',
         title: 'Graphs',
         description: 'Vertices, edges and traversal.',
-        available: false,
         experiences: [],
       },
       {
         id: 'data-structures',
         title: 'Data Structures',
         description: 'Stacks, queues, lists and related ADTs.',
-        available: false,
         experiences: [],
       },
     ],
@@ -103,21 +97,18 @@ export const MODULES: ModuleInfo[] = [
         id: 'interpolation',
         title: 'Interpolation',
         description: 'Fitting functions through known points.',
-        available: false,
         experiences: [],
       },
       {
         id: 'integration',
         title: 'Numerical Integration',
         description: 'Approximating definite integrals.',
-        available: false,
         experiences: [],
       },
       {
         id: 'differential-equations',
         title: 'Differential Equations',
         description: 'Solving equations step by step.',
-        available: false,
         experiences: [],
       },
     ],
@@ -131,21 +122,18 @@ export const MODULES: ModuleInfo[] = [
         id: 'layers',
         title: 'Layers & Protocols',
         description: 'How communication is organised in layers.',
-        available: false,
         experiences: [],
       },
       {
         id: 'routing',
         title: 'Routing',
         description: 'Finding paths between hosts.',
-        available: false,
         experiences: [],
       },
       {
         id: 'transport',
         title: 'Transport & Congestion',
         description: 'Reliable transfer and flow control.',
-        available: false,
         experiences: [],
       },
     ],
@@ -159,7 +147,6 @@ export const MODULES: ModuleInfo[] = [
         id: 'process-management',
         title: 'Process Management',
         description: 'Processes, CPU scheduling and their timing.',
-        available: true,
         experiences: [
           {
             id: 'fcfs-scheduling',
