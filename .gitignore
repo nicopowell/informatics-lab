@@ -26,3 +26,6 @@ dist-ssr
 # Agent working notes (task checklists, not project documentation).
 # The project-facing status lives in docs/project.md.
 odd/
+
+# CodeGraph workspace index: a local tooling cache, not project state.
+.codegraph/
