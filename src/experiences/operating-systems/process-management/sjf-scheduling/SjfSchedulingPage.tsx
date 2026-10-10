@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
-import CodePanel from '@/experience/CodePanel'
-import CodeToggle from '@/experience/CodeToggle'
 import MarkdownDescription from '@/experience/MarkdownDescription'
 import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
 import { usePlayback } from '@/experience/usePlayback'
@@ -16,7 +14,6 @@ import { createReadyFrame, toVisualFrames } from '../schedule'
 import type { SchedulingFrame } from '../schedule'
 import SchedulingBoard from '../SchedulingBoard'
 import { generateSjfSteps } from './logic/sjfScheduling'
-import { SJF_SCHEDULING_REFERENCE } from './content/sjfSchedulingReference'
 import description from './content/description.md?raw'
 import '@/experience/experience.css'
 import '../schedulingBoard.css'
@@ -115,7 +112,6 @@ function SjfSchedulingPage() {
     createRandomProcesses(INITIAL_PROCESSES),
   )
   const [speed, setSpeed] = useState(INITIAL_SPEED)
-  const [showCode, setShowCode] = useState(false)
 
   const frames = useMemo(
     () => [createReadyFrame(), ...toVisualFrames(generateSjfSteps(processes))],
@@ -174,11 +170,7 @@ function SjfSchedulingPage() {
 
   return (
     <AppShell
-      className={
-        showCode
-          ? 'experience experience--with-code scheduling-board'
-          : 'experience scheduling-board'
-      }
+      className="experience scheduling-board"
       style={{ '--step-duration': `${transition}ms` } as CSSProperties}
     >
       <div className="experience__layout">
@@ -188,7 +180,6 @@ function SjfSchedulingPage() {
               {describeFrame(frame, processes)}
             </p>
             <SchedulingBoard frame={frame} processes={processes} makespan={makespan} />
-            <CodeToggle open={showCode} onToggle={() => setShowCode((o) => !o)} />
           </section>
 
           <div className="experience__controls">
@@ -234,8 +225,6 @@ function SjfSchedulingPage() {
             <MarkdownDescription source={description} />
           </div>
         </div>
-
-        <CodePanel languages={SJF_SCHEDULING_REFERENCE} open={showCode} />
       </div>
     </AppShell>
   )

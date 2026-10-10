@@ -98,9 +98,39 @@ experience folder.
   a small subset of Markdown (heading, paragraphs, `- ` lists, `**bold**`)
   rendered by `src/experience/MarkdownDescription.tsx`. Import it with
   `?raw` and pass it as `source`.
-- **`content/<name>Reference.ts`** — export a `ReferenceLanguage[]` with the algorithm
-  in different languages (pseudocode, Python, JavaScript, C++). Each entry has
-  `id`, `label`, `color` and `code`. The type lives in `src/experience/CodePanel.tsx`.
+## Optional pieces
+
+- **`content/<name>Reference.ts`** — export a `ReferenceLanguage[]`, one entry per
+  language with `id`, `label`, `color` and `code`. The type lives in
+  `src/experience/CodePanel.tsx`, which renders the panel with
+  `src/experience/CodeToggle.tsx`.
+
+Not every concept teaches code, so an experience is not incomplete for lacking a
+reference panel. Add one when reading implementations is part of what the
+concept is about — for Bubble Sort and Binary Search it is, because the loop
+nesting and the swap are the thing being studied and they change shape across
+languages.
+
+Do not add one by default. A simulation teaches the consequence of a rule, not
+the rule's source text, and the panel carries a cost the visualization does not:
+the snippets are strings, so no test covers them, they ship to the browser, and
+they drift silently from the implementation they claim to show. The scheduling
+panels had already drifted. The FCFS snippet skipped the CPU forward per process:
+
+```python
+start = max(clock, arrival)
+clock = start + burst
+```
+
+That is a closed form. The board on the same screen advances one unit at a time,
+with a ready queue and an idle gap whenever nothing has arrived — a shortcut the
+visualization never takes, and nothing could have reported the difference. The
+file was removed in `dee1db4`; the example is kept here on purpose.
+
+Anything a panel would be the only place to say belongs in `description.md`
+instead, where it is short, reviewable and actually read. The SJF dispatch order
+(smallest burst, then earliest arrival, then queue order) is a rule of the
+concept, not an implementation detail, so it is prose.
 
 ## Navigation
 
