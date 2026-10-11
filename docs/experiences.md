@@ -132,6 +132,21 @@ instead, where it is short, reviewable and actually read. The SJF dispatch order
 (smallest burst, then earliest arrival, then queue order) is a rule of the
 concept, not an implementation detail, so it is prose.
 
+- **`<topic>/presets.ts`** (or `workloads.ts`) — the characteristic inputs a concept
+  is studied with, shared by every experience under that topic. Add it when the
+  lesson is about how the *input* changes the outcome, not about how the algorithm
+  works: comparing dispatch rules needs identical process sets, and comparing an
+  algorithm against itself needs identical array shapes. Scheduling has
+  `workloads.ts` (convoy, starvation); sorting has `presets.ts` (already sorted,
+  reverse sorted, nearly sorted, many duplicates).
+
+  The two files are deliberately not shaped the same way. A scheduling workload is a
+  hand-built story, so it is a fixed set of processes. A sorting preset is a
+  *shape*, materialized at whatever length the size control shows, because that
+  control is live and a fixed eight-element preset would contradict the board. If
+  you are tempted to unify them, check which of the two the next topic actually
+  needs before copying the other.
+
 ## Navigation
 
 Routing is handled by React Router with `BrowserRouter` in `main.tsx`.

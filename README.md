@@ -16,6 +16,16 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   a description of the algorithm and its reference implementation in pseudocode,
   Python, JavaScript and C++.
 
+  You can also load the array by shape instead of rolling dice: *Already sorted*,
+  *Reverse sorted*, *Nearly sorted* or *Many duplicates*. A preset is a shape, not a
+  fixed array, so it regenerates at whatever length the size control shows. What
+  makes the shapes worth having is the `Passes` readout: at length 8 an
+  already-sorted run costs one pass while a reversed one costs seven, so the best
+  and worst case of this algorithm are visible without any theory. The file lives at
+  topic level (`src/experiences/algorithms/sorting/presets.ts`), like the scheduling
+  workloads, so a second sorting experience can be started from identical inputs and
+  then compare behaviour rather than luck.
+
 - **Binary Search** (`src/experiences/algorithms/searching/binary-search`): generate a sorted array,
   choose a search key, and follow how the search range narrows until the value
   is found or ruled out.

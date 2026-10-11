@@ -73,7 +73,7 @@ describe('createArrayPreset', () => {
   it('returns a fresh array of exactly size values within 1..99 for every preset', () => {
     for (const id of ALL_IDS) {
       for (const size of [5, 8, 40]) {
-        const values = createArrayPreset(id, size)
+        const values = createArrayPreset(id, size, seededRng(size))
         expect(values).toHaveLength(size)
         for (const value of values) {
           expect(value).toBeGreaterThanOrEqual(MIN_VALUE)
@@ -105,11 +105,13 @@ describe('createArrayPreset', () => {
   })
 
   it('sorted is non-decreasing', () => {
-    expect(isInNonDecreasing(createArrayPreset('sorted', 20))).toBe(true)
+    expect(isInNonDecreasing(createArrayPreset('sorted', 20, seededRng(20)))).toBe(
+      true,
+    )
   })
 
   it('reversed is non-increasing and a genuine worst case for swap-based sorts', () => {
-    const values = createArrayPreset('reversed', 8)
+    const values = createArrayPreset('reversed', 8, seededRng(8))
     expect(isInNonIncreasing(values)).toBe(true)
     expect(isInNonDecreasing(values)).toBe(false)
   })
@@ -124,7 +126,7 @@ describe('createArrayPreset', () => {
 
   it('nearlySorted is within a small number of adjacent swaps of fully sorted', () => {
     for (const size of [5, 8, 40]) {
-      const values = createArrayPreset('nearlySorted', size)
+      const values = createArrayPreset('nearlySorted', size, seededRng(size))
       const sorted = [...values].sort((a, b) => a - b)
       const expectedTranspositions = Math.max(1, Math.round(size * 0.1))
 
@@ -139,7 +141,7 @@ describe('createArrayPreset', () => {
 
   it('manyDuplicates uses at most 3 distinct values with visible ties', () => {
     for (const size of [5, 8, 40]) {
-      const values = createArrayPreset('manyDuplicates', size)
+      const values = createArrayPreset('manyDuplicates', size, seededRng(size))
       const distinct = new Set(values)
       expect(distinct.size).toBeLessThanOrEqual(3)
       expect(distinct.size).toBeGreaterThanOrEqual(2)
@@ -164,7 +166,7 @@ describe('createArrayPreset', () => {
   })
 
   it.each([5, 40])('accepts boundary size %i', (size) => {
-    expect(createArrayPreset('sorted', size)).toHaveLength(size)
+    expect(createArrayPreset('sorted', size, seededRng(size))).toHaveLength(size)
   })
 
   it('holds every shape invariant across 300 seeded draws at varying lengths', () => {

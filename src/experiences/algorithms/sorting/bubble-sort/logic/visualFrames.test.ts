@@ -11,11 +11,40 @@ describe('createReadyFrame', () => {
       sortedFrom: 3,
       comparison: 0,
       swaps: 0,
+      pass: 0,
     })
   })
 })
 
 describe('toVisualFrames', () => {
+  it('carries the pass each frame belongs to, so the board can report it', () => {
+    const frames = toVisualFrames(generateBubbleSortSteps([2, 1]))
+
+    expect(frames.map((frame) => frame.kind)).toEqual(['compare', 'swap', 'done'])
+    expect(frames.map((frame) => frame.pass)).toEqual([1, 1, 1])
+  })
+
+  it('reports one pass for input that is already sorted', () => {
+    const frames = toVisualFrames(generateBubbleSortSteps([1, 2, 3]))
+
+    // The early exit means a single pass is enough; this is the number that
+    // makes adaptiveness visible next to the reverse-sorted preset.
+    expect(frames[frames.length - 1].pass).toBe(1)
+  })
+
+  it('reports n-1 passes for a reversed array of the same length', () => {
+    const frames = toVisualFrames(generateBubbleSortSteps([3, 2, 1]))
+
+    expect(frames[frames.length - 1].pass).toBe(2)
+  })
+
+  it('reports zero passes before any comparison happens', () => {
+    const frames = toVisualFrames(generateBubbleSortSteps([]))
+
+    // An empty run must not claim a pass was executed.
+    expect(frames[0].pass).toBe(0)
+  })
+
   it('produces a single done frame for an empty array', () => {
     const frames = toVisualFrames(generateBubbleSortSteps([]))
 
