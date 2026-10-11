@@ -11,6 +11,12 @@
   color: var(--bar-swapped);
 }
 
+/* A selected preset is a state, so the label reads as active text, matching
+   the code toggle's active treatment (src/experience/experience.css). */
+.bubble-sort__preset--active {
+  color: var(--color-text);
+}
+
 .bubble-sort__bars {
   display: flex;
   gap: var(--bar-gap);

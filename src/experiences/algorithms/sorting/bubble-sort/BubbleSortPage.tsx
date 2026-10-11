@@ -10,13 +10,18 @@ import ArrayBars from './visualization/ArrayBars'
 import { createRandomArray, generateBubbleSortSteps } from './logic/bubbleSort'
 import { createReadyFrame, frameMovement, toVisualFrames } from './logic/visualFrames'
 import type { BubbleSortFrame, FrameMovement } from './logic/visualFrames'
+import {
+  ARRAY_PRESETS,
+  MAX_SIZE,
+  MIN_SIZE,
+  createArrayPreset,
+  type ArrayPresetId,
+} from '../presets'
 import { BUBBLE_SORT_REFERENCE } from './content/bubbleSortReference'
 import description from './content/description.md?raw'
 import '@/experience/experience.css'
 import './bubbleSort.css'
 
-const MIN_SIZE = 5
-const MAX_SIZE = 40
 const INITIAL_SIZE = 8
 const INITIAL_SPEED = 5
 const MAX_DELAY = 1000
@@ -41,6 +46,7 @@ function describeFrame(frame: BubbleSortFrame): string {
 function BubbleSortPage() {
   const [size, setSize] = useState(INITIAL_SIZE)
   const [values, setValues] = useState(() => createRandomArray(INITIAL_SIZE))
+  const [activePreset, setActivePreset] = useState<ArrayPresetId | null>(null)
   const [movement, setMovement] = useState<FrameMovement>('none')
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [showCode, setShowCode] = useState(false)
@@ -74,17 +80,30 @@ function BubbleSortPage() {
     handleReset()
   }
 
+  // Moving the size slider keeps the selected shape when one is active; only
+  // the plain random start regenerates randomly.
   function handleSizeChange(value: string) {
     const nextSize = Number(value)
     setSize(nextSize)
-    restartWith(createRandomArray(nextSize))
+    restartWith(
+      activePreset === null
+        ? createRandomArray(nextSize)
+        : createArrayPreset(activePreset, nextSize),
+    )
+  }
+
+  function handlePresetSelect(id: ArrayPresetId) {
+    setActivePreset(id)
+    restartWith(createArrayPreset(id, size))
   }
 
   function handleRandomize() {
+    setActivePreset(null)
     restartWith(createRandomArray(size))
   }
 
   const isDone = frame.kind === 'done'
+  const totalPasses = steps[steps.length - 1].pass
   const counts = [
     {
       label: 'Comparisons',
@@ -93,6 +112,10 @@ function BubbleSortPage() {
     {
       label: 'Swaps',
       value: <span className="bubble-sort__swaps">{frame.swaps}</span>,
+    },
+    {
+      label: 'Passes',
+      value: `${frame.pass} / ${totalPasses}`,
     },
   ]
 
@@ -145,6 +168,21 @@ function BubbleSortPage() {
               <button type="button" className="ui-button" onClick={handleRandomize}>
                 Randomize
               </button>
+              {ARRAY_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  className={
+                    preset.id === activePreset
+                      ? 'ui-button bubble-sort__preset bubble-sort__preset--active'
+                      : 'ui-button bubble-sort__preset'
+                  }
+                  aria-pressed={preset.id === activePreset}
+                  onClick={() => handlePresetSelect(preset.id)}
+                >
+                  {preset.label}
+                </button>
+              ))}
             </div>
           </div>
 
