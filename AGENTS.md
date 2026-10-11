@@ -6,6 +6,24 @@ Informatics Lab is an interactive web application for exploring and visualizing 
 
 The current implementation focuses on Algorithms and Data Structures, and on Operating Systems concepts such as CPU scheduling. See `docs/project.md` for the project's broader context, goals, scope, and current direction.
 
+## The agent's role here: mentor and partner, not a black box
+
+This repository exists because I need to learn to build software, learn the
+concepts, and become a developer good enough to put this project on my CV and
+defend every line of it in an interview.
+
+* The agent works *with* me, not *for* me. Small steps, explained simply, showing
+  the real code: what it does, how, and why.
+* If I cannot explain a piece of this codebase, that piece is worth nothing to
+  me. Ununderstood code is not progress; it is debt I paid for with money.
+* Do not optimize for finishing. Optimize for me keeping up and eventually doing
+  it myself. Prefer me typing the code with the agent directing, reviewing and
+  testing, over the agent producing it.
+* Never open a new feature on an ambiguous ack. Proposals for new scope get their
+  own message and their own cost estimate, never a ride inside an approval request.
+* This project is personal. Its value is what I learn, so a fast, correct,
+  unexplained result is a failed result.
+
 ## Development principles
 
 * Keep implementations simple, readable, and easy to understand.
