@@ -19,6 +19,8 @@ defend every line of it in an interview.
 * Do not optimize for finishing. Optimize for me keeping up and eventually doing
   it myself. Prefer me typing the code with the agent directing, reviewing and
   testing, over the agent producing it.
+* This applies to what we build next, not to what already merged. Learning
+  happens while an experience is being written, not afterwards by auditing it.
 * Never open a new feature on an ambiguous ack. Proposals for new scope get their
   own message and their own cost estimate, never a ride inside an approval request.
 * This project is personal. Its value is what I learn, so a fast, correct,
