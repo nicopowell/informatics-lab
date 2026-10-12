@@ -1,0 +1,170 @@
+.selection-sort {
+  --bar: var(--color-neutral);
+  --bar-sorted: var(--color-success);
+  --bar-scanning: var(--color-comparing);
+  /* A blue marks the running minimum because it is the one role that survives
+     the whole pass, and no palette token carries that meaning yet. */
+  --bar-minimum: #38bdf8;
+  --bar-target: var(--color-text-muted);
+  --bar-gap: 0.5rem;
+  --bar-shift: 1;
+  --step-duration: 0.2s;
+}
+
+/* Selection sort's cost is the scan, not the write, so the exchange count reads
+   as the calm blue of the minimum rather than bubble sort's alarm red. */
+.selection-sort__swaps {
+  color: var(--bar-minimum);
+}
+
+/* A selected preset is a state, so the label reads as active text, matching
+   the code toggle's active treatment (src/experience/experience.css). */
+.selection-sort__preset--active {
+  color: var(--color-text);
+}
+
+/* Duplicated on purpose, as in bubbleSort.css: the browser does not restart an
+   animation when only the class name changes, so rewinding needs its own names. */
+@keyframes selection-sort-bar-from-right {
+  from {
+    transform: translateX(calc(var(--bar-shift) * (100% + var(--bar-gap))));
+  }
+}
+
+@keyframes selection-sort-bar-from-left {
+  from {
+    transform: translateX(calc(var(--bar-shift) * -1 * (100% + var(--bar-gap))));
+  }
+}
+
+@keyframes selection-sort-bar-rewind-from-right {
+  from {
+    transform: translateX(calc(var(--bar-shift) * (100% + var(--bar-gap))));
+  }
+}
+
+@keyframes selection-sort-bar-rewind-from-left {
+  from {
+    transform: translateX(calc(var(--bar-shift) * -1 * (100% + var(--bar-gap))));
+  }
+}
+
+.selection-sort__bar-slot--exchange-from-right {
+  animation: selection-sort-bar-from-right var(--step-duration) ease;
+}
+
+.selection-sort__bar-slot--exchange-from-left {
+  animation: selection-sort-bar-from-left var(--step-duration) ease;
+}
+
+.selection-sort__bar-slot--rewind-from-right {
+  animation: selection-sort-bar-rewind-from-right var(--step-duration) ease;
+}
+
+.selection-sort__bar-slot--rewind-from-left {
+  animation: selection-sort-bar-rewind-from-left var(--step-duration) ease;
+}
+
+.selection-sort__bars {
+  display: flex;
+  gap: var(--bar-gap);
+  height: clamp(16rem, 38vh, 26rem);
+}
+
+.selection-sort__bar-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.selection-sort__bar-track {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.selection-sort__bar {
+  width: 100%;
+  background: var(--bar);
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.2s ease;
+}
+
+.selection-sort__bar--sorted {
+  background: var(--bar-sorted);
+}
+
+.selection-sort__bar--scanning {
+  background: var(--bar-scanning);
+}
+
+/* Declared after --scanning so the minimum keeps its own colour when the scan
+   reaches the slot that already holds it. */
+.selection-sort__bar--minimum {
+  background: var(--bar-minimum);
+}
+
+/* The slot the pass is filling is a position, not a value, so it is outlined
+   rather than recoloured — the bar inside it still shows its own state. */
+.selection-sort__bar--target {
+  outline: 2px dashed var(--bar-target);
+  outline-offset: 2px;
+}
+
+.selection-sort__bar-value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.selection-sort__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+.selection-sort__legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.selection-sort__legend-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--bar);
+}
+
+.selection-sort__legend-swatch--scanning {
+  background: var(--bar-scanning);
+}
+
+.selection-sort__legend-swatch--minimum {
+  background: var(--bar-minimum);
+}
+
+.selection-sort__legend-swatch--target {
+  background: transparent;
+  outline: 2px dashed var(--bar-target);
+  outline-offset: -2px;
+}
+
+.selection-sort__legend-swatch--sorted {
+  background: var(--bar-sorted);
+}
+
+@media (max-width: 720px) {
+  .selection-sort__bars {
+    height: clamp(14rem, 34vh, 20rem);
+  }
+}
