@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import BinarySearchPage from '@/experiences/algorithms/searching/binary-search/BinarySearchPage'
 import BubbleSortPage from '@/experiences/algorithms/sorting/bubble-sort/BubbleSortPage'
 import SelectionSortPage from '@/experiences/algorithms/sorting/selection-sort/SelectionSortPage'
+import InsertionSortPage from '@/experiences/algorithms/sorting/insertion-sort/InsertionSortPage'
 import FcfsSchedulingPage from '@/experiences/operating-systems/process-management/fcfs-scheduling/FcfsSchedulingPage'
 import SjfSchedulingPage from '@/experiences/operating-systems/process-management/sjf-scheduling/SjfSchedulingPage'
 
@@ -10,6 +11,7 @@ import SjfSchedulingPage from '@/experiences/operating-systems/process-managemen
 export const EXPERIENCES: Record<string, ComponentType> = {
   'bubble-sort': BubbleSortPage,
   'selection-sort': SelectionSortPage,
+  'insertion-sort': InsertionSortPage,
   'binary-search': BinarySearchPage,
   'fcfs-scheduling': FcfsSchedulingPage,
   'sjf-scheduling': SjfSchedulingPage,
