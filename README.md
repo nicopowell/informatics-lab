@@ -26,6 +26,14 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   workloads, so a second sorting experience can be started from identical inputs and
   then compare behaviour rather than luck.
 
+- **Selection Sort** (`src/experiences/algorithms/sorting/selection-sort`): scan the
+  unordered tail for the smallest value, exchange it into the first free slot, and follow
+  the sorted head grow one place per pass. It shares `presets.ts` with Bubble Sort, so the
+  same shape can be read on both screens: at length 8 an already-sorted array costs bubble
+  sort 7 comparisons in one pass and selection sort 28 comparisons in seven, while a
+  reversed one costs bubble sort 28 exchanges against selection sort's 4. Selection sort
+  pays the full scan either way, which is the lesson the presets were built to show.
+
 - **Binary Search** (`src/experiences/algorithms/searching/binary-search`): generate a sorted array,
   choose a search key, and follow how the search range narrows until the value
   is found or ruled out.
