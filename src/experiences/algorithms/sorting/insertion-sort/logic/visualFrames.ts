@@ -15,7 +15,7 @@ export type InsertionSortFrame = {
   shifts: number
 }
 
-export type FrameMovement = 'none' | 'shift' | 'place' | 'rewind'
+export type FrameMovement = 'none' | 'shift' | 'place' | 'unshift' | 'unplace'
 
 export function createReadyFrame(values: number[]): InsertionSortFrame {
   return {
@@ -40,7 +40,10 @@ export function createReadyFrame(values: number[]): InsertionSortFrame {
  * Which of the two visible motions a frame transition deserves, and in which
  * direction. Bubble sort and selection sort could ask "did we cross into the
  * write?"; here there are two different writes, the shift and the placement, and
- * the hole itself is the only reliable witness of both.
+ * the hole itself is the only reliable witness of both. Splitting the backward
+ * cases is not decoration: the view has to slide a bar for one of them and lift a
+ * key out of the board for the other, and the destination frame alone cannot tell
+ * them apart.
  */
 export function frameMovement(
   from: InsertionSortFrame,
@@ -59,11 +62,13 @@ export function frameMovement(
 
   if (from.holeIndex !== null && to.holeIndex !== null) {
     const delta = to.holeIndex - from.holeIndex
+    // One slot left is the only way the hole travels forward, so the reverse case
+    // cannot be read as a different distance.
     if (delta === -1) {
       return 'shift'
     }
     if (delta === 1) {
-      return 'rewind'
+      return 'unshift'
     }
   }
 
@@ -72,7 +77,7 @@ export function frameMovement(
   }
 
   if (from.kind === 'place') {
-    return 'rewind'
+    return 'unplace'
   }
 
   return 'none'

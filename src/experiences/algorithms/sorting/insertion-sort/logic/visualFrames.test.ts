@@ -141,9 +141,10 @@ describe('frameMovement', () => {
     const frames = framesOf(PASS_THREE)
 
     // [9] and [10] are pass-3 comparisons with the hole one slot apart; [11] is
-    // the placement that closes it.
-    expect(frameMovement(frames[9], frames[8])).toBe('rewind')
-    expect(frameMovement(frames[11], frames[10])).toBe('rewind')
+    // the placement that closes it. They rewind differently: undoing a shift opens
+    // the hole again on the right, undoing a placement only lifts the key back.
+    expect(frameMovement(frames[9], frames[8])).toBe('unshift')
+    expect(frameMovement(frames[11], frames[10])).toBe('unplace')
   })
 
   it('reports no movement going back to the pick that opened a pass', () => {

@@ -1,0 +1,204 @@
+.insertion-sort {
+  --bar: var(--color-neutral);
+  --bar-ordered: var(--color-success);
+  --bar-testing: var(--color-comparing);
+  /* Violet for the cells this pass already pushed right: it is a state of motion,
+     not one of the palette's semantic colours, and green would claim they are final. */
+  --bar-moved: #a78bfa;
+  --bar-hole: var(--color-text-muted);
+  --bar-gap: 0.5rem;
+  --step-duration: 0.2s;
+  --hand-height: 2.6rem;
+}
+
+.insertion-sort__shifts {
+  color: var(--bar-moved);
+}
+
+/* A selected preset is a state, so the label reads as active text, matching
+   the code toggle's active treatment (src/experience/experience.css). */
+.insertion-sort__preset--active {
+  color: var(--color-text);
+}
+
+/* The board reserves a row above the bars for the key in hand. */
+.insertion-sort__bars {
+  display: flex;
+  gap: var(--bar-gap);
+  height: clamp(16rem, 38vh, 26rem);
+  padding-top: var(--hand-height);
+}
+
+.insertion-sort__bar-slot {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.insertion-sort__bar-track {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.insertion-sort__bar {
+  width: 100%;
+  background: var(--bar);
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.2s ease;
+}
+
+/* The hole is a position, so it is outlined and emptied rather than recoloured:
+   the array really does hold a duplicate there, and painting it would present that
+   copy as a value the algorithm still believes in. */
+.insertion-sort__bar--hole {
+  background: transparent;
+  outline: 2px dashed var(--bar-hole);
+  outline-offset: -2px;
+  opacity: 0.55;
+}
+
+.insertion-sort__bar--moved {
+  background: var(--bar-moved);
+}
+
+.insertion-sort__bar--ordered {
+  background: var(--bar-ordered);
+}
+
+/* Declared after --ordered so the cell under test reads as amber even though it
+   belongs to the ordered prefix it is being compared against. */
+.insertion-sort__bar--testing {
+  background: var(--bar-testing);
+}
+
+/* Declared last: on the placement frame the landing slot is neither a hole nor a
+   tested cell, and the viewer needs to see it join the prefix. */
+.insertion-sort__bar--placed {
+  background: var(--bar-ordered);
+  box-shadow: 0 0 0 2px var(--color-bg);
+}
+
+/* The key is not in the array, so it is drawn above the slot it will land in. */
+.insertion-sort__hand {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: calc(var(--hand-height) - 0.6rem);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--bar-testing);
+  border-radius: 4px;
+  background: var(--color-surface);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.insertion-sort__hand-label {
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+@keyframes insertion-sort-bar-from-left {
+  from {
+    transform: translateX(calc(-100% - var(--bar-gap)));
+  }
+}
+
+@keyframes insertion-sort-bar-from-right {
+  from {
+    transform: translateX(calc(100% + var(--bar-gap)));
+  }
+}
+
+@keyframes insertion-sort-bar-descend {
+  from {
+    opacity: 0.4;
+    transform: translateY(calc(-1 * var(--hand-height)));
+  }
+}
+
+.insertion-sort__bar-slot--from-left {
+  animation: insertion-sort-bar-from-left var(--step-duration) ease;
+}
+
+.insertion-sort__bar-slot--from-right {
+  animation: insertion-sort-bar-from-right var(--step-duration) ease;
+}
+
+.insertion-sort__bar-slot--descend {
+  animation: insertion-sort-bar-descend var(--step-duration) ease;
+}
+
+.insertion-sort__bar-value {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The duplicate the scan left behind is shown faded: it is real data, but it is on
+   its way out of the board. */
+.insertion-sort__bar-value--faded {
+  opacity: 0.4;
+}
+
+.insertion-sort__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+.insertion-sort__legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.insertion-sort__legend-swatch {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--bar);
+}
+
+.insertion-sort__legend-swatch--ordered {
+  background: var(--bar-ordered);
+}
+
+.insertion-sort__legend-swatch--testing {
+  background: var(--bar-testing);
+}
+
+.insertion-sort__legend-swatch--moved {
+  background: var(--bar-moved);
+}
+
+.insertion-sort__legend-swatch--hole {
+  background: transparent;
+  outline: 2px dashed var(--bar-hole);
+  outline-offset: -2px;
+}
+
+@media (max-width: 720px) {
+  .insertion-sort__bars {
+    height: clamp(14rem, 34vh, 20rem);
+  }
+}
