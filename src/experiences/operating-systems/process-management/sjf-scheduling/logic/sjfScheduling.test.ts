@@ -26,12 +26,24 @@ describe('generateSjfSteps', () => {
     // beats P2's 8 even though P2 arrived first.
     expect(steps).toHaveLength(21)
     expect(last.completed).toEqual([
-      { id: 'P1', finish: 6, waiting: 0, turnaround: 6 },
-      { id: 'P3', finish: 13, waiting: 2, turnaround: 9 },
-      { id: 'P2', finish: 21, waiting: 11, turnaround: 19 },
+      { id: 'P1', finish: 6, waiting: 0, turnaround: 6, response: 0 },
+      { id: 'P3', finish: 13, waiting: 2, turnaround: 9, response: 2 },
+      { id: 'P2', finish: 21, waiting: 11, turnaround: 19, response: 11 },
     ])
     // On this workload SJF reaches the same makespan as FCFS (21).
     expect(generateSjfSteps(TEXTBOOK)).toHaveLength(generateFcfsSteps(TEXTBOOK).length)
+  })
+
+  it('reports response time equal to waiting time, because it never requeues a process', () => {
+    const steps = generateSjfSteps(TEXTBOOK)
+    const last = steps[steps.length - 1]
+
+    // SJF reorders the queue but still grants the CPU once per process, so the
+    // wait for the first execution is the whole wait - same as FCFS.
+    expect(last.completed.map((process) => process.response)).toEqual([0, 2, 11])
+    for (const process of last.completed) {
+      expect(process.response).toBe(process.waiting)
+    }
   })
 
   it('produces a schedule identical to FCFS on the convoy workload', () => {
@@ -66,13 +78,13 @@ describe('generateSjfSteps', () => {
     // P2 waits only for the short jobs to drain, not behind them.
     expect(sjf).toHaveLength(27)
     expect(last.completed).toEqual([
-      { id: 'P1', finish: 2, waiting: 0, turnaround: 2 },
-      { id: 'P3', finish: 3, waiting: 0, turnaround: 1 },
-      { id: 'P4', finish: 4, waiting: 0, turnaround: 1 },
-      { id: 'P5', finish: 5, waiting: 0, turnaround: 1 },
-      { id: 'P6', finish: 6, waiting: 0, turnaround: 1 },
-      { id: 'P7', finish: 7, waiting: 0, turnaround: 1 },
-      { id: 'P2', finish: 27, waiting: 6, turnaround: 26 },
+      { id: 'P1', finish: 2, waiting: 0, turnaround: 2, response: 0 },
+      { id: 'P3', finish: 3, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P4', finish: 4, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P5', finish: 5, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P6', finish: 6, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P7', finish: 7, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P2', finish: 27, waiting: 6, turnaround: 26, response: 6 },
     ])
 
     // Both generators run on the same array, so the numbers cannot drift.
@@ -107,8 +119,8 @@ describe('generateSjfSteps', () => {
     // t=0, so P1 runs first despite being the longer job.
     expect(steps).toHaveLength(6)
     expect(last.completed).toEqual([
-      { id: 'P1', finish: 5, waiting: 0, turnaround: 5 },
-      { id: 'P2', finish: 6, waiting: 4, turnaround: 5 },
+      { id: 'P1', finish: 5, waiting: 0, turnaround: 5, response: 0 },
+      { id: 'P2', finish: 6, waiting: 4, turnaround: 5, response: 4 },
     ])
   })
 
@@ -131,8 +143,8 @@ describe('generateSjfSteps', () => {
     expect(steps[4].queue).toEqual([])
     expect(steps[5].arrivedIds).toEqual(['P2'])
     expect(steps[6].completed).toEqual([
-      { id: 'P1', finish: 1, waiting: 0, turnaround: 1 },
-      { id: 'P2', finish: 7, waiting: 0, turnaround: 2 },
+      { id: 'P1', finish: 1, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P2', finish: 7, waiting: 0, turnaround: 2, response: 0 },
     ])
   })
 

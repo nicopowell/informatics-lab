@@ -83,6 +83,10 @@ export function generateSjfSteps(processes: Process[]): ScheduleStep[] {
           finish: time + 1,
           waiting: running.dispatchTime - finished.arrival,
           turnaround: time + 1 - finished.arrival,
+          // Non-preemptive like FCFS: the shortest-burst scan runs only when the
+          // CPU is free, so a process is dispatched once and its first execution
+          // waits exactly as long as its completion does.
+          response: running.dispatchTime - finished.arrival,
         })
         running = null
       }

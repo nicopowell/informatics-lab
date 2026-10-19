@@ -208,7 +208,7 @@ describe('toVisualFrames', () => {
       running: { id: 'P1', unitsLeft: 0, waiting: 0 },
       queue: ['P2', 'P3', 'P4', 'P5'],
       cells: Array(6).fill('P1'),
-      completed: [{ id: 'P1', finish: 6, waiting: 0, turnaround: 6 }],
+      completed: [{ id: 'P1', finish: 6, waiting: 0, turnaround: 6, response: 0 }],
     })
   })
 

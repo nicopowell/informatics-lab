@@ -155,6 +155,10 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 <span className="scheduling-board__th-wide">Turnaround</span>
                 <span className="scheduling-board__th-narrow">Turn</span>
               </th>
+              <th>
+                <span className="scheduling-board__th-wide">Response</span>
+                <span className="scheduling-board__th-narrow">Resp</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -196,6 +200,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                   </td>
                   <td>{waiting}</td>
                   <td>{completion ? completion.turnaround : '—'}</td>
+                  <td>{completion ? completion.response : '—'}</td>
                 </tr>
               )
             })}

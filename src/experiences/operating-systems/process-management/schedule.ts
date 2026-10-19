@@ -7,6 +7,11 @@ export type CompletedProcess = {
   finish: number
   waiting: number
   turnaround: number
+  // Units from arrival until the process first held the CPU. Equal to `waiting`
+  // for a non-preemptive policy, which grants the CPU once and never takes it
+  // back; a preemptive policy can requeue a process, so its total waiting keeps
+  // growing after its response is already fixed.
+  response: number
 }
 
 export type RunningProcess = {
