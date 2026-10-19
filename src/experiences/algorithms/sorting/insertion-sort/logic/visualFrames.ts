@@ -98,3 +98,34 @@ export function toVisualFrames(steps: InsertionSortStep[]): InsertionSortFrame[]
     shifts: step.shifts,
   }))
 }
+
+/*
+ * Whether the board currently has a hole: from the moment a pass lifts its key
+ * until the moment it places it. The view needs the same answer for the dashed
+ * outline, the floating card and the height below, so it is stated once here.
+ */
+export function holeIsOpen(frame: InsertionSortFrame): boolean {
+  return frame.kind === 'pick' || frame.kind === 'compare'
+}
+
+/*
+ * The value a slot is measured by. While a pass is scanning, the array really does
+ * keep a duplicate of the value it pushed aside, so `values[holeIndex]` is stale: the
+ * slot is reserved for the key, and the hole has to be as tall as the key. Otherwise
+ * the view draws a full bar for a value the algorithm no longer believes in, which is
+ * what a dashed outline at 100% of the track used to look like. Keeping the rule here
+ * rather than inline in the component is what lets a test see it.
+ *
+ * The result is never larger than `Math.max(...frame.values)`, so the view can
+ * normalise by that maximum without clamping: either nothing has shifted yet, in which
+ * case the key is still the array's own value at that slot, or something did shift, in
+ * which case that something is a value in the array and it is strictly greater than the
+ * key — that is the only condition under which a shift happens.
+ */
+export function drawnValue(frame: InsertionSortFrame, index: number): number {
+  if (holeIsOpen(frame) && frame.key !== null && index === frame.holeIndex) {
+    return frame.key
+  }
+
+  return frame.values[index]
+}

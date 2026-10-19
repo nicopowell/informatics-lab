@@ -1,4 +1,9 @@
-import type { FrameMovement, InsertionSortFrame } from '../logic/visualFrames'
+import {
+  drawnValue,
+  holeIsOpen,
+  type FrameMovement,
+  type InsertionSortFrame,
+} from '../logic/visualFrames'
 
 type InsertionBarsProps = {
   frame: InsertionSortFrame
@@ -20,7 +25,7 @@ function InsertionBars({ frame, movement }: InsertionBarsProps) {
   const settledTo =
     frame.kind === 'done' ? frame.values.length : holeIndex === null ? 0 : holeIndex
 
-  const isOpenHole = frame.kind === 'pick' || frame.kind === 'compare'
+  const isOpenHole = holeIsOpen(frame)
 
   // A shift pushes a value one slot right, so in the frame that shows the result the
   // arriving bar sits just right of the hole and comes from the left. Stepping back
@@ -45,6 +50,10 @@ function InsertionBars({ frame, movement }: InsertionBarsProps) {
           const isOrdered = index < settledTo
           const isTesting = testedIndex === index
           const isHole = isOpenHole && index === holeIndex
+          // The height of a slot is decided in the logic layer (`drawnValue`), next to
+          // `frameMovement`, so the rule that a hole is measured by the key it is
+          // reserved for is covered by vitest instead of only by a browser.
+          const measuredValue = drawnValue(frame, index)
           const isMoved =
             !isHole &&
             holeIndex !== null &&
@@ -89,7 +98,7 @@ function InsertionBars({ frame, movement }: InsertionBarsProps) {
               <div className="insertion-sort__bar-track">
                 <div
                   className={className}
-                  style={{ height: `${(value / maxValue) * 100}%` }}
+                  style={{ height: `${(measuredValue / maxValue) * 100}%` }}
                 />
               </div>
               <span

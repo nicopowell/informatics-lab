@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { generateInsertionSortSteps } from './insertionSort'
 import {
   createReadyFrame,
+  drawnValue,
   frameMovement,
   toVisualFrames,
 } from './visualFrames'
@@ -182,5 +183,96 @@ describe('frameMovement', () => {
         expect(Math.abs(to.holeIndex - from.holeIndex)).toBeLessThanOrEqual(1)
       }
     }
+  })
+})
+
+describe('drawnValue', () => {
+  it('measures an open hole by the key it is reserved for', () => {
+    // Frame 3 of pass 3 of [1,3,5,2]: the 5 has just been pushed into the hole, so
+    // the array literally reads [1,3,5,5] while the 2 is still in the hand. The slot
+    // is open for the 2, so that is what it is drawn as tall as.
+    expect(passThree[2].values).toEqual([1, 3, 5, 5])
+    expect(passThree[2].holeIndex).toBe(2)
+    expect(passThree[2].key).toBe(2)
+    expect(drawnValue(passThree[2], 2)).toBe(2)
+  })
+
+  it('measures every other slot by the value the array holds there', () => {
+    // The same frame: only the hole borrows the key's height. The pushed-aside copy
+    // at index 3 stays a real 5, and the untouched prefix stays 1 and 3.
+    expect([0, 1, 3].map((index) => drawnValue(passThree[2], index))).toEqual([
+      1, 3, 5,
+    ])
+  })
+
+  it('measures the hole the same way at every step of the scan', () => {
+    // The hole travels left as the scan goes: index 2 after the first shift, index 1
+    // after the second. Both frames must be drawn against the key, not their own copy.
+    expect(passThree[3].values).toEqual([1, 3, 3, 5])
+    expect(passThree[3].holeIndex).toBe(1)
+    expect(drawnValue(passThree[3], 1)).toBe(2)
+  })
+
+  it('leaves closed frames on the array alone', () => {
+    const frames = framesOf(PASS_THREE)
+
+    // `pick` and `compare` are the only kinds with a hole in the board; everywhere
+    // else the value in the array is the value that is there.
+    const closed = frames.filter((frame) => !['pick', 'compare'].includes(frame.kind))
+    for (const frame of closed) {
+      for (let index = 0; index < frame.values.length; index++) {
+        expect(drawnValue(frame, index)).toBe(frame.values[index])
+      }
+    }
+  })
+
+  it('never measures a slot taller than the track it is drawn in', () => {
+    // The view normalises by the maximum of `values` and never clamps, so a drawn
+    // value above that maximum would overflow the board. Ordered: [1,2,3]. Reversed:
+    // every pass shifts. All equal: the key always equals the maximum.
+    for (const values of [[1, 3, 5, 2], [9, 8, 7, 6], [5, 5, 5], [1, 2, 3], [2, 1]]) {
+      const frames = framesOf(values)
+      for (const frame of frames) {
+        const maxValue = Math.max(...frame.values)
+        for (let index = 0; index < frame.values.length; index++) {
+          expect(drawnValue(frame, index)).toBeLessThanOrEqual(maxValue)
+        }
+      }
+    }
+  })
+
+  it('reports the board of the reported case, frame by frame', () => {
+    // The exact array the user screenshotted: [32, 98, 83]. It has three slots, so the
+    // pass that lifts the 83 is pass 2 (pass = the index the key came from). The 98
+    // moves aside and the array is left holding two 98s while the hole sits at index 1.
+    const lastPass = framesOf([32, 98, 83]).filter(
+      (frame) => frame.pass === 2 && frame.kind !== 'done',
+    )
+
+    expect(lastPass.map((frame) => frame.kind)).toEqual([
+      'pick',
+      'compare',
+      'compare',
+      'place',
+    ])
+    expect(lastPass.map((frame) => frame.values)).toEqual([
+      [32, 98, 83],
+      [32, 98, 83],
+      [32, 98, 98],
+      [32, 83, 98],
+    ])
+    expect(lastPass.map((frame) => frame.holeIndex)).toEqual([2, 2, 1, 1])
+
+    // The two frames that used to draw a dashed box at the height of a stale 98 are
+    // now measured against the 83, at 85% of the track instead of 100%.
+    expect(lastPass.map((frame) => drawnValue(frame, frame.holeIndex ?? -1))).toEqual(
+      [83, 83, 83, 83],
+    )
+    expect(drawnValue(lastPass[2], 1)).toBe(83)
+
+    // And the slot the 98 was pushed into keeps its own measurement: the hole is the
+    // only borrower.
+    expect(drawnValue(lastPass[2], 2)).toBe(98)
+    expect(drawnValue(lastPass[2], 0)).toBe(32)
   })
 })
