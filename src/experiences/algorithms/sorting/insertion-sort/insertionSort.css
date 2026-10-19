@@ -153,12 +153,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The duplicate the scan left behind is shown faded: it is real data, but it is on
-   its way out of the board. */
-.insertion-sort__bar-value--faded {
-  opacity: 0.4;
-}
-
 .insertion-sort__legend {
   display: flex;
   flex-wrap: wrap;

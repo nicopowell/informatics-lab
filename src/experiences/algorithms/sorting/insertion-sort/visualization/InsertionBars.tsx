@@ -101,14 +101,17 @@ function InsertionBars({ frame, movement }: InsertionBarsProps) {
                   style={{ height: `${(measuredValue / maxValue) * 100}%` }}
                 />
               </div>
-              <span
-                className={
-                  isHole
-                    ? 'insertion-sort__bar-value insertion-sort__bar-value--faded'
-                    : 'insertion-sort__bar-value'
-                }
-              >
-                {value}
+              <span className="insertion-sort__bar-value">
+                {/*
+                 * The hole names no value. The array really does still hold a copy of
+                 * the value that was pushed aside, but a number printed here reads as a
+                 * value the algorithm believes in, and it is not: the one the scan is
+                 * carrying is the one on the card above. The non-breaking space is not
+                 * decoration: the track is the flexible row of this column, so an empty
+                 * label would hand its height to the bars of this slot alone and the
+                 * slot would render taller than its neighbours.
+                 */}
+                {isHole ? '\u00A0' : value}
               </span>
             </div>
           )
