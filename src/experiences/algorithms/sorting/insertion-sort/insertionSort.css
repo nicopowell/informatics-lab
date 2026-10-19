@@ -86,10 +86,13 @@
   box-shadow: 0 0 0 2px var(--color-bg);
 }
 
-/* The key is not in the array, so it is drawn above the slot it will land in. */
+/* The key is not in the array, so it is drawn in the band above the bars. The slot's
+  `top: 0` is already *below* that band, because the container's padding owns it, so
+  the chip has to be pulled up by a whole band height to sit inside it. The 0.6rem left
+  over is the clearance between the chip and a bar that reaches 100%. */
 .insertion-sort__hand {
   position: absolute;
-  top: 0;
+  top: calc(-1 * var(--hand-height));
   left: 50%;
   transform: translateX(-50%);
   height: calc(var(--hand-height) - 0.6rem);
