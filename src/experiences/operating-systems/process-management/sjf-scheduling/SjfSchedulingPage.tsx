@@ -10,7 +10,7 @@ import {
   createStarvationProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
-import { createReadyFrame, toVisualFrames } from '../schedule'
+import { createReadyFrame, pluralUnits, toVisualFrames } from '../schedule'
 import type { SchedulingFrame } from '../schedule'
 import SchedulingBoard from '../SchedulingBoard'
 import { generateSjfSteps } from './logic/sjfScheduling'
@@ -42,9 +42,11 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
       const waiting = frame.queue.length
       if (frame.running) {
         const left = frame.running.unitsLeft
-        return `${frame.processId} arrives, but the CPU is not preempted: ${frame.running.id} keeps running with ${left} more ${
-          left === 1 ? 'unit' : 'units'
-        } left, and ${waiting === 1 ? '1 process is' : `${waiting} processes are`} waiting.`
+        return `${frame.processId} arrives, but the CPU is not preempted: ${frame.running.id} keeps running with ${
+          left
+        } more ${pluralUnits(left)} left, and ${
+          waiting === 1 ? '1 process is' : `${waiting} processes are`
+        } waiting.`
       }
       if (waiting > 1) {
         return `${frame.processId} arrives and the CPU is free: the shortest burst of the ${waiting} processes waiting will run next.`
@@ -60,7 +62,7 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
         // processes this one was chosen over - the choice was between them plus
         // it. A completed process never re-enters, so this stays one block.
         const beaten = frame.queue.length
-        const burst = `${process.burst} ${process.burst === 1 ? 'unit' : 'units'} of burst`
+        const burst = `${process.burst} ${pluralUnits(process.burst)} of burst`
         if (beaten === 0) {
           return `${frame.processId} runs its ${burst} — the only process waiting when the CPU came free.`
         }

@@ -10,7 +10,7 @@ import {
   createStarvationProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
-import { createReadyFrame, toVisualFrames } from '../schedule'
+import { createReadyFrame, pluralUnits, toVisualFrames } from '../schedule'
 import type { SchedulingFrame } from '../schedule'
 import SchedulingBoard from '../SchedulingBoard'
 import { generateFcfsSteps } from './logic/fcfsScheduling'
@@ -42,9 +42,9 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
       const waiting = frame.queue.length
       if (frame.running) {
         const left = frame.running.unitsLeft
-        return `${frame.processId} arrives. ${frame.running.id} keeps the CPU with ${left} more ${
-          left === 1 ? 'unit' : 'units'
-        } to run, so it joins ${waiting === 1 ? '1 process' : `${waiting} processes`} waiting.`
+        return `${frame.processId} arrives. ${frame.running.id} keeps the CPU with ${left} more ${pluralUnits(
+          left,
+        )} to run, so it joins ${waiting === 1 ? '1 process' : `${waiting} processes`} waiting.`
       }
       if (waiting > 1) {
         return `${frame.processId} arrives and queues behind ${frame.queue[0]}.`
