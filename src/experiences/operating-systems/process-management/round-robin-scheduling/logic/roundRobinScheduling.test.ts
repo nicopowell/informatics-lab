@@ -6,6 +6,7 @@ import {
 } from '../../workloads'
 import type { Process } from '../../workloads'
 import { generateFcfsSteps } from '../../fcfs-scheduling/logic/fcfsScheduling'
+import { generateSjfSteps } from '../../sjf-scheduling/logic/sjfScheduling'
 import { generateRoundRobinSteps } from './roundRobinScheduling'
 
 // The same textbook workload the FCFS and SJF suites use, so a schedule
@@ -312,6 +313,73 @@ describe('generateRoundRobinSteps', () => {
     expect(
       last.completed.reduce((sum, process) => sum + process.waiting, 0),
     ).toBe(17)
+  })
+
+  it('breaks the convoy that FCFS and Shortest-Job-First both leave standing (convoy, quantum 2)', () => {
+    const processes = createConvoyProcesses()
+    const rr = generateRoundRobinSteps(processes, 2)
+    const fcfs = generateFcfsSteps(processes)
+    const last = rr[rr.length - 1]
+
+    // The long P1 still runs first, but only for two units at a time, so the
+    // short jobs behind it reach the CPU in the first rotation instead of at the
+    // end: 10 units of total waiting against 16, at the same makespan, and a
+    // first-slice wait of 1.2 on average against 3.2.
+    expect(rr).toHaveLength(10)
+    expect(fcfs).toHaveLength(10)
+    // Completion order here is P2, P3, P4, P5 and only then P1: the long process
+    // finishes last because the rotation keeps interrupting it, which is exactly
+    // what frees the short ones.
+    expect(last.completed.map((process) => process.id)).toEqual([
+      'P2',
+      'P3',
+      'P4',
+      'P5',
+      'P1',
+    ])
+    expect(last.completed.map((process) => process.waiting)).toEqual([
+      0, 2, 2, 2, 4,
+    ])
+    expect(last.completed.map((process) => process.response)).toEqual([
+      0, 2, 2, 2, 0,
+    ])
+    expect(
+      last.completed.reduce((sum, process) => sum + process.waiting, 0),
+    ).toBe(10)
+    expect(
+      fcfs[fcfs.length - 1].completed.reduce(
+        (sum, process) => sum + process.waiting,
+        0,
+      ),
+    ).toBe(16)
+    expect(rr.filter((step) => step.preemptedId !== null)).toHaveLength(2)
+    // And neither non-preemptive policy moves: SJF picks the same order here, so
+    // the convoy is a consequence of keeping the CPU, not of the queue order.
+    expect(generateSjfSteps(processes)).toEqual(fcfs)
+  })
+
+  it('trades waiting and response for handovers as the quantum grows (convoy)', () => {
+    const processes = createConvoyProcesses()
+
+    const total = (quantum: number) => {
+      const steps = generateRoundRobinSteps(processes, quantum)
+      return steps[steps.length - 1].completed.reduce(
+        (sum, process) => sum + process.waiting,
+        0,
+      )
+    }
+    const handovers = (quantum: number) =>
+      generateRoundRobinSteps(processes, quantum).filter(
+        (step) => step.preemptedId !== null,
+      ).length
+
+    // The same input, one variable: a shorter slice answers sooner and pays in
+    // context switches, and the longest slice on the slider is FCFS again.
+    expect(total(1)).toBeLessThan(total(2))
+    expect(total(2)).toBeLessThan(total(6))
+    expect(handovers(1)).toBe(5)
+    expect(handovers(2)).toBe(2)
+    expect(handovers(6)).toBe(0)
   })
 
   it('stores independent snapshots', () => {
