@@ -31,6 +31,9 @@ describe('generateFcfsSteps', () => {
     const steps = generateFcfsSteps(TEXTBOOK)
 
     expect(steps).toHaveLength(21)
+    // The vocabulary is shared with the preemptive policy, so FCFS states its
+    // position on every single unit: nobody ever loses the CPU.
+    expect(steps.every((step) => step.preemptedId === null)).toBe(true)
     expect(runningIds(steps)).toEqual([
       ...Array(6).fill('P1'),
       ...Array(8).fill('P2'),
@@ -74,6 +77,7 @@ describe('generateFcfsSteps', () => {
       arrivedIds: ['P1'],
       running: { id: 'P1', unitsLeft: 2, waiting: 0 },
       completedId: null,
+      preemptedId: null,
       queue: [],
       completed: [],
     })
@@ -83,6 +87,7 @@ describe('generateFcfsSteps', () => {
       arrivedIds: ['P2'],
       running: { id: 'P1', unitsLeft: 1, waiting: 0 },
       completedId: 'P1',
+      preemptedId: null,
       queue: ['P2'],
       completed: [{ id: 'P1', finish: 2, waiting: 0, turnaround: 2, response: 0 }],
     })
@@ -92,6 +97,7 @@ describe('generateFcfsSteps', () => {
       arrivedIds: [],
       running: { id: 'P2', unitsLeft: 1, waiting: 1 },
       completedId: 'P2',
+      preemptedId: null,
       queue: [],
       completed: [
         { id: 'P1', finish: 2, waiting: 0, turnaround: 2, response: 0 },

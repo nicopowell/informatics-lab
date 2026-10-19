@@ -180,6 +180,10 @@ describe('generateSjfSteps', () => {
     for (const processes of [TEXTBOOK, createConvoyProcesses(), createStarvationProcesses()]) {
       const steps = generateSjfSteps(processes)
 
+      // Shortest-burst scanning happens only when the CPU is free, so the shared
+      // preemption field stays null for the whole run.
+      expect(steps.every((step) => step.preemptedId === null)).toBe(true)
+
       const blocks: { id: string; count: number }[] = []
       for (const step of steps) {
         const id = step.running?.id

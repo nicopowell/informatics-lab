@@ -26,6 +26,11 @@ export type ScheduleStep = {
   arrivedIds: string[]
   running: RunningProcess | null
   completedId: string | null
+  // Set on the unit whose time slice ran out with burst still left: the process
+  // named here keeps the CPU for this unit and joins the tail of the ready queue
+  // at the start of the next one. A policy that never takes the CPU back reports
+  // null, so every producer has to state its position on preemption.
+  preemptedId: string | null
   queue: string[]
   completed: CompletedProcess[]
 }

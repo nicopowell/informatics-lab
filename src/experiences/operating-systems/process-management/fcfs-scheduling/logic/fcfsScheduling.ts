@@ -79,6 +79,9 @@ export function generateFcfsSteps(processes: Process[]): ScheduleStep[] {
       arrivedIds,
       running: active,
       completedId,
+      // Non-preemptive by definition: once the CPU is granted it is kept
+      // until the burst is spent, so no unit ever reports a lost slice.
+      preemptedId: null,
       queue: queue.map((process) => process.id),
       completed: [...completed],
     })
