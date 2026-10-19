@@ -107,10 +107,10 @@ experience folder.
 
 Not every concept teaches code, so an experience is not incomplete for lacking a
 reference panel. Add one when reading implementations is part of what the
-concept is about — for Bubble Sort, Selection Sort and Binary Search it is, because
-the loop nesting and the exchange are the thing being studied and they change shape
-across languages. The panel is where a reader checks that the rule the board
-animates is the rule the code says, so a snippet has to keep the same control
+concept is about — for the three sorting experiences and Binary Search it is,
+because the loop nesting and the exchange are the thing being studied and they
+change shape across languages. The panel is where a reader checks that the rule the
+board animates is the rule the code says, so a snippet has to keep the same control
 structure as the experience's `logic/` file: the same loop bounds, the same
 comparison operator, the same guard around the write. Drop the counters, keep the
 shape.

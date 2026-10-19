@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
+import CodePanel from '@/experience/CodePanel'
+import CodeToggle from '@/experience/CodeToggle'
 import MarkdownDescription from '@/experience/MarkdownDescription'
 import PlaybackControls from '@/experience/PlaybackControls'
 import { usePlayback } from '@/experience/usePlayback'
@@ -16,6 +18,7 @@ import {
   type ArrayPresetId,
 } from '../presets'
 import description from './content/description.md?raw'
+import { INSERTION_SORT_REFERENCE } from './content/insertionSortReference'
 import '@/experience/experience.css'
 import './insertionSort.css'
 
@@ -55,6 +58,7 @@ function InsertionSortPage() {
   const [activePreset, setActivePreset] = useState<ArrayPresetId | null>(null)
   const [movement, setMovement] = useState<FrameMovement>('none')
   const [speed, setSpeed] = useState(INITIAL_SPEED)
+  const [showCode, setShowCode] = useState(false)
 
   const steps = useMemo(() => generateInsertionSortSteps(values), [values])
   const frames = useMemo(
@@ -127,7 +131,11 @@ function InsertionSortPage() {
 
   return (
     <AppShell
-      className="experience insertion-sort"
+      className={
+        showCode
+          ? 'experience experience--with-code insertion-sort'
+          : 'experience insertion-sort'
+      }
       style={{ '--step-duration': `${delay}ms` } as CSSProperties}
     >
       <div className="experience__layout">
@@ -137,6 +145,7 @@ function InsertionSortPage() {
               {describeFrame(frame)}
             </p>
             <InsertionBars frame={frame} movement={movement} />
+            <CodeToggle open={showCode} onToggle={() => setShowCode((o) => !o)} />
           </section>
 
           <div className="experience__controls">
@@ -191,6 +200,8 @@ function InsertionSortPage() {
             <MarkdownDescription source={description} />
           </div>
         </div>
+
+        <CodePanel languages={INSERTION_SORT_REFERENCE} open={showCode} />
       </div>
     </AppShell>
   )
