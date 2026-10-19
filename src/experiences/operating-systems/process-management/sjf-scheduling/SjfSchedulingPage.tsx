@@ -93,6 +93,11 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
           : ' The CPU is free and no process is waiting.'
       }`
     }
+    case 'preempt':
+      // SJF dispatches only when the CPU is free, so this frame cannot come from
+      // its generator. The case exists because the frame type is shared with the
+      // preemptive policy; failing loudly keeps that sharing honest.
+      throw new Error(`SJF cannot produce a preempt frame at t=${frame.time}`)
     case 'done': {
       const total = frame.completed.reduce(
         (sum, process) => sum + process.waiting,

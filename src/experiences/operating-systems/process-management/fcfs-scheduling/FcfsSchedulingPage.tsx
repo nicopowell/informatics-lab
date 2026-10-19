@@ -71,6 +71,12 @@ function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
         nextId ? ` ${nextId} is next in the queue.` : ''
       }`
     }
+    case 'preempt':
+      // FCFS never takes the CPU back, so this frame cannot come from its
+      // generator. The case exists because the frame type is shared with the
+      // preemptive policy; failing loudly keeps that sharing honest instead of
+      // inventing a sentence for a state that cannot happen.
+      throw new Error(`FCFS cannot produce a preempt frame at t=${frame.time}`)
     case 'done': {
       const total = frame.completed.reduce(
         (sum, process) => sum + process.waiting,

@@ -63,6 +63,17 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 classes.push('scheduling-board__cell--idle')
               } else {
                 classes.push(hueOf(id))
+                // A process that gets the CPU back after losing it leaves no gap
+                // in the band: the colour runs on, so the cut is the only thing
+                // that shows the quantum fired. A new process needs no mark - the
+                // id change and the grid gap already say it.
+                if (
+                  index > 0 &&
+                  frame.sliceStarts[index] &&
+                  frame.cells[index - 1] === id
+                ) {
+                  classes.push('scheduling-board__cell--slice-cut')
+                }
               }
               return (
                 <div key={index} className={classes.join(' ')}>
@@ -106,6 +117,13 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                   ? 'finished'
                   : pluralUnits(frame.running.unitsLeft)}
               </span>
+            </span>
+          ) : frame.kind === 'preempt' && frame.processId !== null ? (
+            <span
+              className={`scheduling-board__chip scheduling-board__chip--preempt ${hueOf(frame.processId)}`}
+            >
+              {frame.processId}
+              <span className="scheduling-board__chip-note">slice over</span>
             </span>
           ) : (
             <span className="scheduling-board__chip scheduling-board__chip--empty">
@@ -216,6 +234,10 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
         <li>
           <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--idle" />
           CPU idle
+        </li>
+        <li>
+          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--slice" />
+          New time slice
         </li>
       </ul>
     </div>

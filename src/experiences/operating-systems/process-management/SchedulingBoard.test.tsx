@@ -1,8 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import { createConvoyProcesses } from './workloads'
+import { createConvoyProcesses, createStarvationProcesses } from './workloads'
 import type { Process } from './workloads'
 import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
+import { generateRoundRobinSteps } from './round-robin-scheduling/logic/roundRobinScheduling'
 import { createReadyFrame, toVisualFrames } from './schedule'
 import type { SchedulingFrame } from './schedule'
 import SchedulingBoard from './SchedulingBoard'
@@ -27,7 +28,17 @@ function framesFor(processes: Process[]): SchedulingFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))]
 }
 
+function rrFramesFor(processes: Process[], quantum: number): SchedulingFrame[] {
+  return [
+    createReadyFrame(),
+    ...toVisualFrames(generateRoundRobinSteps(processes, quantum)),
+  ]
+}
+
 function renderBoard(frame: SchedulingFrame, processes: Process[]): string {
+  // The makespan is the same for every work-conserving policy (pinned in the
+  // round-robin suite), so deriving it from the FCFS frames of the same
+  // processes is valid whatever frame is on screen.
   const frames = framesFor(processes)
 
   return renderToStaticMarkup(
@@ -80,5 +91,73 @@ describe('SchedulingBoard metrics table', () => {
     // P1's row shows finish metrics; the four queued processes show waiting but
     // still no turnaround or response.
     expect(html.match(/—/g)).toHaveLength(2 * (processes.length - 1))
+  })
+})
+
+// P1's slice ends at t=1, the instant P2 arrives; with quantum 1 every unit of
+// this workload is its own grant of the CPU.
+const ROTATION: Process[] = [
+  { id: 'P1', arrival: 0, burst: 3 },
+  { id: 'P2', arrival: 1, burst: 1 },
+]
+
+describe('SchedulingBoard under a preemptive policy', () => {
+  it('names the process that lost the CPU on the CPU track', () => {
+    const frames = rrFramesFor(ROTATION, 1)
+    const preempt = frames.find((frame) => frame.kind === 'preempt')!
+    const html = renderBoard(preempt, ROTATION)
+
+    expect(preempt.kind).toBe('preempt')
+    expect(html).toContain('scheduling-board__chip--preempt')
+    expect(html).toContain('slice over')
+    // The preempted process is not drawn as running: nothing holds the CPU in
+    // this beat, and 'finished' belongs to the complete frame only.
+    expect(html).not.toContain('scheduling-board__chip--focus')
+    expect(html).not.toContain('finished')
+  })
+
+  it('cuts the Gantt band where the same process gets the CPU back', () => {
+    const done = rrFramesFor(ROTATION, 1).at(-1)!
+    const html = renderBoard(done, ROTATION)
+
+    // Cells P1, P2, P1, P1: the third unit starts a new grant after a different
+    // process, so the id change already separates it; only the fourth unit is a
+    // cut inside a contiguous band of the same color.
+    expect(done.cells).toEqual(['P1', 'P2', 'P1', 'P1'])
+    expect(html.match(/scheduling-board__cell--slice-cut/g)).toHaveLength(1)
+  })
+
+  it('shows the cost of a small quantum as cuts inside the long band', () => {
+    const processes = createStarvationProcesses()
+
+    const rrCuts = (
+      renderBoard(rrFramesFor(processes, 1).at(-1)!, processes).match(
+        /scheduling-board__cell--slice-cut/g,
+      ) ?? []
+    ).length
+    const fcfsCuts = (
+      renderBoard(framesFor(processes).at(-1)!, processes).match(
+        /scheduling-board__cell--slice-cut/g,
+      ) ?? []
+    ).length
+
+    // One unit per grant: the long process comes back to the CPU on its own
+    // again and again, so its band is cut 16 times. FCFS, which never takes the
+    // CPU back, never cuts a band at all.
+    expect(rrCuts).toBe(16)
+    expect(fcfsCuts).toBe(0)
+  })
+
+  it('says which metric a preempted process keeps and which one freezes', () => {
+    const frames = rrFramesFor(createStarvationProcesses(), 4)
+    const firstPreempt = frames.find((frame) => frame.kind === 'preempt')!
+    const html = renderBoard(firstPreempt, createStarvationProcesses())
+
+    // With quantum 4 the two-unit P1 finishes inside its slice, so the first
+    // process ever taken off the CPU is the long one, after four units.
+    expect(firstPreempt.processId).toBe('P2')
+    expect(firstPreempt.queue).toEqual(['P3', 'P4', 'P5', 'P6', 'P2'])
+    // P2 is drawn as waiting again, not as done: its metrics are not frozen.
+    expect(html).toContain('scheduling-board__status--waiting')
   })
 })

@@ -124,6 +124,13 @@
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
+/* Where a process takes the CPU again after its slice was cut short. The grid
+   already separates every unit by 2px, so this paints that same break inside a
+   band that would otherwise read as one uninterrupted run. */
+.scheduling-board__cell--slice-cut {
+  box-shadow: inset 2px 0 0 var(--color-bg);
+}
+
 /* The time cursor: one continuous marker that slides from unit to unit on
    every frame, so the Gantt reads as a moving timeline. It is centered on
    the cell row with the same 6 px overhang above and below (inside the
@@ -210,6 +217,14 @@
   border-style: dashed;
   border-color: var(--color-border);
   background: transparent;
+  color: var(--color-text-muted);
+}
+
+/* The CPU track on a preemption: the process keeps its own colour, because it
+   is the one that just held the CPU, and loses the focus ring, because the CPU
+   is no longer anyone's. */
+.scheduling-board__chip--preempt {
+  border-style: dashed;
   color: var(--color-text-muted);
 }
 
@@ -328,6 +343,11 @@
 
 .scheduling-board__legend-swatch--idle {
   border: 1px dashed var(--color-border);
+}
+
+.scheduling-board__legend-swatch--slice {
+  background: var(--color-neutral);
+  box-shadow: inset 2px 0 0 var(--color-bg);
 }
 
 @media (max-width: 720px) {
