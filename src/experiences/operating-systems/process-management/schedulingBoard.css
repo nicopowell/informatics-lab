@@ -80,7 +80,10 @@
 .scheduling-board__axis {
   display: grid;
   grid-template-columns: repeat(var(--gantt-units), minmax(0, 1fr));
-  gap: 2px;
+  /* No layout gap: columns land on fractional pixels, so a gap would render
+     1-3px wide depending on browser rounding. Breaks are painted instead
+     (cell--band-start), which is always exact. */
+  gap: 0;
 }
 
 .scheduling-board__cells {
@@ -124,11 +127,25 @@
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
-/* Where a process takes the CPU again after its slice was cut short. The grid
-   already separates every unit by 2px, so this paints that same break inside a
-   band that would otherwise read as one uninterrupted run. */
-.scheduling-board__cell--slice-cut {
+/* A process that gets the CPU back after losing it, or a process change: the
+   new band paints a 2px background-coloured line inside its left edge. That
+   is the whole break - a layout gap would be fractional and irregular. */
+.scheduling-board__cell--band-start {
   box-shadow: inset 2px 0 0 var(--color-bg);
+}
+
+/* Band fusion: consecutive units of one grant join edge to edge, so the only
+   breaks in the Gantt are slice cuts and process changes. The joined side
+   drops its corner rounding, keeping the rounding on the outer ends of the
+   band. */
+.scheduling-board__cell--band-left {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.scheduling-board__cell--band-right {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 /* The time cursor: one continuous marker that slides from unit to unit on
