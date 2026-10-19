@@ -103,6 +103,40 @@ describe('describeFrame for Round Robin', () => {
     )
   })
 
+  it('separates an arrival that finds the CPU busy from one that finds it free', () => {
+    const processes = createConvoyProcesses()
+    const frames = framesFor(processes, 2)
+    const arrives = (id: string) =>
+      frames.filter((frame) => frame.kind === 'arrive' && frame.processId === id)
+
+    // P4 arrives inside P1's second slice, so it queues and waits; P3 arrives at
+    // the instant the CPU is free, and the head of the queue is not decided until
+    // the dispatch, so the sentence states the rule and not a name.
+    expect(arrives('P4')[0].running).toMatchObject({ id: 'P1', unitsLeft: 3 })
+    expect(sentence(arrives('P4')[0], processes, 2)).toEqual(
+      'P4 joins the ready queue; P1 keeps the CPU for the rest of its slice, and 2 processes are waiting.',
+    )
+    expect(sentence(arrives('P3')[0], processes, 2)).toEqual(
+      'P3 arrives and finds the CPU free.',
+    )
+  })
+
+  it('reads the second unit of a slice as a continuation, and the last as the end', () => {
+    const processes = createConvoyProcesses()
+    const frames = framesFor(processes, 2)
+    const runs = (id: string, time: number) =>
+      frames.find(
+        (frame) => frame.kind === 'run' && frame.processId === id && frame.time === time,
+      )!
+
+    expect(sentence(runs('P1', 1), processes, 2)).toEqual(
+      'P1 runs within its slice — 5 units of its burst left.',
+    )
+    expect(sentence(runs('P1', 9), processes, 2)).toEqual(
+      'P1 runs its last unit of burst.',
+    )
+  })
+
   it('finishes with the two averages and the number of handovers', () => {
     const frames = framesFor(ROTATION, 1)
     const done = frames[frames.length - 1]
