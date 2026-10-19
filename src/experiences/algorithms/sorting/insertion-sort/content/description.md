@@ -12,7 +12,7 @@ prefix is one value longer.
   comparison and no shift, so the scan never travels
 - **Extra space:** O(1), sorting in place
 - **Adaptive:** the cost follows how ordered the input already is, which is what
-  the *Already sorted* and *Nearly sorted* presets show
+  the "Already sorted" and "Nearly sorted" presets show
 - **Stable:** the scan stops on an equal value, so equal values keep their order
 
 The comparison against Selection Sort is the point of having both. Selection Sort

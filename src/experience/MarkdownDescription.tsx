@@ -65,6 +65,13 @@ function MarkdownDescription({ source }: MarkdownDescriptionProps) {
     } else if (line === '') {
       flushParagraph()
       flushList()
+    } else if (list.length > 0 && /^[ \t]/.test(rawLine)) {
+      // An indented line right below a bullet continues that bullet. Descriptions
+      // are written wrapped at ~80 columns, so this is the normal shape of a long
+      // bullet: without it the list closes at the first wrapped line and the rest of
+      // the sentence comes back as a paragraph after the list, which is how every
+      // wrapped bullet in this project rendered until now.
+      list[list.length - 1] += ` ${line}`
     } else {
       flushList()
       paragraph.push(line)

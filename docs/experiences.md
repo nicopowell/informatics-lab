@@ -96,7 +96,11 @@ experience folder.
 
 - **`content/description.md`** — the explanation shown below the visualization. It uses
   a small subset of Markdown (heading, paragraphs, `- ` lists, `**bold**`)
-  rendered by `src/experience/MarkdownDescription.tsx`. Import it with
+  rendered by `src/experience/MarkdownDescription.tsx`. Nothing else is parsed: a
+  single `*asterisk*` is not emphasis and reaches the page as asterisks, so write a
+  preset name as `"Already sorted"` instead. A list item may span source
+  lines: an indented line below a bullet continues that bullet, so a long one wraps
+  like a paragraph instead of breaking the list. Import it with
   `?raw` and pass it as `source`.
 ## Optional pieces
 
