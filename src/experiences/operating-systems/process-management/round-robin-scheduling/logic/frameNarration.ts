@@ -1,6 +1,6 @@
 import type { Process } from '../../workloads'
 import type { SchedulingFrame } from '../../schedule'
-import { unitsRunInGantt } from '../../schedule'
+import { pluralUnits, unitsRunInGantt } from '../../schedule'
 
 /*
  * Frames to sentences for the Round Robin page. Kept out of the component file
@@ -8,10 +8,6 @@ import { unitsRunInGantt } from '../../schedule'
  * costs, what a preempted process still needs - and those claims are tested
  * here, without a React tree in the way.
  */
-
-function pluralUnits(units: number): string {
-  return units === 1 ? 'unit' : 'units'
-}
 
 function processById(processes: Process[], id: string | null): Process | undefined {
   return processes.find((candidate) => candidate.id === id)

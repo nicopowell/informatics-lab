@@ -75,6 +75,13 @@ export function waitingSoFar(frame: SchedulingFrame, process: Process): number {
   return frame.time - process.arrival - unitsRunInGantt(frame, process.id)
 }
 
+// How a count of time units is spoken. Shared by the round-robin narration and
+// its page, which said the same thing in two copies; the board's label is a
+// different phrase and is deliberately not this function.
+export function pluralUnits(units: number): string {
+  return units === 1 ? 'unit' : 'units'
+}
+
 export function createReadyFrame(): SchedulingFrame {
   return {
     kind: 'ready',
@@ -110,13 +117,17 @@ export function toVisualFrames(steps: ScheduleStep[]): SchedulingFrame[] {
     // the ready queue at the start of this one, after the arrivals of this
     // instant: the queue order the generator produces, reconstructed here.
     const requeuedId = previous?.preemptedId ?? null
-    // A unit continues the previous one only when the same process held the CPU
-    // and kept it: a process re-dispatched after being preempted starts a new
-    // grant even though the id did not change.
-    const continuing =
+    // Two separate things make a unit a continuation of the previous one: the
+    // same process holds the CPU, and that process was not cut short at the end
+    // of the previous unit. A process re-dispatched after being preempted starts
+    // a new grant even though the id did not change, which is why the second
+    // condition cannot be folded into the id comparison.
+    const sameProcessHeld =
+      previous !== null &&
       step.running !== null &&
-      previous?.running?.id === step.running.id &&
-      previous.preemptedId === null
+      previous.running?.id === step.running.id
+    const keptTheCpu = previous !== null && previous.preemptedId === null
+    const continuing = sameProcessHeld && keptTheCpu
 
     // A step already records the completion that happens at the end of its
     // unit; only the `complete` frame may show it, so the frames before it

@@ -10,7 +10,7 @@ import {
   createStarvationProcesses,
 } from '../workloads'
 import type { Process } from '../workloads'
-import { createReadyFrame, toVisualFrames } from '../schedule'
+import { createReadyFrame, pluralUnits, toVisualFrames } from '../schedule'
 import SchedulingBoard from '../SchedulingBoard'
 import { generateRoundRobinSteps } from './logic/roundRobinScheduling'
 import { describeFrame } from './logic/frameNarration'
@@ -33,11 +33,6 @@ const SLOWEST_DELAY = 1400
 const FASTEST_DELAY = 90
 // Movement should not drag when playing at a slow speed.
 const MAX_TRANSITION = 500
-
-// The one place the page speaks in units outside the narration.
-function pluralUnits(units: number): string {
-  return units === 1 ? 'unit' : 'units'
-}
 
 // A geometric ramp keeps the low speeds genuinely slow and the high speeds
 // genuinely fast, with a comfortable pace around the default.

@@ -20,7 +20,10 @@ function hueClassName(index: number): string {
   return `scheduling-board--hue-${(index % HUE_COUNT) + 1}`
 }
 
-function pluralUnits(units: number): string {
+// The CPU chip's note: a whole phrase, not the word-only plural the narration
+// uses. The name says so, because a function called pluralUnits that returns
+// "5 units left" invites the wrong reuse.
+function unitsLeftLabel(units: number): string {
   return units === 1 ? '1 unit left' : `${units} units left`
 }
 
@@ -116,7 +119,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
               <span className="scheduling-board__chip-note">
                 {frame.kind === 'complete'
                   ? 'finished'
-                  : pluralUnits(frame.running.unitsLeft)}
+                  : unitsLeftLabel(frame.running.unitsLeft)}
               </span>
             </span>
           ) : frame.kind === 'preempt' && frame.processId !== null ? (
