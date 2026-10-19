@@ -203,6 +203,48 @@ function FcfsSchedulingArt() {
   )
 }
 
+function RoundRobinSchedulingArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      {/* Two processes cut into equal slices, alternating: nobody keeps the CPU,
+          which is the whole policy in one band. */}
+      <g fill="currentColor">
+        <rect x="24" y="52" width="18" height="20" rx="3" opacity="0.9" />
+        <rect x="46" y="52" width="18" height="20" rx="3" opacity="0.4" />
+        <rect x="68" y="52" width="18" height="20" rx="3" opacity="0.9" />
+        <rect x="90" y="52" width="18" height="20" rx="3" opacity="0.4" />
+        <rect x="112" y="52" width="18" height="20" rx="3" opacity="0.9" />
+        <rect x="134" y="52" width="18" height="20" rx="3" opacity="0.4" />
+      </g>
+      <line
+        x1="20"
+        y1="76"
+        x2="156"
+        y2="76"
+        stroke="rgba(255, 255, 255, 0.22)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* The slice that ends goes back to the tail of the queue, behind the rest. */}
+      <path
+        d="M150 44 C148 22 34 22 32 44"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        d="M27 39 l5 6 l6 -5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.7"
+      />
+    </svg>
+  )
+}
+
 function SjfSchedulingArt() {
   return (
     <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
@@ -271,6 +313,7 @@ const ART: Record<string, ReactNode> = {
   'sequential-search': <SequentialSearchArt />,
   'fcfs-scheduling': <FcfsSchedulingArt />,
   'sjf-scheduling': <SjfSchedulingArt />,
+  'round-robin-scheduling': <RoundRobinSchedulingArt />,
 }
 
 type ExperienceArtProps = {

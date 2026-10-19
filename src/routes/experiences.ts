@@ -5,6 +5,7 @@ import SelectionSortPage from '@/experiences/algorithms/sorting/selection-sort/S
 import InsertionSortPage from '@/experiences/algorithms/sorting/insertion-sort/InsertionSortPage'
 import FcfsSchedulingPage from '@/experiences/operating-systems/process-management/fcfs-scheduling/FcfsSchedulingPage'
 import SjfSchedulingPage from '@/experiences/operating-systems/process-management/sjf-scheduling/SjfSchedulingPage'
+import RoundRobinSchedulingPage from '@/experiences/operating-systems/process-management/round-robin-scheduling/RoundRobinSchedulingPage'
 
 // Implemented experiences. This map is the single source of truth for what the
 // catalogue may offer as available.
@@ -15,6 +16,7 @@ export const EXPERIENCES: Record<string, ComponentType> = {
   'binary-search': BinarySearchPage,
   'fcfs-scheduling': FcfsSchedulingPage,
   'sjf-scheduling': SjfSchedulingPage,
+  'round-robin-scheduling': RoundRobinSchedulingPage,
 }
 
 /*

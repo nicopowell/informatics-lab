@@ -65,9 +65,10 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   process that arrives behind it wait for all of it, or the starvation preset to
   see five one-unit jobs wait the full burst of a long one behind them.
 
-  Both presets are the same workloads the SJF experience offers, and that is the
-  point: the two pages share their processes and their board at topic level, so
-  running the same workload on both compares the dispatch rule and nothing else.
+  Both presets are the same workloads the SJF and Round Robin experiences
+  offer, and that is the point: the three pages share their processes and their
+  board at topic level, so running the same workload on any of them compares the
+  dispatch rule and nothing else.
 
 - **SJF Scheduling**
   (`src/experiences/operating-systems/process-management/sjf-scheduling`): the same
@@ -79,15 +80,25 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   schedule, because a non-preemptive policy never displaces the long process that
   already owns the CPU.
 
+- **Round Robin Scheduling**
+  (`src/experiences/operating-systems/process-management/round-robin-scheduling`):
+  the same processes and the same board under the project's first **preemptive**
+  rule — the CPU is taken back after a fixed time slice and the process that lost
+  it goes to the tail of the ready queue. The quantum is a slider from 1 to 6, so
+  the page is the experiment itself: a short slice gives every process its first
+  answer sooner and pays in context switches, and a slice long enough to cover the
+  largest burst reproduces the FCFS schedule exactly. This is also where response
+  time stops equaling waiting time, which is why the shared table shows both.
+
 ## Structure
 
 Implementations live under `src/experiences/<module>/<topic>/<experience>/`,
 mirroring the catalogue hierarchy and the URL. Each experience keeps its page
 and stylesheet at the root and its files grouped by responsibility (`logic/`,
 `visualization/`, `content/`). Code that several experiences of one topic share
-lives at that topic's level: the two scheduling experiences share their workload
-factory and their process board, and keep only their dispatch policy and
-narration to themselves. The shared machinery every experience reuses is
+lives at that topic's level: the three scheduling experiences share their
+workload factory, their step and frame vocabulary, and their process board, and
+keep only their dispatch policy and their narration to themselves. The shared machinery every experience reuses is
 in `src/experience/`, and the catalogue data in `src/modules/modules.ts`.
 
 ## Documentation
