@@ -1,5 +1,6 @@
 import type { Process } from '../../workloads'
 import type { SchedulingFrame } from '../../schedule'
+import { unitsRunInGantt } from '../../schedule'
 
 /*
  * Frames to sentences for the Round Robin page. Kept out of the component file
@@ -16,12 +17,10 @@ function processById(processes: Process[], id: string | null): Process | undefin
   return processes.find((candidate) => candidate.id === id)
 }
 
-// A preempted process has no running snapshot to read, so its remaining burst is
-// counted from the Gantt itself: every cell of its id is one unit it spent on the
-// CPU, and the board only grows that row one unit at a time.
-function unitsLeftInGantt(frame: SchedulingFrame, process: Process): number {
-  const spent = frame.cells.filter((cell) => cell === process.id).length
-  return process.burst - spent
+// A preempted process has no running snapshot to read, so what it still needs is
+// its burst minus the units the Gantt already shows it having run.
+function burstLeftAfterPreemption(frame: SchedulingFrame, process: Process): number {
+  return process.burst - unitsRunInGantt(frame, process.id)
 }
 
 // True when the cell just added to the Gantt opens a fresh grant of the CPU,
@@ -105,7 +104,7 @@ export function describeFrame(
     }
     case 'preempt': {
       const process = processById(processes, frame.processId)
-      const left = process ? unitsLeftInGantt(frame, process) : 0
+      const left = process ? burstLeftAfterPreemption(frame, process) : 0
       const ahead = frame.queue.length - 1
       return `${frame.processId}'s slice is over. It still needs ${left} ${pluralUnits(
         left,

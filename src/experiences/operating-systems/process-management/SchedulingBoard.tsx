@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import type { Process } from './workloads'
 import type { SchedulingFrame } from './schedule'
+import { waitingSoFar } from './schedule'
 
 type SchedulingBoardProps = {
   frame: SchedulingFrame
@@ -139,7 +140,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
           ) : (
             frame.queue.map((id) => {
               const process = processById.get(id)
-              const waiting = process ? frame.time - process.arrival : 0
+              const waiting = process ? waitingSoFar(frame, process) : 0
               return (
                 <span key={id} className={`scheduling-board__chip ${hueOf(id)}`}>
                   {id}
@@ -198,7 +199,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 : isRunning && frame.running
                   ? String(frame.running.waiting)
                   : isQueued
-                    ? String(frame.time - process.arrival)
+                    ? String(waitingSoFar(frame, process))
                     : '—'
 
               return (

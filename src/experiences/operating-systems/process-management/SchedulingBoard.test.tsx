@@ -148,6 +148,30 @@ describe('SchedulingBoard under a preemptive policy', () => {
     expect(fcfsCuts).toBe(0)
   })
 
+  it('does not charge the units a preempted process ran as waiting time', () => {
+    // The case the reader sees first: a single process, quantum 2. At t=2 it
+    // loses the CPU with two units still to run, and those two units were spent
+    // ON the CPU, not in the ready queue.
+    const processes: Process[] = [{ id: 'P1', arrival: 0, burst: 4 }]
+    const frames = rrFramesFor(processes, 2)
+    const preempt = frames.find((frame) => frame.kind === 'preempt')!
+
+    expect(preempt.time).toBe(2)
+    expect(preempt.cells).toEqual(['P1', 'P1'])
+    expect(preempt.queue).toEqual(['P1'])
+
+    const html = renderBoard(preempt, processes)
+
+    // Waiting is 0, so the row holds two zero cells: arrival and waiting. Before
+    // the fix the same row charged the two run units as waiting.
+    expect(html.match(/<td>0<\/td>/g)).toHaveLength(2)
+    expect(html).not.toContain('<td>2</td>')
+    // The ready queue chip is the same number, shown as +<waiting>.
+    expect(html).toContain('+0')
+    expect(html).not.toContain('+2')
+    expect(html).toContain('scheduling-board__status--waiting')
+  })
+
   it('says which metric a preempted process keeps and which one freezes', () => {
     const frames = rrFramesFor(createStarvationProcesses(), 4)
     const firstPreempt = frames.find((frame) => frame.kind === 'preempt')!

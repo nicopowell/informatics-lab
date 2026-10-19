@@ -2,6 +2,8 @@
 // Each policy keeps its own step generator, but every generator produces the
 // same `ScheduleStep` shape and shares this frame builder.
 
+import type { Process } from './workloads'
+
 export type CompletedProcess = {
   id: string
   finish: number
@@ -48,6 +50,29 @@ export type SchedulingFrame = {
   // including a slice the same process gets back after losing the CPU.
   sliceStarts: boolean[]
   completed: CompletedProcess[]
+}
+
+/*
+ * Two readers need the same number - the board's Waiting column and its ready
+ * queue chips, and the round-robin narration's "still needs N units" - so the
+ * derivation lives here once instead of in each of them.
+ */
+
+// Units this process has spent on the CPU up to the frame's instant. The Gantt
+// is the record: every cell holding its id is one unit the simulation ran it,
+// and cells only ever grow, one per unit.
+export function unitsRunInGantt(frame: SchedulingFrame, id: string): number {
+  return frame.cells.filter((cell) => cell === id).length
+}
+
+// Ready-queue time accumulated up to the frame's instant: everything since the
+// process arrived that is not a unit it already ran. For a non-preemptive policy
+// a process sitting in the queue has never been dispatched, so this reduces to
+// `frame.time - arrival` and the FCFS and SJF boards keep every number they
+// showed before. Under Round Robin a queued process has usually run, and without
+// this subtraction its own CPU time is charged to it as waiting.
+export function waitingSoFar(frame: SchedulingFrame, process: Process): number {
+  return frame.time - process.arrival - unitsRunInGantt(frame, process.id)
 }
 
 export function createReadyFrame(): SchedulingFrame {

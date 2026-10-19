@@ -7,7 +7,7 @@ import type { Process } from './workloads'
 import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
 import { generateSjfSteps } from './sjf-scheduling/logic/sjfScheduling'
 import { generateRoundRobinSteps } from './round-robin-scheduling/logic/roundRobinScheduling'
-import { createReadyFrame, toVisualFrames } from './schedule'
+import { createReadyFrame, toVisualFrames, waitingSoFar } from './schedule'
 import type { SchedulingFrame } from './schedule'
 
 function framesFor(processes: Process[]): SchedulingFrame[] {
@@ -471,5 +471,53 @@ describe('toVisualFrames under Round Robin', () => {
         processes.length,
       )
     }
+  })
+})
+
+// The Waiting column and the ready queue chips read this, so its two edges are
+// what a reader sees: a preemptive process must not be charged for its own CPU
+// time, and the older policies must keep every number they showed before.
+describe('waitingSoFar', () => {
+  it('excludes the units a queued round-robin process already ran', () => {
+    const processes: Process[] = [{ id: 'P1', arrival: 0, burst: 4 }]
+    const preempt = rrFramesFor(processes, 2).find(
+      (frame) => frame.kind === 'preempt',
+    )!
+
+    expect(preempt.time).toBe(2)
+    expect(preempt.cells).toEqual(['P1', 'P1'])
+    expect(preempt.queue).toEqual(['P1'])
+    expect(waitingSoFar(preempt, processes[0])).toBe(0)
+  })
+
+  it('keeps a lone process at zero waiting however many slices it is cut into', () => {
+    const processes: Process[] = [{ id: 'P1', arrival: 0, burst: 3 }]
+    const frames = rrFramesFor(processes, 1)
+    const preempted = frames.filter((frame) => frame.kind === 'preempt')
+
+    // Two handovers, all three units run: the live column and the finished record
+    // have to say the same thing, or the page contradicts itself at t=done.
+    expect(preempted).toHaveLength(2)
+    for (const frame of preempted) {
+      expect(waitingSoFar(frame, processes[0])).toBe(0)
+    }
+    expect(frames.at(-1)!.completed[0].waiting).toBe(0)
+  })
+
+  it('keeps the non-preemptive reading, because a queued process has never run', () => {
+    const processes = createConvoyProcesses()
+    const p1Complete = framesFor(processes).find(
+      (frame) => frame.kind === 'complete' && frame.processId === 'P1',
+    )!
+
+    // FCFS at t=6: P2, P3, P4 and P5 are queued and none has held the CPU, so
+    // their wait is the whole time since arrival - 4, 3, 2 and 1 units.
+    expect(p1Complete.time).toBe(6)
+    expect(p1Complete.cells).toEqual(Array(6).fill('P1'))
+    expect(
+      p1Complete.queue.map((id) =>
+        waitingSoFar(p1Complete, processes.find((process) => process.id === id)!),
+      ),
+    ).toEqual([4, 3, 2, 1])
   })
 })
