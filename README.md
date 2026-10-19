@@ -31,22 +31,26 @@ Topics and experiences that are not implemented yet appear as "coming soon".
 
 - **Selection Sort** (`src/experiences/algorithms/sorting/selection-sort`): scan the
   unordered tail for the smallest value, exchange it into the first free slot, and follow
-  the sorted head grow one place per pass. It shares `presets.ts` with Bubble Sort, so the
-  same shape can be read on both screens: at length 8 an already-sorted array costs bubble
-  sort 7 comparisons in one pass and selection sort 28 comparisons in seven, while a
-  reversed one costs bubble sort 28 exchanges against selection sort's 4. Selection sort
-  pays the full scan either way, which is the lesson the presets were built to show.
+  the sorted head grow one place per pass. Like Bubble Sort, it shows its reference
+  implementation in pseudocode, Python, JavaScript and C++. It shares `presets.ts` with
+  Bubble Sort, so the same shape can be read on both screens: at length 8 an
+  already-sorted array costs bubble sort 7 comparisons in one pass and selection sort 28
+  comparisons in seven, while a reversed one costs bubble sort 28 exchanges against
+  selection sort's 4. Selection sort pays the full scan either way, which is the lesson
+  the presets were built to show.
 
 - **Insertion Sort** (`src/experiences/algorithms/sorting/insertion-sort`): lift one value
   into the hand, walk left through the ordered prefix sliding every bigger value one slot
-  right, and close the hole where the scan stops. It is the adaptive one of the three. At
-  length 8 an *Already sorted* array costs it 7 comparisons and no shift at all — one
-  comparison per pass, which is the best case the algorithm has — while the same shape
-  costs Selection Sort its full 28. On *Reverse sorted* all three pay 28 comparisons, and
-  the difference is in the writes: insertion shifts once for every step a value travels,
-  selection exchanges at most once per pass. A preset is a shape rather than a fixed
-  array, so the write counts move a little between loads; the comparison counts above are
-  the ones that hold every time.
+  right, and close the hole where the scan stops. Like the other two sorting experiences,
+  it shows its reference implementation in pseudocode, Python, JavaScript and C++, where
+  the scan's strict `>` is the line that keeps equal values in place. It is the adaptive
+  one of the three. At length 8 an *Already sorted* array costs it 7 comparisons and no
+  shift at all — one comparison per pass, which is the best case the algorithm has — while
+  the same shape costs Selection Sort its full 28. On *Reverse sorted* all three pay 28
+  comparisons, and the difference is in the writes: insertion shifts once for every step a
+  value travels, selection exchanges at most once per pass. A preset is a shape rather
+  than a fixed array, so the write counts move a little between loads; the comparison
+  counts above are the ones that hold every time.
 
 - **Binary Search** (`src/experiences/algorithms/searching/binary-search`): generate a sorted array,
   choose a search key, and follow how the search range narrows until the value
