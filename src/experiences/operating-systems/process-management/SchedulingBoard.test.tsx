@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { createConvoyProcesses, createStarvationProcesses } from './workloads'
 import type { Process } from './workloads'
 import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
+import { generateSjfSteps } from './sjf-scheduling/logic/sjfScheduling'
 import { generateRoundRobinSteps } from './round-robin-scheduling/logic/roundRobinScheduling'
 import { createReadyFrame, toVisualFrames } from './schedule'
 import type { SchedulingFrame } from './schedule'
@@ -26,6 +27,10 @@ const HEADERS = [
 
 function framesFor(processes: Process[]): SchedulingFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateFcfsSteps(processes))]
+}
+
+function sjfFramesFor(processes: Process[]): SchedulingFrame[] {
+  return [createReadyFrame(), ...toVisualFrames(generateSjfSteps(processes))]
 }
 
 function rrFramesFor(processes: Process[], quantum: number): SchedulingFrame[] {
@@ -100,6 +105,51 @@ const ROTATION: Process[] = [
   { id: 'P1', arrival: 0, burst: 3 },
   { id: 'P2', arrival: 1, burst: 1 },
 ]
+
+// The board text with the markup stripped: the numbers a reader can see, in
+// reading order. Used only to assert a whole row at once, which is what the
+// comparison between policies is about.
+function readout(frame: SchedulingFrame, processes: Process[]): string {
+  return renderBoard(frame, processes)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+}
+
+// Same processes, three dispatch rules. The last short arrival is the clearest
+// victim of each rule, so its row is pinned through the rendered table for all
+// three policies: if a column ever reads from the wrong place, this is the kind
+// of number that shows it.
+describe('SchedulingBoard across the three policies', () => {
+  it('reports what P7 waited under each dispatch rule', () => {
+    const processes = createStarvationProcesses()
+    const cases: [string, SchedulingFrame, string][] = [
+      // FCFS hands the CPU to the 20-unit process before P7 arrives, so P7 waits
+      // its full burst: 20 waited, 21 turnaround, 20 response.
+      ['fcfs', framesFor(processes).at(-1)!, 'P7 6 1 done 20 21 20'],
+      // SJF runs the short jobs first, so P7 is served the unit after arriving.
+      ['sjf', sjfFramesFor(processes).at(-1)!, 'P7 6 1 done 0 1 0'],
+      // Round Robin rotates: P7 is served behind whoever is already queued, so it
+      // reaches the CPU three units after arriving and waits three in total.
+      ['round-robin q1', rrFramesFor(processes, 1).at(-1)!, 'P7 6 1 done 3 4 3'],
+    ]
+
+    for (const [, frame, row] of cases) {
+      expect(readout(frame, processes)).toContain(row)
+    }
+  })
+
+  it('shows the same three metrics for the long process under every policy', () => {
+    const processes = createStarvationProcesses()
+
+    // P2 is the process the three policies disagree about the most: 1/21/1 under
+    // FCFS, 6/26/6 under SJF (its response is the price of the short arrivals)
+    // and 6/26/0 under Round Robin, which answers it at once and then lets it
+    // finish last.
+    expect(readout(framesFor(processes).at(-1)!, processes)).toContain('P2 1 20 done 1 21 1')
+    expect(readout(sjfFramesFor(processes).at(-1)!, processes)).toContain('P2 1 20 done 6 26 6')
+    expect(readout(rrFramesFor(processes, 1).at(-1)!, processes)).toContain('P2 1 20 done 6 26 0')
+  })
+})
 
 describe('SchedulingBoard under a preemptive policy', () => {
   it('names the process that lost the CPU on the CPU track', () => {
