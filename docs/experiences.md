@@ -42,11 +42,20 @@ only once more than one experience in that topic needs the identical thing —
 never on the first consumer's hunch. In
 `operating-systems/process-management`, `workloads.ts`, `schedule.ts`,
 `SchedulingBoard.tsx` and `schedulingBoard.css` live at that level because
-both scheduling experiences consume them unchanged: what is shared is the
-data shape (`Process`, `ScheduleStep`, `SchedulingFrame`) and the rendering
-of that shape on the Gantt board. What stays per-experience is the policy
+all three scheduling experiences consume them: what is shared is the data shape
+(`Process`, `ScheduleStep`, `SchedulingFrame`) and the rendering of that shape on
+the Gantt board. What stays per-experience is the policy
 (`fcfs-scheduling/logic/fcfsScheduling.ts`,
-`sjf-scheduling/logic/sjfScheduling.ts`) and the page narration. This is a
+`sjf-scheduling/logic/sjfScheduling.ts`,
+`round-robin-scheduling/logic/roundRobinScheduling.ts`) and the page narration.
+
+A shared shape grows by addition, never by opt-out. Round Robin needed two facts
+the older policies cannot express — `response`, which only a preemptive policy
+separates from waiting, and the `preempt` frame with the per-cell slice marks —
+and both became part of the common type, with FCFS and SJF reporting the new
+state as nothing (`preemptedId: null`) rather than skipping the field. That is
+what makes TypeScript force every producer to state its position on preemption,
+and it is why the two older suites keep their exact-state fixtures. This is a
 plain module, not a framework: nothing discovers or registers these files,
 the experiences import them with explicit relative paths (`../workloads`,
 `../SchedulingBoard`), and a first consumer keeps its own copies until a
@@ -137,8 +146,10 @@ file was removed in `dee1db4`; the example is kept here on purpose.
 
 Anything a panel would be the only place to say belongs in `description.md`
 instead, where it is short, reviewable and actually read. The SJF dispatch order
-(smallest burst, then earliest arrival, then queue order) is a rule of the
-concept, not an implementation detail, so it is prose.
+(smallest burst, then earliest arrival, then queue order) and the Round Robin
+tie-break (a process whose slice just ended lands behind everything that arrived
+at the same instant) are rules of the concept, not implementation details, so
+they are prose.
 
 - **`<topic>/presets.ts`** (or `workloads.ts`) — the characteristic inputs a concept
   is studied with, shared by every experience under that topic. Add it when the

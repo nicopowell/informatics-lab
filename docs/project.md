@@ -328,9 +328,10 @@ The project currently contains:
 * A shared application shell (`AppShell`, `PageHeader`) used by every screen,
   with catalogue cards (`CatalogueCard`) that navigate through real links.
 * A three-level catalogue for navigation: Modules → Topics → Experiences.
-* Four interactive experiences: a Bubble Sort visualization, a Binary Search
-  visualization, and two CPU Scheduling visualizations in Operating Systems —
-  FCFS (the first concept outside Algorithms and Data Structures) and SJF.
+* Seven interactive experiences: three sorting ones (Bubble, Selection and
+  Insertion Sort), a Binary Search visualization, and three CPU Scheduling
+  visualizations in Operating Systems — FCFS (the first concept outside
+  Algorithms and Data Structures), SJF and Round Robin.
 * Pure, deterministic algorithm logic and step generation, covered by tests.
 * Shared experience machinery in `src/experience/`: the layout, playback
   controls, the `usePlayback` frame hook and the reference code panel.
@@ -344,11 +345,13 @@ experiences that exist in code are offered as available; everything else is
 shown as "coming soon" based on a single source of truth in
 `src/routes/experiences.ts`.
 
-All four experiences follow the intended experience layout: the visualization
-is the protagonist, playback controls and input configuration sit below it, a
-static description explains the concept and its complexity, and a collapsible
-panel shows the reference implementation in pseudocode, Python, JavaScript and
-C++ with syntax highlighting.
+All seven experiences follow the intended experience layout: the visualization
+is the protagonist, playback controls and input configuration sit below it, and
+a static description explains the concept. The four experiences that teach an
+algorithm's shape — the three sorting ones and Binary Search — add a collapsible
+panel with the reference implementation in pseudocode, Python, JavaScript and
+C++ with syntax highlighting. The three scheduling simulations do not: a
+simulation teaches the consequence of a rule, not the rule's source text.
 
 The Bubble Sort experience lets the user generate an array, run the algorithm,
 pause, move forward and backward, control the speed, and read a description of
@@ -365,9 +368,9 @@ times) through the CPU one time unit at a time, showing the classic Gantt
 timeline under a sliding time cursor, the ready queue where the convoy effect
 becomes visible, and per-process waiting and turnaround times that accumulate
 as the simulation runs. The user can randomize the workload or load either the
-convoy-effect or the starvation preset — the same two workloads the SJF page
-offers — so a comparison between the two policies is always a comparison on
-identical input.
+convoy-effect or the starvation preset — the same two workloads the SJF and
+Round Robin pages offer — so a comparison between the policies is always a
+comparison on identical input.
 
 The SJF Scheduling experience (Shortest-Job-First) uses the same processes
 and the same board, and shows the result of a different dispatch rule: it
@@ -376,29 +379,46 @@ arrived, tie-breaking by arrival time and then queue order. It needs burst
 knowledge, which real systems can only estimate, and it starves long jobs
 when short ones keep arriving.
 
-The comparison between the two experiences is informative because it varies
-one variable: the workloads (`workloads.ts`) and the board
-(`SchedulingBoard.tsx`) are shared at topic level in
-`src/experiences/operating-systems/process-management/`, so what each
+The Round Robin Scheduling experience (the project's first preemptive policy)
+uses the same processes and the same board, and adds one control the other two
+do not have: the quantum, a slider from 1 to 6. The board now shows what
+preemption means — a `preempt` beat between the end of a slice and the next
+dispatch, a cut inside the Gantt band where a process gets the CPU back, and a
+waiting time that keeps growing across slices while the response time freezes at
+the first one.
+
+The comparison between the experiences is informative because it varies one
+variable: the workloads (`workloads.ts`), the step and frame vocabulary
+(`schedule.ts`) and the board (`SchedulingBoard.tsx`) are shared at topic level
+in `src/experiences/operating-systems/process-management/`, so what each
 experience keeps to itself is only the policy and the narration around it.
 
 The shared playback controls, playback state and experience shell were
-extracted from two concrete implementations and have now carried four — the
-latest addition being a second time-stepped simulation with a scrolling
-timeline — without a single change to the shared code in `src/experience/`.
+extracted from two concrete implementations and have now carried seven — the
+three latest additions being time-stepped simulations with a scrolling timeline,
+the last of them preemptive — without a single change to the shared code in
+`src/experience/`.
 The same pattern is now visible between
-the two scheduling experiences: the shared rendering and the separate policy
-were not designed up front, they were found by building FCFS and SJF
-concretely and measuring where they coincide and where they differ.
+the three scheduling experiences: the shared rendering and the separate policy
+were not designed up front, they were found by building FCFS and SJF concretely,
+measuring where they coincide and where they differ, and then adding Round Robin
+to the same board.
 
-The measurement also answered the convoy question: on the convoy workload,
-non-preemptive SJF does not fix the convoy effect, because the long process
-already owns the CPU and nothing displaces it — its schedule is identical
-to FCFS's. On the starvation workload it cuts the total waiting time from
-101 to 6 units at the same makespan (27), at the cost of the long process,
-whose waiting time is the only one that grows. A preemptive policy (Round
-Robin or SRTF) is therefore the interesting next scheduling candidate:
-preemption is what changes those schedules, not novelty per se.
+The measurement also answered the convoy question, and Round Robin closed it. On
+the convoy workload non-preemptive SJF does not fix the convoy effect, because
+the long process already owns the CPU and nothing displaces it — its schedule is
+identical to FCFS's. Round Robin does: at quantum 2 the same processes and the
+same makespan (10) fall from 16 to 10 units of total waiting and from 3.2 to 1.2
+in average first-slice wait, and at quantum 1 to 8 and 0.8, at the price of five
+handovers. The slider's far end closes the loop: at quantum 6 no burst is cut
+short and the schedule is FCFS again, step for step, which is the proof that what
+changed the other schedules was preemption and not novelty.
+
+On the starvation workload, at the same makespan (27), Shortest-Job-First still
+beats Round Robin on both averages — 6 units of total waiting against 17 at
+quantum 1 — and it does so because it knows the burst lengths, which real systems
+only estimate. What Round Robin buys instead is the worst case: the longest wait
+for a first slice falls from 20 units under FCFS and 6 under SJF to 3.
 
 The process identity colors settle the question raised earlier: they ended up
 shared at topic level (`.scheduling-board--hue-*` in `schedulingBoard.css`,
@@ -406,5 +426,7 @@ assigned by index) instead of promoted to the application-wide tokens in
 `src/theme.css`, because "process 1..6" is scheduling vocabulary rather
 than an application-wide color palette. The limitation is that the mapping
 is index-based, so it assumes the process ids arrive in stable input order.
-The next step is adding further concepts (for example Selection Sort)
-following the conventions in `docs/experiences.md`.
+The next step is adding further concepts following the conventions in
+`docs/experiences.md`; in scheduling the natural next candidate is SRTF, the
+preemptive counterpart of SJF, which needs the same board and a different
+dispatch rule.

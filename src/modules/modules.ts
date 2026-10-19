@@ -158,6 +158,11 @@ export const MODULES: ModuleInfo[] = [
             title: 'SJF Scheduling',
             description: 'Run the shortest burst first and watch the long jobs wait.',
           },
+          {
+            id: 'round-robin-scheduling',
+            title: 'Round Robin Scheduling',
+            description: 'Cut the CPU into time slices and watch who gets an answer first.',
+          },
         ],
       },
     ],

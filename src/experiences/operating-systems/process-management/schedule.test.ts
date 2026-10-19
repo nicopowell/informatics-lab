@@ -6,7 +6,8 @@ import {
 import type { Process } from './workloads'
 import { generateFcfsSteps } from './fcfs-scheduling/logic/fcfsScheduling'
 import { generateSjfSteps } from './sjf-scheduling/logic/sjfScheduling'
-import { createReadyFrame, toVisualFrames } from './schedule'
+import { generateRoundRobinSteps } from './round-robin-scheduling/logic/roundRobinScheduling'
+import { createReadyFrame, toVisualFrames, waitingSoFar } from './schedule'
 import type { SchedulingFrame } from './schedule'
 
 function framesFor(processes: Process[]): SchedulingFrame[] {
@@ -15,6 +16,13 @@ function framesFor(processes: Process[]): SchedulingFrame[] {
 
 function sjfFramesFor(processes: Process[]): SchedulingFrame[] {
   return [createReadyFrame(), ...toVisualFrames(generateSjfSteps(processes))]
+}
+
+function rrFramesFor(processes: Process[], quantum: number): SchedulingFrame[] {
+  return [
+    createReadyFrame(),
+    ...toVisualFrames(generateRoundRobinSteps(processes, quantum)),
+  ]
 }
 
 function summarize(frame: SchedulingFrame) {
@@ -31,6 +39,9 @@ function summarize(frame: SchedulingFrame) {
       : null,
     queue: frame.queue,
     cells: frame.cells,
+    starts: frame.sliceStarts
+      .map((start, index) => (start ? index : -1))
+      .filter((index) => index >= 0),
     completed: frame.completed.map(
       (process) => `${process.id}:${process.waiting}/${process.turnaround}`,
     ),
@@ -51,6 +62,7 @@ describe('createReadyFrame', () => {
       running: null,
       queue: [],
       cells: [],
+      sliceStarts: [],
       completed: [],
     })
   })
@@ -61,7 +73,12 @@ describe('toVisualFrames', () => {
     const frames = toVisualFrames([])
 
     expect(frames).toHaveLength(1)
-    expect(frames[0]).toMatchObject({ kind: 'done', time: 0, cells: [] })
+    expect(frames[0]).toMatchObject({
+      kind: 'done',
+      time: 0,
+      cells: [],
+      sliceStarts: [],
+    })
   })
 
   it('expands a small workload into one fact per frame', () => {
@@ -75,6 +92,7 @@ describe('toVisualFrames', () => {
         running: null,
         queue: [],
         cells: [],
+        starts: [],
         completed: [],
       },
       {
@@ -84,6 +102,7 @@ describe('toVisualFrames', () => {
         running: null,
         queue: ['P1'],
         cells: [],
+        starts: [],
         completed: [],
       },
       {
@@ -93,6 +112,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P1', unitsLeft: 2, waiting: 0 },
         queue: [],
         cells: ['P1'],
+        starts: [0],
         completed: [],
       },
       {
@@ -102,6 +122,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P1', unitsLeft: 1, waiting: 0 },
         queue: ['P2'],
         cells: ['P1'],
+        starts: [0],
         completed: [],
       },
       {
@@ -111,6 +132,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P1', unitsLeft: 1, waiting: 0 },
         queue: ['P2'],
         cells: ['P1', 'P1'],
+        starts: [0],
         completed: [],
       },
       {
@@ -120,6 +142,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P1', unitsLeft: 0, waiting: 0 },
         queue: ['P2'],
         cells: ['P1', 'P1'],
+        starts: [0],
         completed: ['P1:0/2'],
       },
       {
@@ -129,6 +152,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P2', unitsLeft: 1, waiting: 1 },
         queue: [],
         cells: ['P1', 'P1', 'P2'],
+        starts: [0, 2],
         completed: ['P1:0/2'],
       },
       {
@@ -138,6 +162,7 @@ describe('toVisualFrames', () => {
         running: { id: 'P2', unitsLeft: 0, waiting: 1 },
         queue: [],
         cells: ['P1', 'P1', 'P2'],
+        starts: [0, 2],
         completed: ['P1:0/2', 'P2:1/2'],
       },
       {
@@ -147,6 +172,7 @@ describe('toVisualFrames', () => {
         running: null,
         queue: [],
         cells: ['P1', 'P1', 'P2'],
+        starts: [0, 2],
         completed: ['P1:0/2', 'P2:1/2'],
       },
     ])
@@ -194,6 +220,7 @@ describe('toVisualFrames', () => {
       running: { id: 'P1', unitsLeft: 4, waiting: 0 },
       queue: ['P2'],
       cells: ['P1', 'P1'],
+      sliceStarts: [true, false],
     })
   })
 
@@ -208,7 +235,8 @@ describe('toVisualFrames', () => {
       running: { id: 'P1', unitsLeft: 0, waiting: 0 },
       queue: ['P2', 'P3', 'P4', 'P5'],
       cells: Array(6).fill('P1'),
-      completed: [{ id: 'P1', finish: 6, waiting: 0, turnaround: 6 }],
+      sliceStarts: [true, ...Array(5).fill(false)],
+      completed: [{ id: 'P1', finish: 6, waiting: 0, turnaround: 6, response: 0 }],
     })
   })
 
@@ -345,5 +373,151 @@ describe('toVisualFrames under SJF', () => {
     // The FCFS suite pins the same 22-frame count for this workload, so the
     // equality above also says SJF adds no frame of its own here.
     expect(framesFor(processes)).toHaveLength(22)
+  })
+})
+
+// Round Robin is the first policy that takes the CPU back, so the shared frame
+// vocabulary needs two things the non-preemptive ones never use: a `preempt`
+// frame sitting between the end of a slice and the next dispatch, and the record
+// of which Gantt cells start a new slice.
+describe('toVisualFrames under Round Robin', () => {
+  // P1's quantum ends at t=1, exactly when P2 arrives.
+  const PREEMPT_WORKLOAD: Process[] = [
+    { id: 'P1', arrival: 0, burst: 3 },
+    { id: 'P2', arrival: 1, burst: 1 },
+  ]
+
+  it('inserts a preempt frame that frees the CPU and lands the process at the tail', () => {
+    const frames = rrFramesFor(PREEMPT_WORKLOAD, 1)
+
+    expect(frames.map((frame) => frame.kind)).toEqual([
+      'ready',
+      'arrive',
+      'run',
+      'preempt',
+      'arrive',
+      'run',
+      'complete',
+      'run',
+      'preempt',
+      'run',
+      'complete',
+      'done',
+    ])
+    expect(frames[3]).toMatchObject({
+      kind: 'preempt',
+      time: 1,
+      processId: 'P1',
+      running: null,
+      queue: ['P1'],
+      // The Gantt does not grow on a preemption: no unit of burst was spent.
+      cells: ['P1'],
+      completed: [],
+    })
+  })
+
+  it('lands a process that arrives at the preemption instant ahead of the preempted one', () => {
+    const frames = rrFramesFor(PREEMPT_WORKLOAD, 1)
+
+    // The arrive frame reconstructs the queue as it stands while P2 lands: what
+    // was already waiting first, the arrivals next, and the process that just
+    // lost the CPU last - the order the generator itself uses.
+    expect(frames[4]).toMatchObject({
+      kind: 'arrive',
+      processId: 'P2',
+      running: null,
+      queue: ['P2', 'P1'],
+    })
+  })
+
+  it('marks every time slice as the start of a run of the Gantt segment', () => {
+    const done = rrFramesFor(PREEMPT_WORKLOAD, 1).at(-1)!
+
+    // P1 runs t=0, t=2 and t=3, P2 runs t=1: each unit is its own slice, so all
+    // four cells start one, even where the same process resumes.
+    expect(done.cells).toEqual(['P1', 'P2', 'P1', 'P1'])
+    expect(done.sliceStarts).toEqual([true, true, true, true])
+  })
+
+  it('marks only the segment starts under FCFS, where a process is dispatched once', () => {
+    const done = framesFor(PREEMPT_WORKLOAD).at(-1)!
+
+    expect(done.cells).toEqual(['P1', 'P1', 'P1', 'P2'])
+    expect(done.sliceStarts).toEqual([true, false, false, true])
+  })
+
+  it('starts a new slice when the only waiting process is re-dispatched after preemption', () => {
+    const frames = rrFramesFor([{ id: 'P1', arrival: 0, burst: 3 }], 1)
+    const done = frames.at(-1)!
+
+    // Same process, three contiguous cells, three separate slices: the mark is
+    // the only thing that tells the reader the CPU was taken back twice.
+    expect(done.cells).toEqual(['P1', 'P1', 'P1'])
+    expect(done.sliceStarts).toEqual([true, true, true])
+    expect(frames.filter((frame) => frame.kind === 'preempt')).toHaveLength(2)
+  })
+
+  it('never emits a preempt frame for the non-preemptive policies', () => {
+    const processes = createStarvationProcesses()
+
+    for (const frames of [
+      framesFor(processes),
+      sjfFramesFor(processes),
+    ]) {
+      expect(frames.some((frame) => frame.kind === 'preempt')).toBe(false)
+      // One slice per process, so the finished Gantt has exactly as many starts
+      // as processes even though it holds 27 cells.
+      expect(frames.at(-1)!.sliceStarts.filter(Boolean)).toHaveLength(
+        processes.length,
+      )
+    }
+  })
+})
+
+// The Waiting column and the ready queue chips read this, so its two edges are
+// what a reader sees: a preemptive process must not be charged for its own CPU
+// time, and the older policies must keep every number they showed before.
+describe('waitingSoFar', () => {
+  it('excludes the units a queued round-robin process already ran', () => {
+    const processes: Process[] = [{ id: 'P1', arrival: 0, burst: 4 }]
+    const preempt = rrFramesFor(processes, 2).find(
+      (frame) => frame.kind === 'preempt',
+    )!
+
+    expect(preempt.time).toBe(2)
+    expect(preempt.cells).toEqual(['P1', 'P1'])
+    expect(preempt.queue).toEqual(['P1'])
+    expect(waitingSoFar(preempt, processes[0])).toBe(0)
+  })
+
+  it('keeps a lone process at zero waiting however many slices it is cut into', () => {
+    const processes: Process[] = [{ id: 'P1', arrival: 0, burst: 3 }]
+    const frames = rrFramesFor(processes, 1)
+    const preempted = frames.filter((frame) => frame.kind === 'preempt')
+
+    // Two handovers, all three units run: the live column and the finished record
+    // have to say the same thing, or the page contradicts itself at t=done.
+    expect(preempted).toHaveLength(2)
+    for (const frame of preempted) {
+      expect(waitingSoFar(frame, processes[0])).toBe(0)
+    }
+    expect(frames.at(-1)!.completed[0].waiting).toBe(0)
+  })
+
+  it('keeps the non-preemptive reading, because a queued process has never run', () => {
+    const processes = createConvoyProcesses()
+    const p1Complete = framesFor(processes).find(
+      (frame) => frame.kind === 'complete' && frame.processId === 'P1',
+    )!
+
+    // FCFS at t=6: P2, P3, P4 and P5 are queued and none has held the CPU, so
+    // their wait is the whole time since arrival - 4, 3, 2 and 1 units.
+    expect(p1Complete.time).toBe(6)
+    expect(p1Complete.cells).toEqual(Array(6).fill('P1'))
+    expect(
+      p1Complete.queue.map((id) =>
+        waitingSoFar(p1Complete, processes.find((process) => process.id === id)!),
+      ),
+    ).toEqual([4, 3, 2, 1])
   })
 })

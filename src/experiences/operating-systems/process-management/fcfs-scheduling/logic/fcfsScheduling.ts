@@ -65,6 +65,9 @@ export function generateFcfsSteps(processes: Process[]): ScheduleStep[] {
           finish: time + 1,
           waiting: running.dispatchTime - finished.arrival,
           turnaround: time + 1 - finished.arrival,
+          // Non-preemptive: this is the only dispatch, so the wait for the CPU
+          // is also the wait for the first execution.
+          response: running.dispatchTime - finished.arrival,
         })
         running = null
       }
@@ -76,6 +79,9 @@ export function generateFcfsSteps(processes: Process[]): ScheduleStep[] {
       arrivedIds,
       running: active,
       completedId,
+      // Non-preemptive by definition: once the CPU is granted it is kept
+      // until the burst is spent, so no unit ever reports a lost slice.
+      preemptedId: null,
       queue: queue.map((process) => process.id),
       completed: [...completed],
     })

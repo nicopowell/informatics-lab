@@ -31,6 +31,9 @@ describe('generateFcfsSteps', () => {
     const steps = generateFcfsSteps(TEXTBOOK)
 
     expect(steps).toHaveLength(21)
+    // The vocabulary is shared with the preemptive policy, so FCFS states its
+    // position on every single unit: nobody ever loses the CPU.
+    expect(steps.every((step) => step.preemptedId === null)).toBe(true)
     expect(runningIds(steps)).toEqual([
       ...Array(6).fill('P1'),
       ...Array(8).fill('P2'),
@@ -38,14 +41,26 @@ describe('generateFcfsSteps', () => {
     ])
   })
 
+  it('reports response time equal to waiting time, because a process is dispatched once', () => {
+    const steps = generateFcfsSteps(TEXTBOOK)
+    const last = steps[steps.length - 1]
+
+    // FCFS never takes the CPU back, so the first dispatch is the only one:
+    // the wait for the first execution is the whole wait.
+    expect(last.completed.map((process) => process.response)).toEqual([0, 4, 10])
+    for (const process of last.completed) {
+      expect(process.response).toBe(process.waiting)
+    }
+  })
+
   it('computes waiting and turnaround at completion', () => {
     const steps = generateFcfsSteps(TEXTBOOK)
     const last = steps[steps.length - 1]
 
     expect(last.completed).toEqual([
-      { id: 'P1', finish: 6, waiting: 0, turnaround: 6 },
-      { id: 'P2', finish: 14, waiting: 4, turnaround: 12 },
-      { id: 'P3', finish: 21, waiting: 10, turnaround: 17 },
+      { id: 'P1', finish: 6, waiting: 0, turnaround: 6, response: 0 },
+      { id: 'P2', finish: 14, waiting: 4, turnaround: 12, response: 4 },
+      { id: 'P3', finish: 21, waiting: 10, turnaround: 17, response: 10 },
     ])
   })
 
@@ -62,6 +77,7 @@ describe('generateFcfsSteps', () => {
       arrivedIds: ['P1'],
       running: { id: 'P1', unitsLeft: 2, waiting: 0 },
       completedId: null,
+      preemptedId: null,
       queue: [],
       completed: [],
     })
@@ -71,8 +87,9 @@ describe('generateFcfsSteps', () => {
       arrivedIds: ['P2'],
       running: { id: 'P1', unitsLeft: 1, waiting: 0 },
       completedId: 'P1',
+      preemptedId: null,
       queue: ['P2'],
-      completed: [{ id: 'P1', finish: 2, waiting: 0, turnaround: 2 }],
+      completed: [{ id: 'P1', finish: 2, waiting: 0, turnaround: 2, response: 0 }],
     })
     expect(steps[2]).toEqual({
       kind: 'run',
@@ -80,10 +97,11 @@ describe('generateFcfsSteps', () => {
       arrivedIds: [],
       running: { id: 'P2', unitsLeft: 1, waiting: 1 },
       completedId: 'P2',
+      preemptedId: null,
       queue: [],
       completed: [
-        { id: 'P1', finish: 2, waiting: 0, turnaround: 2 },
-        { id: 'P2', finish: 3, waiting: 1, turnaround: 2 },
+        { id: 'P1', finish: 2, waiting: 0, turnaround: 2, response: 0 },
+        { id: 'P2', finish: 3, waiting: 1, turnaround: 2, response: 1 },
       ],
     })
   })
@@ -97,8 +115,8 @@ describe('generateFcfsSteps', () => {
     expect(steps.map((step) => step.kind)).toEqual(['run', 'idle', 'idle', 'run'])
     expect(runningIds(steps)).toEqual(['P1', null, null, 'P2'])
     expect(steps[3].completed).toEqual([
-      { id: 'P1', finish: 1, waiting: 0, turnaround: 1 },
-      { id: 'P2', finish: 4, waiting: 0, turnaround: 1 },
+      { id: 'P1', finish: 1, waiting: 0, turnaround: 1, response: 0 },
+      { id: 'P2', finish: 4, waiting: 0, turnaround: 1, response: 0 },
     ])
   })
 

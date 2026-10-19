@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { CSSProperties } from 'react'
 import type { Process } from './workloads'
 import type { SchedulingFrame } from './schedule'
+import { waitingSoFar } from './schedule'
 
 type SchedulingBoardProps = {
   frame: SchedulingFrame
@@ -19,7 +20,10 @@ function hueClassName(index: number): string {
   return `scheduling-board--hue-${(index % HUE_COUNT) + 1}`
 }
 
-function pluralUnits(units: number): string {
+// The CPU chip's note: a whole phrase, not the word-only plural the narration
+// uses. The name says so, because a function called pluralUnits that returns
+// "5 units left" invites the wrong reuse.
+function unitsLeftLabel(units: number): string {
   return units === 1 ? '1 unit left' : `${units} units left`
 }
 
@@ -63,6 +67,17 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 classes.push('scheduling-board__cell--idle')
               } else {
                 classes.push(hueOf(id))
+                // A process that gets the CPU back after losing it leaves no gap
+                // in the band: the colour runs on, so the cut is the only thing
+                // that shows the quantum fired. A new process needs no mark - the
+                // id change and the grid gap already say it.
+                if (
+                  index > 0 &&
+                  frame.sliceStarts[index] &&
+                  frame.cells[index - 1] === id
+                ) {
+                  classes.push('scheduling-board__cell--slice-cut')
+                }
               }
               return (
                 <div key={index} className={classes.join(' ')}>
@@ -104,8 +119,15 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
               <span className="scheduling-board__chip-note">
                 {frame.kind === 'complete'
                   ? 'finished'
-                  : pluralUnits(frame.running.unitsLeft)}
+                  : unitsLeftLabel(frame.running.unitsLeft)}
               </span>
+            </span>
+          ) : frame.kind === 'preempt' && frame.processId !== null ? (
+            <span
+              className={`scheduling-board__chip scheduling-board__chip--preempt ${hueOf(frame.processId)}`}
+            >
+              {frame.processId}
+              <span className="scheduling-board__chip-note">slice over</span>
             </span>
           ) : (
             <span className="scheduling-board__chip scheduling-board__chip--empty">
@@ -121,7 +143,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
           ) : (
             frame.queue.map((id) => {
               const process = processById.get(id)
-              const waiting = process ? frame.time - process.arrival : 0
+              const waiting = process ? waitingSoFar(frame, process) : 0
               return (
                 <span key={id} className={`scheduling-board__chip ${hueOf(id)}`}>
                   {id}
@@ -155,6 +177,10 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 <span className="scheduling-board__th-wide">Turnaround</span>
                 <span className="scheduling-board__th-narrow">Turn</span>
               </th>
+              <th>
+                <span className="scheduling-board__th-wide">Response</span>
+                <span className="scheduling-board__th-narrow">Resp</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -176,7 +202,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                 : isRunning && frame.running
                   ? String(frame.running.waiting)
                   : isQueued
-                    ? String(frame.time - process.arrival)
+                    ? String(waitingSoFar(frame, process))
                     : '—'
 
               return (
@@ -196,6 +222,7 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
                   </td>
                   <td>{waiting}</td>
                   <td>{completion ? completion.turnaround : '—'}</td>
+                  <td>{completion ? completion.response : '—'}</td>
                 </tr>
               )
             })}
@@ -211,6 +238,10 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
         <li>
           <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--idle" />
           CPU idle
+        </li>
+        <li>
+          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--slice" />
+          New time slice
         </li>
       </ul>
     </div>

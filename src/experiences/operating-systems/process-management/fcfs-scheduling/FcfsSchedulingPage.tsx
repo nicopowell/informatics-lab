@@ -11,7 +11,7 @@ import {
 } from '../workloads'
 import type { Process } from '../workloads'
 import { createReadyFrame, toVisualFrames } from '../schedule'
-import type { SchedulingFrame } from '../schedule'
+import { describeFrame } from './logic/frameNarration'
 import SchedulingBoard from '../SchedulingBoard'
 import { generateFcfsSteps } from './logic/fcfsScheduling'
 import description from './content/description.md?raw'
@@ -32,56 +32,6 @@ const MAX_TRANSITION = 500
 function frameDelay(speed: number): number {
   const ratio = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)
   return Math.round(SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio))
-}
-
-function describeFrame(frame: SchedulingFrame, processes: Process[]): string {
-  switch (frame.kind) {
-    case 'ready':
-      return `Ready to schedule ${processes.length} processes.`
-    case 'arrive': {
-      const waiting = frame.queue.length
-      if (frame.running) {
-        const left = frame.running.unitsLeft
-        return `${frame.processId} arrives. ${frame.running.id} keeps the CPU with ${left} more ${
-          left === 1 ? 'unit' : 'units'
-        } to run, so it joins ${waiting === 1 ? '1 process' : `${waiting} processes`} waiting.`
-      }
-      if (waiting > 1) {
-        return `${frame.processId} arrives and queues behind ${frame.queue[0]}.`
-      }
-      return `${frame.processId} arrives and finds the CPU free.`
-    }
-    case 'run': {
-      const left = frame.running ? frame.running.unitsLeft : 1
-      return left === 1
-        ? `${frame.processId} runs its last burst unit.`
-        : `${frame.processId} runs on the CPU — ${left} units of its burst left.`
-    }
-    case 'idle':
-      return 'The CPU is idle: the ready queue is empty and the next process has not arrived yet.'
-    case 'complete': {
-      const finished = frame.completed.find(
-        (process) => process.id === frame.processId,
-      )
-      const metrics = finished
-        ? ` waited ${finished.waiting} and finished with a turnaround of ${finished.turnaround}.`
-        : '.'
-      const nextId = frame.queue[0]
-      return `${frame.processId} finished at t=${frame.time}.${metrics}${
-        nextId ? ` ${nextId} is next in the queue.` : ''
-      }`
-    }
-    case 'done': {
-      const total = frame.completed.reduce(
-        (sum, process) => sum + process.waiting,
-        0,
-      )
-      const average = frame.completed.length > 0
-        ? (total / frame.completed.length).toFixed(1)
-        : '0'
-      return `All ${frame.completed.length} processes finished in ${frame.time} units. Average waiting time: ${average}.`
-    }
-  }
 }
 
 function FcfsSchedulingPage() {

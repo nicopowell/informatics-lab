@@ -124,6 +124,13 @@
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
+/* Where a process takes the CPU again after its slice was cut short. The grid
+   already separates every unit by 2px, so this paints that same break inside a
+   band that would otherwise read as one uninterrupted run. */
+.scheduling-board__cell--slice-cut {
+  box-shadow: inset 2px 0 0 var(--color-bg);
+}
+
 /* The time cursor: one continuous marker that slides from unit to unit on
    every frame, so the Gantt reads as a moving timeline. It is centered on
    the cell row with the same 6 px overhang above and below (inside the
@@ -213,6 +220,14 @@
   color: var(--color-text-muted);
 }
 
+/* The CPU track on a preemption: the process keeps its own colour, because it
+   is the one that just held the CPU, and loses the focus ring, because the CPU
+   is no longer anyone's. */
+.scheduling-board__chip--preempt {
+  border-style: dashed;
+  color: var(--color-text-muted);
+}
+
 .scheduling-board__chip-note {
   font-size: 0.68rem;
   color: var(--color-text-muted);
@@ -222,7 +237,7 @@
 /* Process metrics --------------------------------------------------------- */
 
 /* Safety net: if a narrow screen cannot fit even the compressed table, it
-   scrolls instead of losing the Turnaround column. */
+   scrolls instead of losing the Response column. */
 .scheduling-board__metrics {
   overflow-x: auto;
   overflow-y: clip;
@@ -231,7 +246,9 @@
 
 .scheduling-board__table {
   width: 100%;
-  max-width: 34rem;
+  /* Seven columns: the Response metric needs its own room, and the Process
+     column must keep the identity dot and the id on one line. */
+  max-width: 38rem;
   margin: 0 auto;
   border-collapse: collapse;
   font-size: 0.78rem;
@@ -326,6 +343,11 @@
 
 .scheduling-board__legend-swatch--idle {
   border: 1px dashed var(--color-border);
+}
+
+.scheduling-board__legend-swatch--slice {
+  background: var(--color-neutral);
+  box-shadow: inset 2px 0 0 var(--color-bg);
 }
 
 @media (max-width: 720px) {
