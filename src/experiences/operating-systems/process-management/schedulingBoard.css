@@ -80,7 +80,10 @@
 .scheduling-board__axis {
   display: grid;
   grid-template-columns: repeat(var(--gantt-units), minmax(0, 1fr));
-  gap: 2px;
+  /* No layout gap: columns land on fractional pixels, so a gap would render
+     1-3px wide depending on browser rounding. Breaks are painted instead
+     (cell--band-start), which is always exact. */
+  gap: 0;
 }
 
 .scheduling-board__cells {
@@ -124,11 +127,25 @@
   border: 1px dashed rgba(255, 255, 255, 0.07);
 }
 
-/* Where a process takes the CPU again after its slice was cut short. The grid
-   already separates every unit by 2px, so this paints that same break inside a
-   band that would otherwise read as one uninterrupted run. */
-.scheduling-board__cell--slice-cut {
+/* A process that gets the CPU back after losing it, or a process change: the
+   new band paints a 2px background-coloured line inside its left edge. That
+   is the whole break - a layout gap would be fractional and irregular. */
+.scheduling-board__cell--band-start {
   box-shadow: inset 2px 0 0 var(--color-bg);
+}
+
+/* Band fusion: consecutive units of one grant join edge to edge, so the only
+   breaks in the Gantt are slice cuts and process changes. The joined side
+   drops its corner rounding, keeping the rounding on the outer ends of the
+   band. */
+.scheduling-board__cell--band-left {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.scheduling-board__cell--band-right {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 /* The time cursor: one continuous marker that slides from unit to unit on
@@ -158,6 +175,15 @@
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
   padding-left: 1px;
+}
+
+/* Preset buttons live in their own group so they wrap as one unit below the
+   sliders instead of interleaving with them at intermediate widths. */
+.experience__presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
 }
 
 /* CPU and ready queue ----------------------------------------------------- */
@@ -345,23 +371,49 @@
   border: 1px dashed var(--color-border);
 }
 
-.scheduling-board__legend-swatch--slice {
-  background: var(--color-neutral);
-  box-shadow: inset 2px 0 0 var(--color-bg);
-}
+/* The legend dropped its "New time slice" entry by decision: a gap is an
+   absence and cannot read as a cut in an isolated swatch. Slice cuts are
+   taught live by the "slice over" chip and the frame narration instead. */
+
 
 @media (max-width: 720px) {
   .scheduling-board__board {
     gap: 1.25rem;
   }
 
+  /* Stacked, one chip line each: the queue grows sideways (overflow), never
+     down, so the table below never moves while frames play. */
   .scheduling-board__tracks {
-    gap: 0.75rem 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .scheduling-board__track {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    /* The scroll box clips the focus chip's outline (2px + 1px offset) that
+       paints outside it; padding gives it room, and the matching negative
+       margin keeps the row exactly where it was. */
+    padding: 4px;
+    margin: -4px;
   }
 
   /* Time units keep a readable width; the row scrolls and follows the cursor. */
   .scheduling-board__gantt {
     min-width: calc(var(--gantt-units) * 2.15rem);
+  }
+
+  /* Wrap instead of overflowing the right edge at any mobile width; the
+     two-per-line pairing only kicks in below (480px), where the four
+     counters cannot fit even stacked. */
+  .scheduling-board .experience__counts {
+    flex-wrap: wrap;
+  }
+
+  /* Presets take their own full-width line below the sliders. */
+  .scheduling-board .experience__presets {
+    width: 100%;
   }
 
   /* The code toggle is not shown here, so the band can use the space. */
@@ -406,5 +458,14 @@
 
   .scheduling-board .experience__count-value {
     white-space: nowrap;
+  }
+}
+
+/* Phone widths: the four stacked counters do not fit on one line, so two
+   per line - the two averages land together on the second. Basis accounts
+   for the 1rem column gap set above; an item that still cannot fit wraps. */
+@media (max-width: 480px) {
+  .scheduling-board .experience__count {
+    flex: 1 1 calc(50% - 0.5rem);
   }
 }

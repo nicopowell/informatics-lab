@@ -63,19 +63,39 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
           <div className="scheduling-board__cells">
             {frame.cells.map((id, index) => {
               const classes = ['scheduling-board__cell']
+              const previous = index > 0 ? frame.cells[index - 1] : undefined
+              // A cut is the same process coming back after losing the CPU; a
+              // plain neighbour change is a process change. Everything else
+              // that touches its neighbour fuses into one continuous band, so
+              // the only ruptures in the Gantt are cuts and process changes -
+              // which is what makes the cost of a small quantum visible.
+              const resumesAfterCut =
+                id !== null && previous === id && frame.sliceStarts[index]
+              const fusesLeft = previous === id && !resumesAfterCut
+              const fusesRight =
+                frame.cells[index + 1] === id && !frame.sliceStarts[index + 1]
+              // Every band start paints its own 2px break. A layout gap would
+              // land on fractional pixels and render 1-3px wide depending on
+              // rounding; a painted one is always exact.
+              if (
+                index > 0 &&
+                id !== null &&
+                previous !== null &&
+                !fusesLeft
+              ) {
+                classes.push('scheduling-board__cell--band-start')
+              }
+              if (fusesLeft) {
+                classes.push('scheduling-board__cell--band-left')
+              }
+              if (fusesRight) {
+                classes.push('scheduling-board__cell--band-right')
+              }
               if (id === null) {
                 classes.push('scheduling-board__cell--idle')
               } else {
                 classes.push(hueOf(id))
-                // A process that gets the CPU back after losing it leaves no gap
-                // in the band: the colour runs on, so the cut is the only thing
-                // that shows the quantum fired. A new process needs no mark - the
-                // id change and the grid gap already say it.
-                if (
-                  index > 0 &&
-                  frame.sliceStarts[index] &&
-                  frame.cells[index - 1] === id
-                ) {
+                if (resumesAfterCut) {
                   classes.push('scheduling-board__cell--slice-cut')
                 }
               }
@@ -238,10 +258,6 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
         <li>
           <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--idle" />
           CPU idle
-        </li>
-        <li>
-          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--slice" />
-          New time slice
         </li>
       </ul>
     </div>
