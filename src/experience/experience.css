@@ -187,6 +187,15 @@
   width: 9rem;
 }
 
+/* Preset buttons live in their own group so they wrap as one unit below the
+   sliders instead of interleaving with them at intermediate widths. */
+.experience__presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
 .experience__counts {
   display: flex;
   align-items: center;
@@ -471,6 +480,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* Stacked, the blocks no longer share a seam, so the flattened corners
+     that fused them side by side come back. */
+  .experience--with-code .experience__stage {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  .experience--with-code .code-panel {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+
   /* No room for a side drawer, so the reference code is always shown below. */
   .experience .code-toggle {
     display: none;
@@ -507,6 +528,29 @@
   .experience__input {
     width: 100%;
     justify-content: space-between;
+  }
+
+  /* Presets take their own full-width line below the sliders. */
+  .experience__presets {
+    width: 100%;
+  }
+
+  /* Counters stack label over value so none of them wraps mid-number. */
+  .experience__counts {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .experience__count {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .experience__count-value {
+    white-space: nowrap;
   }
 
   .experience__input .experience__slider input[type='range'] {

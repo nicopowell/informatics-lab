@@ -39,7 +39,7 @@ export const ARRAY_PRESETS: readonly ArrayPreset[] = [
 ]
 
 // Exported so every experience's size slider shares the preset contract's
-// bounds instead of keeping private copies.
+// lower bound; pages may cap their own slider below MAX_SIZE for legibility.
 export const MIN_SIZE = 5
 export const MAX_SIZE = 40
 const MIN_VALUE = 1

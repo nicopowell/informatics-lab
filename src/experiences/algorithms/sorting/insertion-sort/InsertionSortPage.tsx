@@ -12,7 +12,6 @@ import { createReadyFrame, frameMovement, toVisualFrames } from './logic/visualF
 import type { FrameMovement, InsertionSortFrame } from './logic/visualFrames'
 import {
   ARRAY_PRESETS,
-  MAX_SIZE,
   MIN_SIZE,
   createArrayPreset,
   type ArrayPresetId,
@@ -24,6 +23,8 @@ import './insertionSort.css'
 
 const INITIAL_SIZE = 8
 const INITIAL_SPEED = 5
+// UI cap: past 20 bars the visualization compresses and stops teaching.
+const MAX_SIZE = 20
 const MAX_DELAY = 1000
 
 function describeFrame(frame: InsertionSortFrame): string {
@@ -175,24 +176,26 @@ function InsertionSortPage() {
                 />
                 <span className="experience__count-value">{size}</span>
               </label>
-              <button type="button" className="ui-button" onClick={handleRandomize}>
-                Randomize
-              </button>
-              {ARRAY_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  className={
-                    preset.id === activePreset
-                      ? 'ui-button insertion-sort__preset insertion-sort__preset--active'
-                      : 'ui-button insertion-sort__preset'
-                  }
-                  aria-pressed={preset.id === activePreset}
-                  onClick={() => handlePresetSelect(preset.id)}
-                >
-                  {preset.label}
+              <div className="experience__presets">
+                <button type="button" className="ui-button" onClick={handleRandomize}>
+                  Randomize
                 </button>
-              ))}
+                {ARRAY_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    className={
+                      preset.id === activePreset
+                        ? 'ui-button insertion-sort__preset insertion-sort__preset--active'
+                        : 'ui-button insertion-sort__preset'
+                    }
+                    aria-pressed={preset.id === activePreset}
+                    onClick={() => handlePresetSelect(preset.id)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
