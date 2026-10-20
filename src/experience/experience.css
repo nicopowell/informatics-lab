@@ -54,8 +54,15 @@
   padding: 3rem 1.75rem 1.5rem;
 }
 
+/* The narration varies from one to three lines between frames; the box
+   reserves the worst case and centers the text so the layout below it
+   never shifts while stepping through frames. Line boxes are 1.5x the font
+   (line-height inherited from :root), so three lines at 1rem = 4.5rem. */
 .experience__status {
-  min-height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.5rem;
   margin: 0 0 1.25rem;
   text-align: center;
   font-size: 1rem;
@@ -535,6 +542,14 @@
     width: 100%;
   }
 
+  /* Narrow width turns the longest scheduling narrations into four lines;
+     a smaller status font keeps them in that budget. Four lines at 0.85rem
+     with the 1.5 line-height = 5.1rem. */
+  .experience__status {
+    font-size: 0.85rem;
+    min-height: 5.1rem;
+  }
+
   /* Counters stack label over value so none of them wraps mid-number. */
   .experience__counts {
     width: 100%;
@@ -555,5 +570,16 @@
 
   .experience__input .experience__slider input[type='range'] {
     width: 6rem;
+  }
+}
+
+/* Below ~360px the longest scheduling narrations still reach five lines even
+   at 0.85rem, which bursts a four-line reservation and jumps the layout. The
+   font drops one notch more and the box budgets five lines: 5 x 0.8 x 1.5 =
+   6rem. */
+@media (max-width: 360px) {
+  .experience__status {
+    font-size: 0.8rem;
+    min-height: 6rem;
   }
 }
