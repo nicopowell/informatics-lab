@@ -371,10 +371,10 @@
   border: 1px dashed var(--color-border);
 }
 
-.scheduling-board__legend-swatch--slice {
-  background: var(--color-neutral);
-  box-shadow: inset 2px 0 0 var(--color-bg);
-}
+/* The legend dropped its "New time slice" entry by decision: a gap is an
+   absence and cannot read as a cut in an isolated swatch. Slice cuts are
+   taught live by the "slice over" chip and the frame narration instead. */
+
 
 @media (max-width: 720px) {
   .scheduling-board__board {

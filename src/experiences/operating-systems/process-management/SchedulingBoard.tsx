@@ -259,10 +259,6 @@ function SchedulingBoard({ frame, processes, makespan }: SchedulingBoardProps) {
           <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--idle" />
           CPU idle
         </li>
-        <li>
-          <span className="scheduling-board__legend-swatch scheduling-board__legend-swatch--slice" />
-          New time slice
-        </li>
       </ul>
     </div>
   )
