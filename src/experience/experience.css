@@ -480,6 +480,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* Stacked, the blocks no longer share a seam, so the flattened corners
+     that fused them side by side come back. */
+  .experience--with-code .experience__stage {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  .experience--with-code .code-panel {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+
   /* No room for a side drawer, so the reference code is always shown below. */
   .experience .code-toggle {
     display: none;
