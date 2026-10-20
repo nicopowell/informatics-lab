@@ -128,7 +128,13 @@ export const MODULES: ModuleInfo[] = [
         id: 'routing',
         title: 'Routing',
         description: 'Finding paths between hosts.',
-        experiences: [],
+        experiences: [
+          {
+            id: 'mpls-forwarding',
+            title: 'MPLS Forwarding',
+            description: 'Forward along a pre-established label path.',
+          },
+        ],
       },
       {
         id: 'transport',

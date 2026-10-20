@@ -1,0 +1,38 @@
+import { renderToStaticMarkup } from 'react-dom/server'
+import { MemoryRouter } from 'react-router'
+import { describe, expect, it } from 'vitest'
+import App from '@/App'
+
+/*
+ * No browser is available in this environment, so this is the functional check
+ * for the whole delivery path: the real route tree, the real URL the catalogue
+ * links to, and the registered page with its graph, LFIB panel and narration.
+ * It proves the experience is reachable and mounts; the numbers it renders are
+ * covered by the logic and component suites.
+ */
+function renderExperienceRoute(): string {
+  return renderToStaticMarkup(
+    <MemoryRouter initialEntries={['/networks/routing/mpls-forwarding']}>
+      <App />
+    </MemoryRouter>,
+  )
+}
+
+describe('the MPLS forwarding route', () => {
+  it('resolves to the page through the catalogue URL', () => {
+    const html = renderExperienceRoute()
+
+    expect(html).toContain('MPLS Forwarding')
+    // Not the catalogue's "coming soon" placeholder for an unregistered id.
+    expect(html).not.toContain('coming soon')
+  })
+
+  it('opens on the ingress classification with the ingress LFIB on screen', () => {
+    const html = renderExperienceRoute()
+
+    expect(html).toContain('classifies 10.0.7.0/24, pushes label 42')
+    expect(html).toContain('LFIB — LER-A')
+    expect(html).toContain('aria-label="Speed"')
+    expect(html).toContain('Restore LFIB')
+  })
+})

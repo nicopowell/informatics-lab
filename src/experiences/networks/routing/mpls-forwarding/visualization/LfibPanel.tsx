@@ -5,6 +5,9 @@ type LfibPanelProps = {
   node: TopologyNode
   entries: LfibEntry[]
   frame: MplsFrame
+  // Editable tables must keep reference identity: frames and this panel read
+  // the same lfib object, never a clone between them (see the page invariant).
+  onOutLabelChange?: (entry: LfibEntry, value: number) => void
 }
 
 /*
@@ -13,7 +16,12 @@ type LfibPanelProps = {
  * as a ghost row of dashes: the packet stopped precisely there, at a port and
  * label no row claims.
  */
-function LfibPanel({ node, entries, frame }: LfibPanelProps) {
+function LfibPanel({
+  node,
+  entries,
+  frame,
+  onOutLabelChange,
+}: LfibPanelProps) {
   const showingFrameNode = frame.nodeId === node.id
   const lookupFailed = showingFrameNode && frame.action === 'dropped'
 
@@ -42,7 +50,21 @@ function LfibPanel({ node, entries, frame }: LfibPanelProps) {
                 <td>{entry.inPort}</td>
                 <td>{entry.inLabel}</td>
                 <td>{entry.outPort}</td>
-                <td>{entry.outLabel}</td>
+                <td>
+                  {onOutLabelChange && typeof entry.outLabel === 'number' ? (
+                    <input
+                      className="mpls-lfib__label-input"
+                      type="number"
+                      aria-label={`${node.label} output label after ${entry.inPort}, label ${entry.inLabel}`}
+                      value={entry.outLabel}
+                      onChange={(event) =>
+                        onOutLabelChange(entry, Number(event.target.value))
+                      }
+                    />
+                  ) : (
+                    entry.outLabel
+                  )}
+                </td>
               </tr>
             )
           })}
