@@ -41,7 +41,7 @@ export const ARRAY_PRESETS: readonly ArrayPreset[] = [
 // Exported so every experience's size slider shares the preset contract's
 // bounds instead of keeping private copies.
 export const MIN_SIZE = 5
-export const MAX_SIZE = 40
+export const MAX_SIZE = 20
 const MIN_VALUE = 1
 const MAX_VALUE = 99
 const NEARLY_SORTED_RATIO = 0.1
