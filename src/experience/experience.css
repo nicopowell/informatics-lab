@@ -523,6 +523,24 @@
     width: 100%;
   }
 
+  /* Counters stack label over value so none of them wraps mid-number. */
+  .experience__counts {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+
+  .experience__count {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .experience__count-value {
+    white-space: nowrap;
+  }
+
   .experience__input .experience__slider input[type='range'] {
     width: 6rem;
   }

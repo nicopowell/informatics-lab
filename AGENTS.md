@@ -62,6 +62,7 @@ defend every line of it in an interview.
 
 ## Workflow
 
+* Work on independent branches, never directly on `main`. Every change — even a small fix — gets its own branch, and lands on `main` through a reviewed pull request.
 * Keep changes focused and avoid unrelated refactors.
 * Before making significant architectural changes, explain the reasoning.
 * Do not generalize an abstraction based on a single example when a simpler concrete implementation is sufficient.

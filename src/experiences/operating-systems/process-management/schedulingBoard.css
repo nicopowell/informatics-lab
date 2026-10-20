@@ -395,13 +395,6 @@
     min-width: calc(var(--gantt-units) * 2.15rem);
   }
 
-  /* Wrap instead of overflowing the right edge at any mobile width; the
-     two-per-line pairing only kicks in below (480px), where the four
-     counters cannot fit even stacked. */
-  .scheduling-board .experience__counts {
-    flex-wrap: wrap;
-  }
-
   /* The code toggle is not shown here, so the band can use the space. */
   .scheduling-board .experience__visualization {
     padding: 2.25rem 1rem 1rem;
@@ -429,27 +422,12 @@
     display: inline;
   }
 
-  /* Counters stack label over value so none of them wraps mid-number. */
-  .scheduling-board .experience__counts {
-    width: 100%;
-    justify-content: space-between;
-    gap: 0.5rem 1rem;
-  }
-
-  .scheduling-board .experience__count {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
-  }
-
-  .scheduling-board .experience__count-value {
-    white-space: nowrap;
-  }
 }
 
 /* Phone widths: the four stacked counters do not fit on one line, so two
    per line - the two averages land together on the second. Basis accounts
-   for the 1rem column gap set above; an item that still cannot fit wraps. */
+   for the 1rem column gap set in experience.css; an item that still cannot
+   fit wraps. */
 @media (max-width: 480px) {
   .scheduling-board .experience__count {
     flex: 1 1 calc(50% - 0.5rem);
