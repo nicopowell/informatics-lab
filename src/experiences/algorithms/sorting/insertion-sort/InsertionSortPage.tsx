@@ -12,7 +12,6 @@ import { createReadyFrame, frameMovement, toVisualFrames } from './logic/visualF
 import type { FrameMovement, InsertionSortFrame } from './logic/visualFrames'
 import {
   ARRAY_PRESETS,
-  MAX_SIZE,
   MIN_SIZE,
   createArrayPreset,
   type ArrayPresetId,
@@ -24,6 +23,8 @@ import './insertionSort.css'
 
 const INITIAL_SIZE = 8
 const INITIAL_SPEED = 5
+// UI cap: past 20 bars the visualization compresses and stops teaching.
+const MAX_SIZE = 20
 const MAX_DELAY = 1000
 
 function describeFrame(frame: InsertionSortFrame): string {

@@ -72,7 +72,7 @@ describe('ARRAY_PRESETS', () => {
 describe('createArrayPreset', () => {
   it('returns a fresh array of exactly size values within 1..99 for every preset', () => {
     for (const id of ALL_IDS) {
-      for (const size of [5, 8, 20]) {
+      for (const size of [5, 8, 40]) {
         const values = createArrayPreset(id, size, seededRng(size))
         expect(values).toHaveLength(size)
         for (const value of values) {
@@ -125,7 +125,7 @@ describe('createArrayPreset', () => {
   })
 
   it('nearlySorted is within a small number of adjacent swaps of fully sorted', () => {
-    for (const size of [5, 8, 20]) {
+    for (const size of [5, 8, 40]) {
       const values = createArrayPreset('nearlySorted', size, seededRng(size))
       const sorted = [...values].sort((a, b) => a - b)
       const expectedTranspositions = Math.max(1, Math.round(size * 0.1))
@@ -140,7 +140,7 @@ describe('createArrayPreset', () => {
   })
 
   it('manyDuplicates uses at most 3 distinct values with visible ties', () => {
-    for (const size of [5, 8, 20]) {
+    for (const size of [5, 8, 40]) {
       const values = createArrayPreset('manyDuplicates', size, seededRng(size))
       const distinct = new Set(values)
       expect(distinct.size).toBeLessThanOrEqual(3)
@@ -159,13 +159,13 @@ describe('createArrayPreset', () => {
     }
   })
 
-  it.each([0, 4, 21])('throws a RangeError for size %i', (size) => {
+  it.each([0, 4, 41])('throws a RangeError for size %i', (size) => {
     for (const id of ALL_IDS) {
       expect(() => createArrayPreset(id, size)).toThrow(RangeError)
     }
   })
 
-  it.each([5, 20])('accepts boundary size %i', (size) => {
+  it.each([5, 40])('accepts boundary size %i', (size) => {
     expect(createArrayPreset('sorted', size, seededRng(size))).toHaveLength(size)
   })
 
@@ -174,7 +174,7 @@ describe('createArrayPreset', () => {
 
     for (let trial = 0; trial < 300; trial++) {
       const id = ALL_IDS[trial % ALL_IDS.length]
-      const size = 5 + Math.floor(rng() * 16)
+      const size = 5 + Math.floor(rng() * 36)
       const values = createArrayPreset(id, size, rng)
       const transpositions = Math.max(1, Math.round(size * 0.1))
       const where = `${id}/${size}`
