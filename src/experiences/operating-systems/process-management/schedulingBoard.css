@@ -177,6 +177,15 @@
   padding-left: 1px;
 }
 
+/* Preset buttons live in their own group so they wrap as one unit below the
+   sliders instead of interleaving with them at intermediate widths. */
+.experience__presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
 /* CPU and ready queue ----------------------------------------------------- */
 
 .scheduling-board__tracks {
@@ -395,6 +404,18 @@
     min-width: calc(var(--gantt-units) * 2.15rem);
   }
 
+  /* Wrap instead of overflowing the right edge at any mobile width; the
+     two-per-line pairing only kicks in below (480px), where the four
+     counters cannot fit even stacked. */
+  .scheduling-board .experience__counts {
+    flex-wrap: wrap;
+  }
+
+  /* Presets take their own full-width line below the sliders. */
+  .scheduling-board .experience__presets {
+    width: 100%;
+  }
+
   /* The code toggle is not shown here, so the band can use the space. */
   .scheduling-board .experience__visualization {
     padding: 2.25rem 1rem 1rem;
@@ -437,5 +458,14 @@
 
   .scheduling-board .experience__count-value {
     white-space: nowrap;
+  }
+}
+
+/* Phone widths: the four stacked counters do not fit on one line, so two
+   per line - the two averages land together on the second. Basis accounts
+   for the 1rem column gap set above; an item that still cannot fit wraps. */
+@media (max-width: 480px) {
+  .scheduling-board .experience__count {
+    flex: 1 1 calc(50% - 0.5rem);
   }
 }

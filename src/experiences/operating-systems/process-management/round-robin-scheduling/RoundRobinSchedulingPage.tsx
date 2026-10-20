@@ -169,15 +169,17 @@ function RoundRobinSchedulingPage() {
                 />
                 <span className="experience__count-value">{quantum}</span>
               </label>
-              <button type="button" className="ui-button" onClick={handleRandomize}>
-                Randomize
-              </button>
-              <button type="button" className="ui-button" onClick={handleConvoy}>
-                Convoy effect
-              </button>
-              <button type="button" className="ui-button" onClick={handleStarvation}>
-                Starvation
-              </button>
+              <div className="experience__presets">
+                <button type="button" className="ui-button" onClick={handleRandomize}>
+                  Randomize
+                </button>
+                <button type="button" className="ui-button" onClick={handleConvoy}>
+                  Convoy effect
+                </button>
+                <button type="button" className="ui-button" onClick={handleStarvation}>
+                  Starvation
+                </button>
+              </div>
             </div>
           </div>
 
