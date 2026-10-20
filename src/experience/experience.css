@@ -187,6 +187,15 @@
   width: 9rem;
 }
 
+/* Preset buttons live in their own group so they wrap as one unit below the
+   sliders instead of interleaving with them at intermediate widths. */
+.experience__presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
 .experience__counts {
   display: flex;
   align-items: center;
@@ -507,6 +516,11 @@
   .experience__input {
     width: 100%;
     justify-content: space-between;
+  }
+
+  /* Presets take their own full-width line below the sliders. */
+  .experience__presets {
+    width: 100%;
   }
 
   .experience__input .experience__slider input[type='range'] {
