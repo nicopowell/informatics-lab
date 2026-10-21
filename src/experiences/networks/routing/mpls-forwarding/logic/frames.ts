@@ -26,6 +26,7 @@ export type MplsFrame = {
   inLabel: number | null // label on arrival; null before the push and after the pop
   outLabel: number | null // label on departure; null once popped or dropped
   nextNodeId: string | null // where it goes next: own id while standing at a node, null once it stops
+  fromNodeId?: string | null // the node this frame was reached from; lights the crossing link
   narration: string
   dropReason?: DropReason // present exactly when action is 'dropped'
 }
@@ -224,7 +225,13 @@ export function generateFrames(preset: Preset): MplsFrame[] {
     visits += 1
   }
 
-  return frames
+  // Every frame remembers the node it was reached from. The graph lights the
+  // crossed link on arrival frames — during the glide — so a chosen hop stays
+  // lit from the swap that chose it until the next operation takes over.
+  return frames.map((frame, index) => ({
+    ...frame,
+    fromNodeId: index === 0 ? null : frames[index - 1].nodeId,
+  }))
 }
 
 // Every stopped packet is built here so dropped frames cannot drift apart:

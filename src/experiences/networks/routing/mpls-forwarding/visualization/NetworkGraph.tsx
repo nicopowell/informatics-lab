@@ -45,6 +45,10 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
 
   const outgoing =
     frame.nextNodeId !== null ? linkKey(frame.nodeId, frame.nextNodeId) : null
+  // While the glide renders on the arrival frame, the packet is ON the link
+  // it just crossed: light it so the chosen hop never goes dark mid-travel.
+  const crossing =
+    frame.fromNodeId != null ? linkKey(frame.fromNodeId, frame.nodeId) : null
   const label = packetLabel(frame)
   const activeNode = nodeById.get(frame.nodeId)
 
@@ -63,7 +67,7 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const key = linkKey(link.a, link.b)
           const classes = ['mpls-graph__link']
           if (lspLinks.has(key)) classes.push('mpls-graph__link--lsp')
-          if (key === outgoing) classes.push('mpls-graph__link--active')
+          if (key === outgoing || key === crossing) classes.push('mpls-graph__link--active')
 
           // Port numbers sit just past each node's edge, one end nudged to
           // each side of the line: the two numbers of a short link can never

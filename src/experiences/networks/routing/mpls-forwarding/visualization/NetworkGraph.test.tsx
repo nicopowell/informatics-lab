@@ -35,6 +35,14 @@ describe('NetworkGraph', () => {
     expect(html).toContain('mpls-graph__node--active')
   })
 
+  it('keeps the chosen link lit while the packet crosses it', () => {
+    // Frame 3: arrival at LSR-1 — the glide from LER-A renders on this frame,
+    // so the link it crosses must be the active one.
+    expect(render(MPLS_PRESET, 3)).toContain('mpls-graph__link--active')
+    // Frame 1: the bare ingress arrival crosses the access link from PC-A.
+    expect(render(MPLS_PRESET, 1)).toContain('mpls-graph__link--active')
+  })
+
   it('shows the label the packet carries at the current node', () => {
     const html = render(MPLS_PRESET, 4) // LSR-1 swapped 42 to 17 (frame 3 showed the arrival)
 

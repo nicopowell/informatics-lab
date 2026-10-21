@@ -69,6 +69,14 @@ describe('generateFrames', () => {
     expect(frames[2].lookup).toEqual({ port: 1, label: '10.0.7.0/24' }) // classify arrives at LER-A on port 1
   })
 
+  it('remembers the node each frame was reached from', () => {
+    const frames = generateFrames(MPLS_PRESET)
+
+    expect(frames[0].fromNodeId).toBeNull() // the send starts at the source
+    expect(frames[3].fromNodeId).toBe('ler-a') // arrival at LSR-1 crossed from LER-A
+    expect(frames[4].fromNodeId).toBe('lsr-1') // the swap stands where the arrival parked
+  })
+
   it('drops the packet at the first node whose LFIB lacks the arriving label', () => {
     const preset = withLfib({
       'lsr-1': [{ inPort: 0, inLabel: 42, outPort: 2, outLabel: 18 }],
