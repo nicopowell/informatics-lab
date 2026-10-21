@@ -75,7 +75,8 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
             activeHop !== null && link.a === activeHop[0] && link.b === activeHop[1]
           const backwards =
             activeHop !== null && link.a === activeHop[1] && link.b === activeHop[0]
-          if (forwards || backwards) classes.push('mpls-graph__link--active')
+          const lit = forwards || backwards
+          if (lit) classes.push('mpls-graph__link--active')
           if (backwards) classes.push('mpls-graph__link--active-reverse')
 
           // Port numbers sit just past each node's edge, one end nudged to
@@ -95,6 +96,19 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
             <g key={key}>
               <line
                 className={classes.join(' ')}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+              />
+              <line
+                className={[
+                  'mpls-graph__link-flow',
+                  lit ? 'mpls-graph__link-flow--on' : '',
+                  backwards ? 'mpls-graph__link--active-reverse' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 x1={from.x}
                 y1={from.y}
                 x2={to.x}

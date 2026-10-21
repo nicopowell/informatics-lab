@@ -24,6 +24,9 @@
 .mpls-graph__link {
   stroke: var(--color-border);
   stroke-width: 2;
+  /* Declared on the base so the highlight fades IN and OUT — a transition
+     only on the active class snaps the old link dark the moment it changes. */
+  transition: stroke 300ms ease, stroke-width 300ms ease;
 }
 
 /* The configured path is a background fact, not an event: muted and thin
@@ -36,11 +39,22 @@
 .mpls-graph__link--active {
   stroke: var(--mpls-active);
   stroke-width: 4;
-  /* The lit link carries a flowing dash: it fades on smoothly and shows the
-     packet's direction of travel while the packet rides it. */
+}
+
+/* Every link carries its flow overlay at opacity 0: the dashes fade in and
+   out through opacity (which interpolates — a dasharray swap would pop) and
+   march only while the link is lit. */
+.mpls-graph__link-flow {
+  stroke: var(--mpls-active);
+  stroke-width: 4;
   stroke-dasharray: 10 8;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.mpls-graph__link-flow--on {
+  opacity: 1;
   animation: mpls-link-flow 420ms linear infinite;
-  transition: stroke 250ms ease, stroke-width 250ms ease;
 }
 
 /* Every preset link is drawn a→b in the packet's direction; a hop running
@@ -181,7 +195,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mpls-graph__link--active,
+  .mpls-graph__link,
+  .mpls-graph__link-flow,
+  .mpls-graph__link-flow--on,
   .mpls-graph__packet,
   .mpls-graph__packet-shape,
   .mpls-graph__packet-dot,

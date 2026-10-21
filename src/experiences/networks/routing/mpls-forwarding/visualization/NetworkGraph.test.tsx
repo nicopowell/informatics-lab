@@ -15,7 +15,7 @@ describe('NetworkGraph', () => {
   it('draws every node and physical link of the preset', () => {
     const html = render(MPLS_PRESET, 4) // a swap frame carries the badge
 
-    expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length)
+    expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length * 2) // base + flow overlay
     expect(html.match(/<circle /g)).toHaveLength(7) // five LSRs + packet dot + pulse
     expect(html.match(/<rect /g)).toHaveLength(5) // two LERs + two terminals + badge
   })
@@ -46,8 +46,23 @@ describe('NetworkGraph', () => {
   it('flows the dash toward the destination, and against it when reversed', () => {
     // The preset draws ler-a → lsr-1 in travel direction: forward flow.
     const forward = render(MPLS_PRESET, 3)
-    expect(forward).toContain('mpls-graph__link--active')
+    expect(forward).toContain('mpls-graph__link-flow--on')
     expect(forward).not.toContain('mpls-graph__link--active-reverse')
+
+    // A dropped packet has no lit hop: the overlay stays mounted but dark.
+    const dropped: Preset = {
+      ...MPLS_PRESET,
+      lfib: {
+        ...MPLS_PRESET.lfib,
+        'lsr-1': [{ inPort: 0, inLabel: 42, outPort: 2, outLabel: 18 }],
+      },
+    }
+    const dropFrames = generateFrames(dropped)
+    const dark = renderToStaticMarkup(
+      <NetworkGraph preset={dropped} frame={dropFrames[dropFrames.length - 1]} />,
+    )
+    expect(dark).toContain('mpls-graph__link-flow')
+    expect(dark).not.toContain('mpls-graph__link-flow--on')
 
     // The same hop on a link stored backwards must flow in reverse.
     const reversedPreset: Preset = {
