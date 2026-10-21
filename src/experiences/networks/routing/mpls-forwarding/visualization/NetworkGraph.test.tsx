@@ -13,7 +13,7 @@ function render(preset: Preset, frameIndex: number): string {
 
 describe('NetworkGraph', () => {
   it('draws every node and physical link of the preset', () => {
-    const html = render(MPLS_PRESET, 2) // a labelled frame carries the badge
+    const html = render(MPLS_PRESET, 3) // a swap frame carries the badge
 
     expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length)
     expect(html.match(/<circle /g)).toHaveLength(5) // the five LSRs
@@ -48,7 +48,8 @@ describe('NetworkGraph', () => {
     )
 
     expect(html).toContain('mpls-graph__node--delivered')
-    expect(html).not.toContain('mpls-graph__packet') // no label survives the pop
+    expect(html).toContain('mpls-graph__packet-dot') // bare packet: nothing survived the pop
+    expect(html).not.toContain('mpls-graph__label-chip')
   })
 
   it('flags the node where a broken chain drops the packet', () => {
@@ -67,5 +68,36 @@ describe('NetworkGraph', () => {
     expect(html).toContain('mpls-graph__node--dropped')
     expect(html).toContain('mpls-graph__packet--dropped')
     expect(html).toContain('>18<') // died carrying the label nothing matched
+  })
+
+  it('glides the packet between nodes instead of teleporting it', () => {
+    const html = render(MPLS_PRESET, 3) // parked at LSR-1 after the swap
+
+    // The transform must live in the style attribute (transitionable); the
+    // 400ms transition itself is declared in mplsForwarding.css.
+    expect(html).toContain('style="transform:translate(')
+  })
+
+  it('rings the node only on the arrival frame', () => {
+    expect(render(MPLS_PRESET, 2)).toContain('mpls-graph__arrival-ring')
+    expect(render(MPLS_PRESET, 3)).not.toContain('mpls-graph__arrival-ring')
+  })
+
+  it('shows a bare packet at the source terminal', () => {
+    const html = render(MPLS_PRESET, 0) // PC-A puts an unlabelled packet on the wire
+
+    expect(html).toContain('mpls-graph__packet-dot')
+    expect(html).not.toContain('mpls-graph__label-chip')
+  })
+
+  it('fades the label away on the pop', () => {
+    const frames = generateFrames(MPLS_PRESET)
+    const popIndex = frames.findIndex((frame) => frame.action === 'pop')
+    const html = renderToStaticMarkup(
+      <NetworkGraph preset={MPLS_PRESET} frame={frames[popIndex]} />,
+    )
+
+    expect(html).toContain('mpls-graph__packet--popping')
+    expect(html).toContain('>63<') // the label about to leave the packet
   })
 })

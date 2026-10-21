@@ -97,6 +97,88 @@
   fill: var(--mpls-dropped);
 }
 
+.mpls-graph__packet--dropped .mpls-graph__packet-dot {
+  fill: var(--mpls-dropped);
+}
+
+/* --- motion ---------------------------------------------------------------
+   The badge glides between nodes on a CSS transition and labels fade in and
+   out. Every bit of it turns off under prefers-reduced-motion: the frames
+   still tell the whole story, they just stop moving. */
+
+.mpls-graph__packet {
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mpls-graph__packet-dot {
+  fill: var(--mpls-tunnel);
+}
+
+.mpls-graph__label-text {
+  animation: mpls-label-in 280ms ease-out;
+}
+
+.mpls-graph__packet--popping rect,
+.mpls-graph__packet--popping text {
+  animation: mpls-label-pop 600ms ease-in forwards;
+}
+
+.mpls-graph__arrival-ring {
+  stroke: var(--mpls-active);
+  opacity: 0;
+  animation: mpls-arrival-ring 600ms ease-out forwards;
+}
+
+@keyframes mpls-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mpls-label-pop {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes mpls-arrival-ring {
+  from {
+    opacity: 0.55;
+    stroke-width: 3px;
+  }
+  to {
+    opacity: 0;
+    stroke-width: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpls-graph__packet,
+  .mpls-graph__label-text,
+  .mpls-graph__packet--popping rect,
+  .mpls-graph__packet--popping text,
+  .mpls-graph__arrival-ring,
+  .mpls-lfib__row--active td {
+    animation: none;
+    transition: none;
+  }
+
+  /* Without the animation the ring has nothing left to hide it. */
+  .mpls-graph__arrival-ring {
+    opacity: 0;
+  }
+}
+
 /* --- LFIB panel ---------------------------------------------------------- */
 
 .mpls-lfib {
@@ -137,6 +219,16 @@
 .mpls-lfib__row--active td {
   background: color-mix(in srgb, var(--mpls-active) 14%, transparent);
   font-weight: 700;
+  animation: mpls-row-light 320ms ease-out;
+}
+
+@keyframes mpls-row-light {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .mpls-lfib__row--missing td {

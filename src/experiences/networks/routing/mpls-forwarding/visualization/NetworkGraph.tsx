@@ -15,10 +15,10 @@ function linkKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`
 }
 
-// The packet badge shows the label the node has just written; a dropped packet
-// died carrying the label it arrived with, and send/received/pop carry nothing.
+// The packet badge shows the label on board: the push's new label at the
+// ingress, the incoming one on an arrival, the one about to leave on a pop.
+// A bare dot travels when no label is on board (send, after a pop, delivery).
 function packetLabel(frame: MplsFrame): number | null {
-  if (frame.action === 'pop') return null
   return frame.outLabel ?? frame.inLabel
 }
 
@@ -152,19 +152,52 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
         })}
       </g>
 
-      {label !== null && activeNode && (
+      {frame.action === 'arrive' && activeNode && (
+        <circle
+          className="mpls-graph__arrival-ring"
+          cx={activeNode.x}
+          cy={activeNode.y}
+          r={nodeShapeRadius(activeNode) + 5}
+          fill="none"
+        />
+      )}
+
+      {activeNode && (
         <g
-          className={
-            frame.action === 'dropped'
-              ? 'mpls-graph__packet mpls-graph__packet--dropped'
-              : 'mpls-graph__packet'
-          }
-          transform={`translate(${activeNode.x}, ${activeNode.y - nodeShapeRadius(activeNode) - 20})`}
+          className={[
+            'mpls-graph__packet',
+            frame.action === 'dropped' ? 'mpls-graph__packet--dropped' : '',
+            frame.action === 'pop' ? 'mpls-graph__packet--popping' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={{
+            transform: `translate(${activeNode.x}px, ${activeNode.y - nodeShapeRadius(activeNode) - 20}px)`,
+          }}
         >
-          <rect x={-24} y={-14} width={48} height={28} rx={7} />
-          <text x={0} y={6} textAnchor="middle">
-            {label}
-          </text>
+          {label !== null ? (
+            <>
+              <rect
+                className="mpls-graph__label-chip"
+                x={-24}
+                y={-14}
+                width={48}
+                height={28}
+                rx={7}
+              />
+              <text
+                key={label}
+                className="mpls-graph__label-text"
+                x={0}
+                y={6}
+                textAnchor="middle"
+              >
+                {label}
+              </text>
+            </>
+          ) : (
+            <circle className="mpls-graph__packet-dot" r={9} />
+          )}
         </g>
       )}
     </svg>
