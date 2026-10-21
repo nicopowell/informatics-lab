@@ -36,7 +36,6 @@ function MplsForwardingPage() {
   // playback index should not be able to address outside the frame list.
   const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
   const frame = frames[frameIndex]
-  const previousFrame = frameIndex > 0 ? frames[frameIndex - 1] : undefined
   const activeNode =
     preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
 
@@ -83,7 +82,7 @@ function MplsForwardingPage() {
               {frame.narration}
             </p>
             <div className="mpls__board">
-              <NetworkGraph preset={preset} frame={frame} previousFrame={previousFrame} />
+              <NetworkGraph preset={preset} frame={frame} />
               <LfibPanel
                 node={activeNode}
                 entries={lfib[frame.nodeId] ?? []}

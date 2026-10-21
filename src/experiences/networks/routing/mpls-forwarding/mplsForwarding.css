@@ -129,16 +129,13 @@
   animation: mpls-label-in 280ms ease-out;
 }
 
-.mpls-graph__arrival-ring {
+/* The pulse marks the frame where the table acts: the same instant the
+   LFIB row lights and the label morphs. Operation frames never travel —
+   the packet is already parked — so both stepping directions agree. */
+.mpls-graph__pulse {
   stroke: var(--mpls-active);
   opacity: 0;
-  animation: mpls-arrival-ring 600ms ease-out forwards;
-}
-
-/* The glide takes 400ms: hold the pulse until the packet actually lands.
-   Backward steps don't travel, so they pulse right away. */
-.mpls-graph__arrival-ring--after-travel {
-  animation-delay: 400ms;
+  animation: mpls-pulse 600ms ease-out forwards;
 }
 
 @keyframes mpls-label-in {
@@ -152,7 +149,7 @@
   }
 }
 
-@keyframes mpls-arrival-ring {
+@keyframes mpls-pulse {
   from {
     opacity: 0.55;
     stroke-width: 3px;
@@ -168,14 +165,14 @@
   .mpls-graph__packet-shape,
   .mpls-graph__packet-dot,
   .mpls-graph__label-text,
-  .mpls-graph__arrival-ring,
+  .mpls-graph__pulse,
   .mpls-lfib__row--active td {
     animation: none;
     transition: none;
   }
 
-  /* Without the animation the ring has nothing left to hide it. */
-  .mpls-graph__arrival-ring {
+  /* Without the animation the pulse has nothing left to hide it. */
+  .mpls-graph__pulse {
     opacity: 0;
   }
 }

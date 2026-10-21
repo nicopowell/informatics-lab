@@ -4,7 +4,6 @@ import type { Preset, TopologyNode } from '../logic/model'
 type NetworkGraphProps = {
   preset: Preset
   frame: MplsFrame
-  previousFrame?: MplsFrame
 }
 
 const LSR_RADIUS = 24
@@ -37,7 +36,7 @@ function nodeShapeRadius(node: TopologyNode): number {
  * same numbers the LFIB columns use. Links never disappear: the grey shortcuts
  * are what make "the path is configured, not discovered" visible.
  */
-function NetworkGraph({ preset, frame, previousFrame }: NetworkGraphProps) {
+function NetworkGraph({ preset, frame }: NetworkGraphProps) {
   const nodeById = new Map(preset.nodes.map((node) => [node.id, node]))
   const lspLinks = new Set<string>()
   for (let index = 0; index + 1 < preset.lsp.length; index++) {
@@ -48,10 +47,6 @@ function NetworkGraph({ preset, frame, previousFrame }: NetworkGraphProps) {
     frame.nextNodeId !== null ? linkKey(frame.nodeId, frame.nextNodeId) : null
   const label = packetLabel(frame)
   const activeNode = nodeById.get(frame.nodeId)
-  // A backward step re-renders the arrival at the same node, with no travel:
-  // only a real glide deserves the delayed pulse.
-  const arrivedByTravel =
-    previousFrame !== undefined && previousFrame.nodeId !== frame.nodeId
 
   return (
     <svg
@@ -158,11 +153,11 @@ function NetworkGraph({ preset, frame, previousFrame }: NetworkGraphProps) {
         })}
       </g>
 
-      {frame.action === 'arrive' && activeNode && (
+      {/* The pulse marks the frame where the table acts: the same instant
+          the LFIB row lights and the label morphs. */}
+      {frame.entry !== null && activeNode && (
         <circle
-          className={`mpls-graph__arrival-ring${
-            arrivedByTravel ? ' mpls-graph__arrival-ring--after-travel' : ''
-          }`}
+          className="mpls-graph__pulse"
           cx={activeNode.x}
           cy={activeNode.y}
           r={nodeShapeRadius(activeNode) + 5}

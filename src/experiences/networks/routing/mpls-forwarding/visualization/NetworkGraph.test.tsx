@@ -16,7 +16,7 @@ describe('NetworkGraph', () => {
     const html = render(MPLS_PRESET, 3) // a swap frame carries the badge
 
     expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length)
-    expect(html.match(/<circle /g)).toHaveLength(6) // the five LSRs + the packet dot
+    expect(html.match(/<circle /g)).toHaveLength(7) // five LSRs + packet dot + pulse
     expect(html.match(/<rect /g)).toHaveLength(5) // two LERs + two terminals + badge
   })
 
@@ -78,33 +78,11 @@ describe('NetworkGraph', () => {
     expect(html).toContain('style="transform:translate(')
   })
 
-  it('rings the node only on the arrival frame', () => {
-    expect(render(MPLS_PRESET, 2)).toContain('mpls-graph__arrival-ring')
-    expect(render(MPLS_PRESET, 3)).not.toContain('mpls-graph__arrival-ring')
-  })
-
-  it('holds the arrival pulse until the gliding packet lands', () => {
-    const frames = generateFrames(MPLS_PRESET)
-    const arriveIndex = frames.findIndex((frame) => frame.action === 'arrive')
-
-    const gliding = renderToStaticMarkup(
-      <NetworkGraph
-        preset={MPLS_PRESET}
-        frame={frames[arriveIndex]}
-        previousFrame={frames[arriveIndex - 1]}
-      />,
-    )
-    expect(gliding).toContain('mpls-graph__arrival-ring--after-travel')
-
-    // Stepping backward from the swap: same node, no travel, no delay.
-    const backward = renderToStaticMarkup(
-      <NetworkGraph
-        preset={MPLS_PRESET}
-        frame={frames[arriveIndex]}
-        previousFrame={frames[arriveIndex + 1]}
-      />,
-    )
-    expect(backward).not.toContain('mpls-graph__arrival-ring--after-travel')
+  it('rings the node on the frames where the table acts', () => {
+    expect(render(MPLS_PRESET, 1)).toContain('mpls-graph__pulse') // push at LER-A
+    expect(render(MPLS_PRESET, 3)).toContain('mpls-graph__pulse') // swap at LSR-1
+    // Arrival frames park the packet; the table is still silent there.
+    expect(render(MPLS_PRESET, 2)).not.toContain('mpls-graph__pulse')
   })
 
   it('grows the label chip out of the bare packet on the push', () => {
