@@ -17,7 +17,10 @@ export const MPLS_PRESET: Preset = {
     { id: 'lsr-2', label: 'LSR-2', kind: 'lsr', x: 455, y: 80 },
     { id: 'lsr-3', label: 'LSR-3', kind: 'lsr', x: 265, y: 230 },
     { id: 'lsr-4', label: 'LSR-4', kind: 'lsr', x: 455, y: 230 },
-    { id: 'lsr-5', label: 'LSR-5', kind: 'lsr', x: 575, y: 155 },
+    // y 200 instead of level with LER-B: at equal height its link to LER-B
+    // arrived at almost the same angle as lsr-2's shortcut and the two port
+    // numbers stacked on top of each other at the LER.
+    { id: 'lsr-5', label: 'LSR-5', kind: 'lsr', x: 575, y: 200 },
     { id: 'ler-b', label: 'LER-B', kind: 'egress', x: 700, y: 155 },
     { id: 'pc-b', label: 'PC-B', kind: 'host', x: 765, y: 155 },
   ],

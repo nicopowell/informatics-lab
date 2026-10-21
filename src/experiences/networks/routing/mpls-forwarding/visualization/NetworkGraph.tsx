@@ -74,8 +74,8 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const uy = dy / length
           const sideX = -uy * 9
           const sideY = ux * 9
-          const fromGap = nodeShapeRadius(from) + 8
-          const toGap = nodeShapeRadius(to) + 8
+          const fromGap = nodeShapeRadius(from) + 12
+          const toGap = nodeShapeRadius(to) + 12
 
           return (
             <g key={key}>
