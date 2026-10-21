@@ -43,12 +43,16 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
     lspLinks.add(linkKey(preset.lsp[index], preset.lsp[index + 1]))
   }
 
-  const outgoing =
-    frame.nextNodeId !== null ? linkKey(frame.nodeId, frame.nextNodeId) : null
-  // While the glide renders on the arrival frame, the packet is ON the link
-  // it just crossed: light it so the chosen hop never goes dark mid-travel.
-  const crossing =
-    frame.fromNodeId != null ? linkKey(frame.fromNodeId, frame.nodeId) : null
+  // The lit hop: the table's choice on operations, the link the packet is
+  // riding on arrivals (the glide renders there) — self-references never
+  // count as a hop. Light travels the preset's draw direction a→b; hops that
+  // run b→a get the reversed-flow class.
+  const activeHop =
+    frame.nextNodeId !== null && frame.nextNodeId !== frame.nodeId
+      ? ([frame.nodeId, frame.nextNodeId] as const)
+      : frame.fromNodeId != null && frame.fromNodeId !== frame.nodeId
+        ? ([frame.fromNodeId, frame.nodeId] as const)
+        : null
   const label = packetLabel(frame)
   const activeNode = nodeById.get(frame.nodeId)
 
@@ -67,7 +71,12 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const key = linkKey(link.a, link.b)
           const classes = ['mpls-graph__link']
           if (lspLinks.has(key)) classes.push('mpls-graph__link--lsp')
-          if (key === outgoing || key === crossing) classes.push('mpls-graph__link--active')
+          const forwards =
+            activeHop !== null && link.a === activeHop[0] && link.b === activeHop[1]
+          const backwards =
+            activeHop !== null && link.a === activeHop[1] && link.b === activeHop[0]
+          if (forwards || backwards) classes.push('mpls-graph__link--active')
+          if (backwards) classes.push('mpls-graph__link--active-reverse')
 
           // Port numbers sit just past each node's edge, one end nudged to
           // each side of the line: the two numbers of a short link can never

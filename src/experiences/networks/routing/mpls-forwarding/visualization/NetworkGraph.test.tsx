@@ -43,6 +43,27 @@ describe('NetworkGraph', () => {
     expect(render(MPLS_PRESET, 1)).toContain('mpls-graph__link--active')
   })
 
+  it('flows the dash toward the destination, and against it when reversed', () => {
+    // The preset draws ler-a → lsr-1 in travel direction: forward flow.
+    const forward = render(MPLS_PRESET, 3)
+    expect(forward).toContain('mpls-graph__link--active')
+    expect(forward).not.toContain('mpls-graph__link--active-reverse')
+
+    // The same hop on a link stored backwards must flow in reverse.
+    const reversedPreset: Preset = {
+      ...MPLS_PRESET,
+      links: MPLS_PRESET.links.map((link) =>
+        link.a === 'ler-a' && link.b === 'lsr-1'
+          ? { ...link, a: 'lsr-1', b: 'ler-a' }
+          : link,
+      ),
+    }
+    const reversed = renderToStaticMarkup(
+      <NetworkGraph preset={reversedPreset} frame={generateFrames(reversedPreset)[3]} />,
+    )
+    expect(reversed).toContain('mpls-graph__link--active-reverse')
+  })
+
   it('shows the label the packet carries at the current node', () => {
     const html = render(MPLS_PRESET, 4) // LSR-1 swapped 42 to 17 (frame 3 showed the arrival)
 

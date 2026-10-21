@@ -36,6 +36,26 @@
 .mpls-graph__link--active {
   stroke: var(--mpls-active);
   stroke-width: 4;
+  /* The lit link carries a flowing dash: it fades on smoothly and shows the
+     packet's direction of travel while the packet rides it. */
+  stroke-dasharray: 10 8;
+  animation: mpls-link-flow 420ms linear infinite;
+  transition: stroke 250ms ease, stroke-width 250ms ease;
+}
+
+/* Every preset link is drawn a→b in the packet's direction; a hop running
+   b→a (table edits can produce one) flows the opposite way. */
+.mpls-graph__link--active-reverse {
+  animation-direction: reverse;
+}
+
+@keyframes mpls-link-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -18px; /* one period: 10 dash + 8 gap */
+  }
 }
 
 .mpls-graph__node {
@@ -161,6 +181,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mpls-graph__link--active,
   .mpls-graph__packet,
   .mpls-graph__packet-shape,
   .mpls-graph__packet-dot,
