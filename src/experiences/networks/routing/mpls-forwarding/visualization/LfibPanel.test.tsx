@@ -35,7 +35,7 @@ describe('LfibPanel', () => {
   })
 
   it('lights the row the current frame used', () => {
-    const html = renderNode(MPLS_PRESET, 'lsr-1', 1) // frame visits LSR-1
+    const html = renderNode(MPLS_PRESET, 'lsr-1', 2) // frame 2 visits LSR-1
 
     expect(html).toContain('mpls-lfib__row--active')
     expect(html).toContain('42') // its input label is on screen
@@ -47,15 +47,14 @@ describe('LfibPanel', () => {
       ...MPLS_PRESET,
       lfib: {
         ...MPLS_PRESET.lfib,
-        'lsr-1': [{ inPort: 'if0', inLabel: 42, outPort: 'if2', outLabel: 18 }],
+        'lsr-1': [{ inPort: 0, inLabel: 42, outPort: 2, outLabel: 18 }],
       },
     }
     const frames = generateFrames(preset)
     const html = renderNode(preset, 'lsr-3', frames.length - 1)
 
     expect(html).toContain('mpls-lfib__row--missing')
-    expect(html).toContain('>if0<')
-    expect(html).toContain('>18<')
+    expect(html).toContain('>18<') // the orphan label, unique to the ghost row
   })
 
   it('shows no ghost row when the drop was a loop, not a missed lookup', () => {
@@ -71,7 +70,7 @@ describe('LfibPanel', () => {
           nodeId: 'lsr-4',
           action: 'dropped',
           dropReason: 'loop',
-          lookup: { port: 'if0', label: 25 },
+          lookup: { port: 0, label: 25 },
           entry: null,
           inLabel: 25,
           outLabel: null,
@@ -88,6 +87,14 @@ describe('LfibPanel', () => {
     const html = renderNode(MPLS_PRESET, 'lsr-2')
 
     expect(html).toContain('No entries — not on any LSP')
+  })
+
+  it('says terminals forward nothing instead of showing an empty grid', () => {
+    const html = renderNode(MPLS_PRESET, 'pc-a')
+
+    expect(html).toContain('Terminal device — no forwarding table')
+    expect(html).not.toContain('<table')
+    expect(html).not.toContain('LFIB — PC-A')
   })
 
   it('edits only numeric output labels and leaves the egress pop alone', () => {

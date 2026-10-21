@@ -8,7 +8,12 @@ label and its own forwarding table.
 - **Push, swap, pop:** the ingress LER pushes the first label; each LSR swaps it
   for the next one; the egress LER pops it and hands the packet to the destination
 - **The LFIB:** every row reads "input port, input label to output port, output
-  label" — a label carries no meaning outside the single node reading it
+  label" — ports are plain numbers (0, 1, 2 …) shared with the diagram — and a
+  label carries no meaning outside the single node reading it
+- **Terminals:** PC-A and PC-B sit outside the tunnel, plugged into numbered
+  ports of the two LERs. The run opens with PC-A handing the packet to its
+  gateway and closes with PC-B taking delivery after the pop — labels only
+  exist between the LERs
 - **The LSP:** the chain of rows forms a Label Switched Path, a tunnel laid over
   the physical topology — drawn here as the highlighted route while the grey
   links stay untouched
