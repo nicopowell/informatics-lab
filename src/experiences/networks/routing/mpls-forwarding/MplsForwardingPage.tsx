@@ -32,10 +32,11 @@ function MplsForwardingPage() {
   const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
   const playback = usePlayback(frames.length, delay)
-  // The clamp mirrors in both directions (R2-asymmetric-frame-clamp): the
+  // The clamp mirrors in both directions: the
   // playback index should not be able to address outside the frame list.
   const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
   const frame = frames[frameIndex]
+  const previousFrame = frameIndex > 0 ? frames[frameIndex - 1] : undefined
   const activeNode =
     preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
 
@@ -82,7 +83,7 @@ function MplsForwardingPage() {
               {frame.narration}
             </p>
             <div className="mpls__board">
-              <NetworkGraph preset={preset} frame={frame} />
+              <NetworkGraph preset={preset} frame={frame} previousFrame={previousFrame} />
               <LfibPanel
                 node={activeNode}
                 entries={lfib[frame.nodeId] ?? []}

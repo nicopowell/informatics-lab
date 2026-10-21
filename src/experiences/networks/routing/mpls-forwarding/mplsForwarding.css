@@ -135,6 +135,12 @@
   animation: mpls-arrival-ring 600ms ease-out forwards;
 }
 
+/* The glide takes 400ms: hold the pulse until the packet actually lands.
+   Backward steps don't travel, so they pulse right away. */
+.mpls-graph__arrival-ring--after-travel {
+  animation-delay: 400ms;
+}
+
 @keyframes mpls-label-in {
   from {
     opacity: 0;

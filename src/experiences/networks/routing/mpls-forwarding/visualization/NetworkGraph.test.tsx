@@ -83,6 +83,30 @@ describe('NetworkGraph', () => {
     expect(render(MPLS_PRESET, 3)).not.toContain('mpls-graph__arrival-ring')
   })
 
+  it('holds the arrival pulse until the gliding packet lands', () => {
+    const frames = generateFrames(MPLS_PRESET)
+    const arriveIndex = frames.findIndex((frame) => frame.action === 'arrive')
+
+    const gliding = renderToStaticMarkup(
+      <NetworkGraph
+        preset={MPLS_PRESET}
+        frame={frames[arriveIndex]}
+        previousFrame={frames[arriveIndex - 1]}
+      />,
+    )
+    expect(gliding).toContain('mpls-graph__arrival-ring--after-travel')
+
+    // Stepping backward from the swap: same node, no travel, no delay.
+    const backward = renderToStaticMarkup(
+      <NetworkGraph
+        preset={MPLS_PRESET}
+        frame={frames[arriveIndex]}
+        previousFrame={frames[arriveIndex + 1]}
+      />,
+    )
+    expect(backward).not.toContain('mpls-graph__arrival-ring--after-travel')
+  })
+
   it('grows the label chip out of the bare packet on the push', () => {
     const html = render(MPLS_PRESET, 1) // classify frame at LER-A
 
