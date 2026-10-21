@@ -4,6 +4,8 @@ import type { Preset, TopologyNode } from '../logic/model'
 type NetworkGraphProps = {
   preset: Preset
   frame: MplsFrame
+  selectedNodeId?: string | null
+  onSelectNode?: (nodeId: string) => void
 }
 
 const LSR_RADIUS = 24
@@ -36,7 +38,12 @@ function nodeShapeRadius(node: TopologyNode): number {
  * same numbers the LFIB columns use. Links never disappear: the grey shortcuts
  * are what make "the path is configured, not discovered" visible.
  */
-function NetworkGraph({ preset, frame }: NetworkGraphProps) {
+function NetworkGraph({
+  preset,
+  frame,
+  selectedNodeId,
+  onSelectNode,
+}: NetworkGraphProps) {
   const nodeById = new Map(preset.nodes.map((node) => [node.id, node]))
   const lspLinks = new Set<string>()
   for (let index = 0; index + 1 < preset.lsp.length; index++) {
@@ -145,7 +152,22 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           }
           const className = classes.join(' ')
           return (
-            <g key={node.id}>
+            <g
+              key={node.id}
+              className="mpls-graph__node-group"
+              {...(onSelectNode && {
+                role: 'button',
+                tabIndex: 0,
+                'aria-label': `Select ${node.label}`,
+                onClick: () => onSelectNode(node.id),
+                onKeyDown: (event: React.KeyboardEvent) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSelectNode(node.id)
+                  }
+                },
+              })}
+            >
               {node.kind === 'lsr' ? (
                 <circle className={className} cx={node.x} cy={node.y} r={LSR_RADIUS} />
               ) : node.kind === 'host' ? (
@@ -167,6 +189,33 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
                   rx={10}
                 />
               )}
+              {selectedNodeId === node.id &&
+                (node.kind === 'lsr' ? (
+                  <circle
+                    className="mpls-graph__selection"
+                    cx={node.x}
+                    cy={node.y}
+                    r={LSR_RADIUS + 7}
+                  />
+                ) : node.kind === 'host' ? (
+                  <rect
+                    className="mpls-graph__selection"
+                    x={node.x - HOST_HALF_WIDTH - 5}
+                    y={node.y - HOST_HALF_HEIGHT - 5}
+                    width={(HOST_HALF_WIDTH + 5) * 2}
+                    height={(HOST_HALF_HEIGHT + 5) * 2}
+                    rx={8}
+                  />
+                ) : (
+                  <rect
+                    className="mpls-graph__selection"
+                    x={node.x - LER_RADIUS - 5}
+                    y={node.y - LER_RADIUS + 1}
+                    width={(LER_RADIUS + 5) * 2}
+                    height={(LER_RADIUS + 5) * 2 - 12}
+                    rx={13}
+                  />
+                ))}
               <text
                 className="mpls-graph__label"
                 x={node.x}

@@ -43,6 +43,35 @@ describe('NetworkGraph', () => {
     expect(render(MPLS_PRESET, 1)).toContain('mpls-graph__link--active')
   })
 
+  it('exposes every node as a selectable control only when given a handler', () => {
+    const plain = render(MPLS_PRESET, 0) // no handler: display only
+    expect(plain).not.toContain('role="button"')
+
+    const html = renderToStaticMarkup(
+      <NetworkGraph
+        preset={MPLS_PRESET}
+        frame={generateFrames(MPLS_PRESET)[0]}
+        onSelectNode={() => undefined}
+      />,
+    )
+    expect(html.match(/role="button"/g)).toHaveLength(MPLS_PRESET.nodes.length)
+    expect(html).toContain('aria-label="Select LSR-3"')
+  })
+
+  it('rings the selected node with the neutral marquee', () => {
+    const html = renderToStaticMarkup(
+      <NetworkGraph
+        preset={MPLS_PRESET}
+        frame={generateFrames(MPLS_PRESET)[0]}
+        selectedNodeId="lsr-2"
+        onSelectNode={() => undefined}
+      />,
+    )
+
+    expect(html).toContain('mpls-graph__selection')
+    expect(render(MPLS_PRESET, 0)).not.toContain('mpls-graph__selection')
+  })
+
   it('flows the dash toward the destination, and against it when reversed', () => {
     // The preset draws ler-a → lsr-1 in travel direction: forward flow.
     const forward = render(MPLS_PRESET, 3)

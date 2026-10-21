@@ -110,6 +110,26 @@
   stroke-width: 3;
 }
 
+.mpls-graph__node-group {
+  cursor: pointer;
+}
+
+/* Chromium draws its focus rectangle on plain clicks too (Firefox keeps it
+   for keyboard focus only): show the box only for real keyboard focus, so
+   mouse selection never wears the Tab ring. */
+.mpls-graph__node-group:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* The selection marquee: a dashed neutral ring so it never reads as one of
+   the packet states (teal active, green delivered, red dropped). */
+.mpls-graph__selection {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+}
+
 /* Names live inside their shape: nothing hangs below a node for a port number
    to hit, and the role reads at a glance. */
 .mpls-graph__label {
