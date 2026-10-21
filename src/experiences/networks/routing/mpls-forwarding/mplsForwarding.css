@@ -45,16 +45,19 @@
    out through opacity (which interpolates — a dasharray swap would pop) and
    march only while the link is lit. */
 .mpls-graph__link-flow {
-  stroke: var(--mpls-active);
-  stroke-width: 4;
-  stroke-dasharray: 10 8;
+  /* Bright beads wider than the base line: same-color dashes vanish into
+     the solid line underneath, so the flow must read as its own layer. */
+  stroke: color-mix(in srgb, var(--mpls-active) 35%, white);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 3 15;
   opacity: 0;
   transition: opacity 300ms ease;
 }
 
 .mpls-graph__link-flow--on {
   opacity: 1;
-  animation: mpls-link-flow 420ms linear infinite;
+  animation: mpls-link-flow 500ms linear infinite;
 }
 
 /* Every preset link is drawn a→b in the packet's direction; a hop running
