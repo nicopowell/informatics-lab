@@ -13,7 +13,7 @@ function render(preset: Preset, frameIndex: number): string {
 
 describe('NetworkGraph', () => {
   it('draws every node and physical link of the preset', () => {
-    const html = render(MPLS_PRESET, 3) // a swap frame carries the badge
+    const html = render(MPLS_PRESET, 4) // a swap frame carries the badge
 
     expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length)
     expect(html.match(/<circle /g)).toHaveLength(7) // five LSRs + packet dot + pulse
@@ -28,7 +28,7 @@ describe('NetworkGraph', () => {
   })
 
   it('tunnels the five LSP links under the single hop the packet is about to take', () => {
-    const html = render(MPLS_PRESET, 1) // at LER-A, next hop LSR-1
+    const html = render(MPLS_PRESET, 2) // after the push at LER-A, next hop LSR-1
 
     expect(html.match(/mpls-graph__link--lsp/g)).toHaveLength(5)
     expect(html.match(/mpls-graph__link--active/g)).toHaveLength(1)
@@ -36,7 +36,7 @@ describe('NetworkGraph', () => {
   })
 
   it('shows the label the packet carries at the current node', () => {
-    const html = render(MPLS_PRESET, 3) // LSR-1 swapped 42 to 17 (frame 2 showed the arrival)
+    const html = render(MPLS_PRESET, 4) // LSR-1 swapped 42 to 17 (frame 3 showed the arrival)
 
     expect(html).toContain('>17<')
   })
@@ -71,7 +71,7 @@ describe('NetworkGraph', () => {
   })
 
   it('glides the packet between nodes instead of teleporting it', () => {
-    const html = render(MPLS_PRESET, 3) // parked at LSR-1 after the swap
+    const html = render(MPLS_PRESET, 4) // parked at LSR-1 after the swap
 
     // The transform must live in the style attribute (transitionable); the
     // 400ms transition itself is declared in mplsForwarding.css.
@@ -79,14 +79,14 @@ describe('NetworkGraph', () => {
   })
 
   it('rings the node on the frames where the table acts', () => {
-    expect(render(MPLS_PRESET, 1)).toContain('mpls-graph__pulse') // push at LER-A
-    expect(render(MPLS_PRESET, 3)).toContain('mpls-graph__pulse') // swap at LSR-1
+    expect(render(MPLS_PRESET, 2)).toContain('mpls-graph__pulse') // push at LER-A
+    expect(render(MPLS_PRESET, 4)).toContain('mpls-graph__pulse') // swap at LSR-1
     // Arrival frames park the packet; the table is still silent there.
-    expect(render(MPLS_PRESET, 2)).not.toContain('mpls-graph__pulse')
+    expect(render(MPLS_PRESET, 3)).not.toContain('mpls-graph__pulse')
   })
 
   it('grows the label chip out of the bare packet on the push', () => {
-    const html = render(MPLS_PRESET, 1) // classify frame at LER-A
+    const html = render(MPLS_PRESET, 2) // classify frame at LER-A
 
     expect(html).toContain('scale(1)') // chip expanded
     expect(html).toContain('opacity:0') // dot faded away

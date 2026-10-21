@@ -8,13 +8,14 @@ function withLfib(changes: Record<string, LfibEntry[]>): Preset {
 }
 
 describe('generateFrames', () => {
-  it('walks terminal to terminal, splitting each labelled router visit in two', () => {
+  it('walks terminal to terminal, splitting each router visit in two', () => {
     const frames = generateFrames(MPLS_PRESET)
 
     expect(
       frames.map((frame) => [frame.nodeId, frame.action, frame.inLabel, frame.outLabel, frame.nextNodeId]),
     ).toEqual([
       ['pc-a', 'send', null, null, 'ler-a'],
+      ['ler-a', 'arrive', null, null, 'ler-a'], // the ingress arrival is bare, like every other visit
       ['ler-a', 'classify', null, 42, 'lsr-1'],
       ['lsr-1', 'arrive', 42, null, 'lsr-1'], // the incoming label gets its own frame
       ['lsr-1', 'swap', 42, 17, 'lsr-3'],
@@ -35,6 +36,7 @@ describe('generateFrames', () => {
 
     expect(narrations).toEqual([
       'PC-A sends 10.0.7.0/24 to gateway LER-A',
+      'LER-A receives an unlabelled packet on port 1',
       'LER-A classifies 10.0.7.0/24, pushes label 42 and sends to LSR-1',
       'LSR-1 receives label 42 on port 0',
       'LSR-1 swaps label 42 to 17, out 2 to LSR-3',
@@ -64,7 +66,7 @@ describe('generateFrames', () => {
 
     expect(frames[0].lookup).toBeUndefined() // send: nothing to look up
     expect(frames.at(-1)!.lookup).toBeUndefined() // receive: nothing to look up
-    expect(frames[1].lookup).toEqual({ port: 1, label: '10.0.7.0/24' }) // arrives at LER-A on port 1
+    expect(frames[2].lookup).toEqual({ port: 1, label: '10.0.7.0/24' }) // classify arrives at LER-A on port 1
   })
 
   it('drops the packet at the first node whose LFIB lacks the arriving label', () => {
@@ -75,6 +77,7 @@ describe('generateFrames', () => {
 
     expect(frames.map((frame) => frame.nodeId)).toEqual([
       'pc-a',
+      'ler-a',
       'ler-a',
       'lsr-1',
       'lsr-1',
@@ -101,6 +104,7 @@ describe('generateFrames', () => {
 
     expect(frames.map((frame) => frame.nodeId)).toEqual([
       'pc-a',
+      'ler-a',
       'ler-a',
       'lsr-1',
       'lsr-1',

@@ -100,20 +100,23 @@ export function generateFrames(preset: Preset): MplsFrame[] {
       // a hand-edited preset, never from the edit UI.
     }
 
-    // A labelled arrival gets its own frame first: the incoming label is on
-    // screen before this node's table changes it — the same reason sorting
-    // shows the compare before the swap.
-    if (carried !== null) {
-      frames.push({
-        nodeId,
-        action: 'arrive',
-        entry: null,
-        inLabel: carried,
-        outLabel: null,
-        nextNodeId: node.id,
-        narration: `${node.label} receives label ${carried} on port ${arrivalPort}`,
-      })
-    }
+    // Every router visit gets an arrival frame first: the packet parks with
+    // its incoming state on screen — its label, or bare at the ingress —
+    // before this node's table acts (sorting shows the compare before the
+    // swap for the same reason). With the travel animation this also keeps
+    // one frame one moment: the push never shares the frame with the glide.
+    frames.push({
+      nodeId,
+      action: 'arrive',
+      entry: null,
+      inLabel: carried,
+      outLabel: null,
+      nextNodeId: node.id,
+      narration:
+        carried === null
+          ? `${node.label} receives an unlabelled packet on port ${arrivalPort}`
+          : `${node.label} receives label ${carried} on port ${arrivalPort}`,
+    })
 
     const lookup: FrameLookup = { port: arrivalPort, label: lookupLabel }
     const entry = (preset.lfib[nodeId] ?? []).find(
