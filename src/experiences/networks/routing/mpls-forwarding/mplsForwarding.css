@@ -56,7 +56,9 @@
 }
 
 .mpls-graph__link-flow--on {
-  opacity: 1;
+  /* Translucent beads: present enough to read as flow, soft enough not to
+     shout over the lit line they ride on. */
+  opacity: 0.6;
   animation: mpls-link-flow 500ms linear infinite;
 }
 
