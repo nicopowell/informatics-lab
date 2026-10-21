@@ -66,7 +66,6 @@ describe('LfibPanel', () => {
         node={node}
         entries={MPLS_PRESET.lfib['lsr-4'] ?? []}
         frame={{
-          hop: 6,
           nodeId: 'lsr-4',
           action: 'dropped',
           dropReason: 'loop',

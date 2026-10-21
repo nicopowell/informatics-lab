@@ -32,7 +32,7 @@ describe('the MPLS forwarding route', () => {
 
     expect(html).toContain('PC-A sends 10.0.7.0/24 to gateway LER-A')
     expect(html).toContain('Terminal device — no forwarding table')
-    expect(html).toContain('aria-label="Speed"')
+    expect(html).toContain('Push / swap / pop') // page-owned counter label
     expect(html).toContain('Restore LFIB')
   })
 })

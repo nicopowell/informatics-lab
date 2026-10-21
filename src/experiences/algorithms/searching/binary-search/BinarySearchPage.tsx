@@ -4,7 +4,8 @@ import AppShell from '@/components/AppShell'
 import CodePanel from '@/experience/CodePanel'
 import CodeToggle from '@/experience/CodeToggle'
 import MarkdownDescription from '@/experience/MarkdownDescription'
-import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
+import PlaybackControls from '@/experience/PlaybackControls'
+import { frameDelay } from '@/experience/frameDelay'
 import { usePlayback } from '@/experience/usePlayback'
 import ArrayCells from './visualization/ArrayCells'
 import { createSortedArray, generateBinarySearchSteps } from './logic/binarySearch'
@@ -23,15 +24,6 @@ const SLOWEST_DELAY = 2500
 const FASTEST_DELAY = 100
 // Movement should not drag when playing at a slow speed.
 const MAX_TRANSITION = 500
-
-// A geometric ramp keeps the low speeds genuinely slow and the high speeds
-// genuinely fast, with a comfortable pace around the default.
-function frameDelay(speed: number): number {
-  const ratio = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)
-  return Math.round(
-    SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio),
-  )
-}
 
 type SearchState = {
   values: number[]
@@ -88,7 +80,7 @@ function BinarySearchPage() {
     [search.values, search.key],
   )
   const totalComparisons = frames[frames.length - 1].comparisons
-  const delay = frameDelay(speed)
+  const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
 
   const playback = usePlayback(frames.length, delay)

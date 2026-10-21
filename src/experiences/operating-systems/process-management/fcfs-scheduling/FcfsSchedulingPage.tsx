@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
 import MarkdownDescription from '@/experience/MarkdownDescription'
-import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
+import PlaybackControls from '@/experience/PlaybackControls'
+import { frameDelay } from '@/experience/frameDelay'
 import { usePlayback } from '@/experience/usePlayback'
 import {
   createConvoyProcesses,
@@ -27,13 +28,6 @@ const FASTEST_DELAY = 90
 // Movement should not drag when playing at a slow speed.
 const MAX_TRANSITION = 500
 
-// A geometric ramp keeps the low speeds genuinely slow and the high speeds
-// genuinely fast, with a comfortable pace around the default.
-function frameDelay(speed: number): number {
-  const ratio = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)
-  return Math.round(SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio))
-}
-
 function FcfsSchedulingPage() {
   const [count, setCount] = useState(INITIAL_PROCESSES)
   const [processes, setProcesses] = useState(() =>
@@ -46,7 +40,7 @@ function FcfsSchedulingPage() {
     [processes],
   )
   const makespan = frames[frames.length - 1].time
-  const delay = frameDelay(speed)
+  const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
 
   const playback = usePlayback(frames.length, delay)
