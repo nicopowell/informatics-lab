@@ -35,7 +35,7 @@ describe('LfibPanel', () => {
   })
 
   it('lights the row the current frame used', () => {
-    const html = renderNode(MPLS_PRESET, 'lsr-1', 2) // frame 2 visits LSR-1
+    const html = renderNode(MPLS_PRESET, 'lsr-1', 3) // frame 3 is the swap; 2 was the arrival
 
     expect(html).toContain('mpls-lfib__row--active')
     expect(html).toContain('42') // its input label is on screen

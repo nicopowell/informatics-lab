@@ -36,13 +36,16 @@ describe('NetworkGraph', () => {
   })
 
   it('shows the label the packet carries at the current node', () => {
-    const html = render(MPLS_PRESET, 2) // LSR-1 swapped 42 to 17
+    const html = render(MPLS_PRESET, 3) // LSR-1 swapped 42 to 17 (frame 2 showed the arrival)
 
     expect(html).toContain('>17<')
   })
 
   it('marks the sink terminal when the packet is delivered', () => {
-    const html = render(MPLS_PRESET, 7) // PC-B receives
+    const frames = generateFrames(MPLS_PRESET)
+    const html = renderToStaticMarkup(
+      <NetworkGraph preset={MPLS_PRESET} frame={frames[frames.length - 1]} />,
+    )
 
     expect(html).toContain('mpls-graph__node--delivered')
     expect(html).not.toContain('mpls-graph__packet') // no label survives the pop

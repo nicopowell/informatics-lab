@@ -65,7 +65,7 @@ function MplsForwardingPage() {
   const swaps = visited.filter((candidate) => candidate.action === 'swap').length
   const pops = visited.filter((candidate) => candidate.action === 'pop').length
   const counts = [
-    { label: 'Hop', value: `${frameIndex + 1} / ${frames.length}` },
+    { label: 'Frame', value: `${frameIndex + 1} / ${frames.length}` },
     { label: 'Label', value: frame.outLabel ?? frame.inLabel ?? '—' },
     { label: 'Push / swap / pop', value: `${pushes} / ${swaps} / ${pops}` },
   ]
