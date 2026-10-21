@@ -2,12 +2,18 @@ import type { LfibEntry, Preset, TopologyNode } from './model'
 
 export type FrameAction = 'classify' | 'swap' | 'pop' | 'dropped'
 
+// Why a frame stopped. Only 'no-entry' means a lookup ran and found nothing;
+// the loop guard fires before any lookup and the other two are entry-level
+// faults. The LFIB panel draws its ghost row for 'no-entry' alone.
+export type DropReason = 'no-entry' | 'invalid-pop' | 'bad-port' | 'loop'
+
 export type FrameLookup = { port: string; label: number | string }
 
 export type MplsFrame = {
   hop: number
   nodeId: string
   action: FrameAction
+  dropReason?: DropReason // present exactly when action is 'dropped'
   lookup: FrameLookup // what this node searched its LFIB for
   entry: LfibEntry | null // the row that decided the frame; null when nothing matched
   inLabel: number | null // label on arrival; null at the ingress, before any push
@@ -34,7 +40,17 @@ export function generateFrames(preset: Preset): MplsFrame[] {
     if (!node) break
 
     if (frames.length >= preset.nodes.length) {
-      frames.push(dropFrame(preset, node, { port: arrivalPort, label: lookupLabel }, carried))
+      frames.push(
+        droppedFrame({
+          hop: frames.length,
+          node,
+          lookup: { port: arrivalPort, label: lookupLabel },
+          entry: null,
+          inLabel: carried,
+          reason: 'loop',
+          narration: `Forwarding loop at ${node.label} — packet dropped`,
+        }),
+      )
       break
     }
 
@@ -45,17 +61,17 @@ export function generateFrames(preset: Preset): MplsFrame[] {
     const hop = frames.length
 
     if (!entry) {
-      frames.push({
-        hop,
-        nodeId,
-        action: 'dropped',
-        lookup,
-        entry: null,
-        inLabel: carried,
-        outLabel: null,
-        nextNodeId: null,
-        narration: `${node.label} has no LFIB entry for port ${arrivalPort}, label ${lookupLabel} — packet dropped`,
-      })
+      frames.push(
+        droppedFrame({
+          hop,
+          node,
+          lookup,
+          entry: null,
+          inLabel: carried,
+          reason: 'no-entry',
+          narration: `${node.label} has no LFIB entry for port ${arrivalPort}, label ${lookupLabel} — packet dropped`,
+        }),
+      )
       break
     }
 
@@ -63,17 +79,17 @@ export function generateFrames(preset: Preset): MplsFrame[] {
       if (carried === null) {
         // Unreachable from the edit UI (only numeric labels are editable) but a
         // hand-edited preset could push 'pop' at the ingress: fail visibly.
-        frames.push({
-          hop,
-          nodeId,
-          action: 'dropped',
-          lookup,
-          entry,
-          inLabel: null,
-          outLabel: null,
-          nextNodeId: null,
-          narration: `${node.label} cannot pop a label it never pushed — packet dropped`,
-        })
+        frames.push(
+          droppedFrame({
+            hop,
+            node,
+            lookup,
+            entry,
+            inLabel: null,
+            reason: 'invalid-pop',
+            narration: `${node.label} cannot pop a label it never pushed — packet dropped`,
+          }),
+        )
         break
       }
       frames.push({
@@ -93,17 +109,17 @@ export function generateFrames(preset: Preset): MplsFrame[] {
     const outLabel = entry.outLabel
     const hopOut = resolveHop(preset, node, entry.outPort, nodeById)
     if (!hopOut) {
-      frames.push({
-        hop,
-        nodeId,
-        action: 'dropped',
-        lookup,
-        entry,
-        inLabel: carried,
-        outLabel: null,
-        nextNodeId: null,
-        narration: `${node.label} sends label ${outLabel} to unconnected port ${entry.outPort} — packet dropped`,
-      })
+      frames.push(
+        droppedFrame({
+          hop,
+          node,
+          lookup,
+          entry,
+          inLabel: carried,
+          reason: 'bad-port',
+          narration: `${node.label} sends label ${outLabel} to unconnected port ${entry.outPort} — packet dropped`,
+        }),
+      )
       break
     }
 
@@ -134,22 +150,28 @@ export function generateFrames(preset: Preset): MplsFrame[] {
   return frames
 }
 
-function dropFrame(
-  preset: Preset,
-  node: TopologyNode,
-  lookup: FrameLookup,
-  carried: number | null,
-): MplsFrame {
+// Every stopped packet is built here so dropped frames cannot drift apart:
+// no label is ever written (outLabel null) and no hop follows (nextNodeId null).
+function droppedFrame(parts: {
+  hop: number
+  node: TopologyNode
+  lookup: FrameLookup
+  entry: LfibEntry | null
+  inLabel: number | null
+  reason: DropReason
+  narration: string
+}): MplsFrame {
   return {
-    hop: preset.nodes.length,
-    nodeId: node.id,
+    hop: parts.hop,
+    nodeId: parts.node.id,
     action: 'dropped',
-    lookup,
-    entry: null,
-    inLabel: carried,
+    dropReason: parts.reason,
+    lookup: parts.lookup,
+    entry: parts.entry,
+    inLabel: parts.inLabel,
     outLabel: null,
     nextNodeId: null,
-    narration: `Forwarding loop at ${node.label} — packet dropped`,
+    narration: parts.narration,
   }
 }
 

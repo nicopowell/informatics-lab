@@ -52,6 +52,7 @@ describe('generateFrames', () => {
     expect(frames.at(-1)).toMatchObject({
       nodeId: 'lsr-3',
       action: 'dropped',
+      dropReason: 'no-entry',
       lookup: { port: 'if0', label: 18 },
       entry: null,
       outLabel: null,
@@ -83,6 +84,7 @@ describe('generateFrames', () => {
     const last = frames.at(-1)!
 
     expect(last.action).toBe('dropped')
+    expect(last.dropReason).toBe('loop')
     expect(last.nodeId).toBe('lsr-4')
     expect(last.narration).toContain('loop')
     expect(frames.length).toBeLessThanOrEqual(preset.nodes.length + 1)

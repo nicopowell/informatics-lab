@@ -75,7 +75,9 @@ function LfibPanel({
   onOutLabelChange,
 }: LfibPanelProps) {
   const showingFrameNode = frame.nodeId === node.id
-  const lookupFailed = showingFrameNode && frame.action === 'dropped'
+  // Only a missed lookup draws the ghost row: a loop drop never searched, and
+  // entry-level faults light the row that made the decision instead.
+  const lookupMissed = showingFrameNode && frame.dropReason === 'no-entry'
 
   return (
     <div className="mpls-lfib">
@@ -116,7 +118,7 @@ function LfibPanel({
               </tr>
             )
           })}
-          {lookupFailed && (
+          {lookupMissed && (
             <tr className="mpls-lfib__row mpls-lfib__row--missing">
               <td>{frame.lookup.port}</td>
               <td>{frame.lookup.label}</td>
@@ -126,7 +128,7 @@ function LfibPanel({
           )}
         </tbody>
       </table>
-      {entries.length === 0 && !lookupFailed && (
+      {entries.length === 0 && !lookupMissed && (
         <p className="mpls-lfib__empty">No entries — not on any LSP</p>
       )}
     </div>
