@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
 import MarkdownDescription from '@/experience/MarkdownDescription'
@@ -8,6 +8,8 @@ import { usePlayback } from '@/experience/usePlayback'
 import type { LfibEntry, Preset } from './logic/model'
 import { generateFrames } from './logic/frames'
 import { panelNodeId, toggleSelection } from './logic/panelView'
+import { followScroll } from './logic/follow'
+import { ZOOM_LEVELS, zoomPercent, zoomStep } from './logic/zoom'
 import { MPLS_PRESET } from './logic/preset'
 import NetworkGraph from './visualization/NetworkGraph'
 import LfibPanel from './visualization/LfibPanel'
@@ -24,6 +26,7 @@ function MplsForwardingPage() {
   const [lfib, setLfib] = useState(MPLS_PRESET.lfib)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const [zoom, setZoom] = useState(1)
 
   // Frames and the LFIB panel must read the same lfib object: the panel lights
   // its active row by reference identity, so nothing here may clone the tables
@@ -48,6 +51,33 @@ function MplsForwardingPage() {
   )
   const shownNode =
     preset.nodes.find((node) => node.id === shownNodeId) ?? preset.nodes[0]
+  const packetNode =
+    preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
+
+  // Follow the packet across the zoomed viewport: when a new frame lands
+  // outside the visible window, pan the view back to it (a no-op at fit,
+  // where nothing is scrollable — logic/follow.ts owns the geometry).
+  const viewportRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+    const target = followScroll(
+      { x: packetNode.x, y: packetNode.y },
+      { width: viewport.clientWidth, height: viewport.clientHeight },
+      // The real scroll extents, never viewport×zoom: an element that
+      // renders wider than the visible column would lie about both.
+      { width: viewport.scrollWidth, height: viewport.scrollHeight },
+      { left: viewport.scrollLeft, top: viewport.scrollTop },
+    )
+    if (target) {
+      // One atomic scroll: two property sets in the same tick would let the
+      // second (top) cancel the first's in-flight smooth animation — Chrome
+      // cancels any running smooth scroll when a new one starts, which kept
+      // the horizontal follow permanently at zero. The CSS scroll-behavior
+      // (smooth, or auto under reduced-motion) picks the animation mode.
+      viewport.scrollTo({ left: target.left, top: target.top })
+    }
+  }, [frameIndex, zoom, packetNode.x, packetNode.y])
 
   // Any table edit invalidates the current position in the execution.
   function replaceLfib(next: Record<string, LfibEntry[]>) {
@@ -92,14 +122,49 @@ function MplsForwardingPage() {
               {frame.narration}
             </p>
             <div className="mpls__board">
-              <NetworkGraph
-                preset={preset}
-                frame={frame}
-                selectedNodeId={selectedNodeId}
-                onSelectNode={(nodeId) =>
-                  setSelectedNodeId(toggleSelection(selectedNodeId, nodeId))
-                }
-              />
+              <div
+                className="mpls__graph-zoomwrap"
+                style={{ '--mpls-zoom': `${zoom * 100}%` } as CSSProperties}
+              >
+                <div className="mpls__zoom" role="group" aria-label="Graph zoom">
+                  <button
+                    type="button"
+                    className="ui-button"
+                    aria-label="Zoom out"
+                    disabled={zoom === ZOOM_LEVELS[0]}
+                    onClick={() => setZoom((level) => zoomStep(level, -1))}
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    className="ui-button"
+                    aria-label="Reset zoom to 100%"
+                    onClick={() => setZoom(1)}
+                  >
+                    {zoomPercent(zoom)}
+                  </button>
+                  <button
+                    type="button"
+                    className="ui-button"
+                    aria-label="Zoom in"
+                    disabled={zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]}
+                    onClick={() => setZoom((level) => zoomStep(level, 1))}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="mpls__graph-zoom" ref={viewportRef}>
+                  <NetworkGraph
+                    preset={preset}
+                    frame={frame}
+                    selectedNodeId={selectedNodeId}
+                    onSelectNode={(nodeId) =>
+                      setSelectedNodeId(toggleSelection(selectedNodeId, nodeId))
+                    }
+                  />
+                </div>
+              </div>
               <LfibPanel
                 node={shownNode}
                 entries={lfib[shownNode.id] ?? []}

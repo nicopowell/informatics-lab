@@ -220,6 +220,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mpls__graph-zoom {
+    scroll-behavior: auto;
+  }
+
   .mpls-graph__link,
   .mpls-graph__link-flow,
   .mpls-graph__link-flow--on,
@@ -237,6 +241,46 @@
   .mpls-graph__pulse {
     opacity: 0;
   }
+}
+
+/* --- graph zoom -----------------------------------------------------------
+   Fit (100%) is the authored default — the page looks exactly like every
+   other experience until someone presses a button. The viewport keeps the
+   viewBox' aspect ratio so its footprint NEVER changes with zoom: the SVG
+   grows inside the fixed frame and scrolling moves the view over it, like
+   a map reader, instead of pushing the page layout around. */
+.mpls__graph-zoomwrap {
+  position: relative;
+  /* Grid items default to min-width: auto: an oversized intrinsic child
+     would stretch this box past its column and the stage would clip the
+     overflow invisibly — zero is the canonical guard. */
+  min-width: 0;
+}
+
+.mpls__graph-zoom {
+  min-width: 0;
+  aspect-ratio: 830 / 300;
+  overflow: auto;
+  /* Follow-scrolls glide instead of jumping; reduced-motion turns it off. */
+  scroll-behavior: smooth;
+}
+
+.mpls__graph-zoom .mpls-graph {
+  width: var(--mpls-zoom, 100%);
+}
+
+.mpls__zoom {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mpls__zoom .ui-button {
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
 }
 
 /* --- LFIB panel ---------------------------------------------------------- */
