@@ -16,7 +16,7 @@ describe('NetworkGraph', () => {
     const html = render(MPLS_PRESET, 3) // a swap frame carries the badge
 
     expect(html.match(/<line /g)).toHaveLength(MPLS_PRESET.links.length)
-    expect(html.match(/<circle /g)).toHaveLength(5) // the five LSRs
+    expect(html.match(/<circle /g)).toHaveLength(6) // the five LSRs + the packet dot
     expect(html.match(/<rect /g)).toHaveLength(5) // two LERs + two terminals + badge
   })
 
@@ -49,7 +49,7 @@ describe('NetworkGraph', () => {
 
     expect(html).toContain('mpls-graph__node--delivered')
     expect(html).toContain('mpls-graph__packet-dot') // bare packet: nothing survived the pop
-    expect(html).not.toContain('mpls-graph__label-chip')
+    expect(html).toContain('scale(0)') // the chip stays collapsed
   })
 
   it('flags the node where a broken chain drops the packet', () => {
@@ -83,21 +83,30 @@ describe('NetworkGraph', () => {
     expect(render(MPLS_PRESET, 3)).not.toContain('mpls-graph__arrival-ring')
   })
 
+  it('grows the label chip out of the bare packet on the push', () => {
+    const html = render(MPLS_PRESET, 1) // classify frame at LER-A
+
+    expect(html).toContain('scale(1)') // chip expanded
+    expect(html).toContain('opacity:0') // dot faded away
+    expect(html).toContain('>42<')
+  })
+
   it('shows a bare packet at the source terminal', () => {
     const html = render(MPLS_PRESET, 0) // PC-A puts an unlabelled packet on the wire
 
     expect(html).toContain('mpls-graph__packet-dot')
-    expect(html).not.toContain('mpls-graph__label-chip')
+    expect(html).toContain('scale(0)') // chip collapsed
   })
 
-  it('fades the label away on the pop', () => {
+  it('converts the label back into a bare packet on the pop', () => {
     const frames = generateFrames(MPLS_PRESET)
     const popIndex = frames.findIndex((frame) => frame.action === 'pop')
     const html = renderToStaticMarkup(
       <NetworkGraph preset={MPLS_PRESET} frame={frames[popIndex]} />,
     )
 
-    expect(html).toContain('mpls-graph__packet--popping')
-    expect(html).toContain('>63<') // the label about to leave the packet
+    expect(html).toContain('scale(0)') // chip collapsing back to the dot
+    expect(html).toContain('mpls-graph__packet-dot')
+    expect(html).not.toContain('>63<') // the label is gone here
   })
 })

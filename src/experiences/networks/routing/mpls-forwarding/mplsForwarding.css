@@ -26,9 +26,11 @@
   stroke-width: 2;
 }
 
+/* The configured path is a background fact, not an event: muted and thin
+   until the packet is on it (the active link carries the bright color). */
 .mpls-graph__link--lsp {
-  stroke: var(--mpls-tunnel);
-  stroke-width: 4;
+  stroke: color-mix(in srgb, var(--mpls-tunnel) 40%, transparent);
+  stroke-width: 3;
 }
 
 .mpls-graph__link--active {
@@ -110,17 +112,21 @@
   transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* The chip and the dot morph into each other: the chip scales 0 to 1 and
+   the dot fades the other way, around their shared centre. transform-origin
+   must be the local 0,0 — the default would pivot on the viewBox. */
+.mpls-graph__packet-shape {
+  transform-origin: 0 0;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .mpls-graph__packet-dot {
   fill: var(--mpls-tunnel);
+  transition: opacity 220ms ease;
 }
 
 .mpls-graph__label-text {
   animation: mpls-label-in 280ms ease-out;
-}
-
-.mpls-graph__packet--popping rect,
-.mpls-graph__packet--popping text {
-  animation: mpls-label-pop 600ms ease-in forwards;
 }
 
 .mpls-graph__arrival-ring {
@@ -140,17 +146,6 @@
   }
 }
 
-@keyframes mpls-label-pop {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-
 @keyframes mpls-arrival-ring {
   from {
     opacity: 0.55;
@@ -164,9 +159,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .mpls-graph__packet,
+  .mpls-graph__packet-shape,
+  .mpls-graph__packet-dot,
   .mpls-graph__label-text,
-  .mpls-graph__packet--popping rect,
-  .mpls-graph__packet--popping text,
   .mpls-graph__arrival-ring,
   .mpls-lfib__row--active td {
     animation: none;

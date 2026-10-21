@@ -16,9 +16,10 @@ function linkKey(a: string, b: string): string {
 }
 
 // The packet badge shows the label on board: the push's new label at the
-// ingress, the incoming one on an arrival, the one about to leave on a pop.
-// A bare dot travels when no label is on board (send, after a pop, delivery).
+// ingress and the incoming one on an arrival. A pop converts the chip back
+// to the bare-packet dot, which is also how send and delivery travel.
 function packetLabel(frame: MplsFrame): number | null {
+  if (frame.action === 'pop') return null
   return frame.outLabel ?? frame.inLabel
 }
 
@@ -164,27 +165,31 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
 
       {activeNode && (
         <g
-          className={[
-            'mpls-graph__packet',
-            frame.action === 'dropped' ? 'mpls-graph__packet--dropped' : '',
-            frame.action === 'pop' ? 'mpls-graph__packet--popping' : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
+          className={
+            frame.action === 'dropped'
+              ? 'mpls-graph__packet mpls-graph__packet--dropped'
+              : 'mpls-graph__packet'
+          }
           style={{
             transform: `translate(${activeNode.x}px, ${activeNode.y - nodeShapeRadius(activeNode) - 20}px)`,
           }}
         >
-          {label !== null ? (
-            <>
-              <rect
-                className="mpls-graph__label-chip"
-                x={-24}
-                y={-14}
-                width={48}
-                height={28}
-                rx={7}
-              />
+          {/* Both shapes are always here: the push grows the chip out of the
+              dot and the pop collapses it back, instead of one shape
+              swapping for the other. */}
+          <g
+            className="mpls-graph__packet-shape"
+            style={{ transform: `scale(${label !== null ? 1 : 0})` }}
+          >
+            <rect
+              className="mpls-graph__label-chip"
+              x={-24}
+              y={-14}
+              width={48}
+              height={28}
+              rx={7}
+            />
+            {label !== null && (
               <text
                 key={label}
                 className="mpls-graph__label-text"
@@ -194,10 +199,13 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
               >
                 {label}
               </text>
-            </>
-          ) : (
-            <circle className="mpls-graph__packet-dot" r={9} />
-          )}
+            )}
+          </g>
+          <circle
+            className="mpls-graph__packet-dot"
+            r={9}
+            style={{ opacity: label !== null ? 0 : 1 }}
+          />
         </g>
       )}
     </svg>
