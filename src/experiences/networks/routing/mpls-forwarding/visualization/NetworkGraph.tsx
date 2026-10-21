@@ -50,7 +50,7 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
   return (
     <svg
       className="mpls-graph"
-      viewBox="0 0 800 300"
+      viewBox="0 0 830 300"
       role="img"
       aria-label="MPLS topology with the labelled packet"
     >
