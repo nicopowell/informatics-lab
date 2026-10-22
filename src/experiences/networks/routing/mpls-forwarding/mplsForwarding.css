@@ -120,7 +120,7 @@
 }
 
 .mpls-lfib__row--active td {
-  background: rgba(45, 212, 191, 0.14);
+  background: color-mix(in srgb, var(--mpls-active) 14%, transparent);
   font-weight: 700;
 }
 

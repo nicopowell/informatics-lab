@@ -39,7 +39,7 @@ function MplsForwardingPage() {
   const playback = usePlayback(frames.length, delay)
   const frame = frames[Math.min(playback.frameIndex, frames.length - 1)]
   const activeNode =
-    MPLS_PRESET.nodes.find((node) => node.id === frame.nodeId) ?? MPLS_PRESET.nodes[0]
+    preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
 
   // Any table edit invalidates the current position in the execution.
   function replaceLfib(next: Record<string, LfibEntry[]>) {
@@ -60,6 +60,9 @@ function MplsForwardingPage() {
   }
 
   const visited = frames.slice(0, playback.frameIndex + 1)
+  // Every classify frame is exactly one push — the ingress is the only node
+  // that runs it — so the counter keeps the three operations description.md
+  // teaches while the frames keep the precise action name.
   const pushes = visited.filter((candidate) => candidate.action === 'classify').length
   const swaps = visited.filter((candidate) => candidate.action === 'swap').length
   const pops = visited.filter((candidate) => candidate.action === 'pop').length

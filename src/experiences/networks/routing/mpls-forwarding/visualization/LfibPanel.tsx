@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { MplsFrame } from '../logic/frames'
+import { parseLabelInput } from '../logic/labelInput'
 import type { LfibEntry, TopologyNode } from '../logic/model'
 
 type LfibPanelProps = {
@@ -8,6 +10,56 @@ type LfibPanelProps = {
   // Editable tables must keep reference identity: frames and this panel read
   // the same lfib object, never a clone between them (see the page invariant).
   onOutLabelChange?: (entry: LfibEntry, value: number) => void
+}
+
+/*
+ * The box a reader types into is local state: frames, the table and the
+ * playback position change only when the edit is finished (blur or Enter),
+ * because a committed edit resets the run and resetting per keystroke makes
+ * two-digit labels impossible to type. An empty or garbled box reverts.
+ */
+function LabelEditor({
+  node,
+  entry,
+  onOutLabelChange,
+}: {
+  node: TopologyNode
+  entry: LfibEntry
+  onOutLabelChange: (entry: LfibEntry, value: number) => void
+}) {
+  const [text, setText] = useState(String(entry.outLabel))
+
+  // Restore LFIB (or any external rewrite) replaces the row: the box follows
+  // it through the render-phase adjustment React recommends instead of an
+  // effect that would fight the typing state.
+  const [lastOutLabel, setLastOutLabel] = useState(entry.outLabel)
+  if (lastOutLabel !== entry.outLabel) {
+    setLastOutLabel(entry.outLabel)
+    setText(String(entry.outLabel))
+  }
+
+  function commit() {
+    const parsed = parseLabelInput(text)
+    if (parsed === null || parsed === entry.outLabel) {
+      setText(String(entry.outLabel))
+      return
+    }
+    onOutLabelChange(entry, parsed)
+  }
+
+  return (
+    <input
+      className="mpls-lfib__label-input"
+      type="number"
+      aria-label={`${node.label} output label after ${entry.inPort}, label ${entry.inLabel}`}
+      value={text}
+      onChange={(event) => setText(event.target.value)}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') commit()
+      }}
+    />
+  )
 }
 
 /*
@@ -23,7 +75,9 @@ function LfibPanel({
   onOutLabelChange,
 }: LfibPanelProps) {
   const showingFrameNode = frame.nodeId === node.id
-  const lookupFailed = showingFrameNode && frame.action === 'dropped'
+  // Only a missed lookup draws the ghost row: a loop drop never searched, and
+  // entry-level faults light the row that made the decision instead.
+  const lookupMissed = showingFrameNode && frame.dropReason === 'no-entry'
 
   return (
     <div className="mpls-lfib">
@@ -52,14 +106,10 @@ function LfibPanel({
                 <td>{entry.outPort}</td>
                 <td>
                   {onOutLabelChange && typeof entry.outLabel === 'number' ? (
-                    <input
-                      className="mpls-lfib__label-input"
-                      type="number"
-                      aria-label={`${node.label} output label after ${entry.inPort}, label ${entry.inLabel}`}
-                      value={entry.outLabel}
-                      onChange={(event) =>
-                        onOutLabelChange(entry, Number(event.target.value))
-                      }
+                    <LabelEditor
+                      node={node}
+                      entry={entry}
+                      onOutLabelChange={onOutLabelChange}
                     />
                   ) : (
                     entry.outLabel
@@ -68,7 +118,7 @@ function LfibPanel({
               </tr>
             )
           })}
-          {lookupFailed && (
+          {lookupMissed && (
             <tr className="mpls-lfib__row mpls-lfib__row--missing">
               <td>{frame.lookup.port}</td>
               <td>{frame.lookup.label}</td>
@@ -78,7 +128,7 @@ function LfibPanel({
           )}
         </tbody>
       </table>
-      {entries.length === 0 && !lookupFailed && (
+      {entries.length === 0 && !lookupMissed && (
         <p className="mpls-lfib__empty">No entries — not on any LSP</p>
       )}
     </div>

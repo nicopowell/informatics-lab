@@ -58,6 +58,32 @@ describe('LfibPanel', () => {
     expect(html).toContain('>18<')
   })
 
+  it('shows no ghost row when the drop was a loop, not a missed lookup', () => {
+    // The loop guard drops before any lookup runs, so claiming that a port and
+    // label found no row would report a search that never happened.
+    const node = MPLS_PRESET.nodes.find((candidate) => candidate.id === 'lsr-4')!
+    const html = renderToStaticMarkup(
+      <LfibPanel
+        node={node}
+        entries={MPLS_PRESET.lfib['lsr-4'] ?? []}
+        frame={{
+          hop: 6,
+          nodeId: 'lsr-4',
+          action: 'dropped',
+          dropReason: 'loop',
+          lookup: { port: 'if0', label: 25 },
+          entry: null,
+          inLabel: 25,
+          outLabel: null,
+          nextNodeId: null,
+          narration: 'Forwarding loop at LSR-4 — packet dropped',
+        }}
+      />,
+    )
+
+    expect(html).not.toContain('mpls-lfib__row--missing')
+  })
+
   it('says why a table with no rows cannot forward', () => {
     const html = renderNode(MPLS_PRESET, 'lsr-2')
 
