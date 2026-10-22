@@ -56,6 +56,13 @@ Topics and experiences that are not implemented yet appear as "coming soon".
   choose a search key, and follow how the search range narrows until the value
   is found or ruled out.
 
+- **Sequential Search** (`src/experiences/algorithms/searching/sequential-search`): generate an
+  unsorted array, choose a search key, and follow the scan one position at a
+  time until the key matches or every position has been checked. It needs no
+  ordering — that freedom has a price: at length 8 a key in the last position
+  or missing entirely costs all 8 comparisons, where Binary Search spends at
+  most 4 on the same sorted array.
+
 - **FCFS Scheduling**
   (`src/experiences/operating-systems/process-management/fcfs-scheduling`): step a
   set of processes through the CPU one time unit at a time and follow the Gantt

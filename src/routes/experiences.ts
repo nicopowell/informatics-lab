@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import BinarySearchPage from '@/experiences/algorithms/searching/binary-search/BinarySearchPage'
+import SequentialSearchPage from '@/experiences/algorithms/searching/sequential-search/SequentialSearchPage'
 import BubbleSortPage from '@/experiences/algorithms/sorting/bubble-sort/BubbleSortPage'
 import SelectionSortPage from '@/experiences/algorithms/sorting/selection-sort/SelectionSortPage'
 import InsertionSortPage from '@/experiences/algorithms/sorting/insertion-sort/InsertionSortPage'
@@ -15,6 +16,7 @@ export const EXPERIENCES: Record<string, ComponentType> = {
   'selection-sort': SelectionSortPage,
   'insertion-sort': InsertionSortPage,
   'binary-search': BinarySearchPage,
+  'sequential-search': SequentialSearchPage,
   'fcfs-scheduling': FcfsSchedulingPage,
   'sjf-scheduling': SjfSchedulingPage,
   'round-robin-scheduling': RoundRobinSchedulingPage,
