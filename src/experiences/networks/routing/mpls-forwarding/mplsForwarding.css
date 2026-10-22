@@ -1,0 +1,153 @@
+/* Topology + LFIB layout for the MPLS experience. Colors follow the palette
+   the scheduling board established for process hues. */
+.mpls {
+  --mpls-tunnel: #38bdf8;
+  --mpls-active: #2dd4bf;
+  --mpls-dropped: #fb7185;
+}
+
+.mpls__board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* --- topology ------------------------------------------------------------ */
+
+.mpls-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mpls-graph__link {
+  stroke: var(--color-border);
+  stroke-width: 2;
+}
+
+.mpls-graph__link--lsp {
+  stroke: var(--mpls-tunnel);
+  stroke-width: 4;
+}
+
+.mpls-graph__link--active {
+  stroke: var(--mpls-active);
+  stroke-width: 4;
+}
+
+.mpls-graph__node {
+  fill: var(--color-bg);
+  stroke: var(--color-text-muted);
+  stroke-width: 2;
+}
+
+.mpls-graph__node--ingress,
+.mpls-graph__node--egress {
+  stroke: var(--color-text);
+}
+
+.mpls-graph__node--active {
+  stroke: var(--mpls-active);
+  stroke-width: 3;
+}
+
+.mpls-graph__node--delivered {
+  stroke: var(--color-success);
+  stroke-width: 3;
+}
+
+.mpls-graph__node--dropped {
+  stroke: var(--mpls-dropped);
+  stroke-width: 3;
+}
+
+.mpls-graph__label {
+  fill: var(--color-text-muted);
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.mpls-graph__packet rect {
+  fill: var(--mpls-tunnel);
+}
+
+.mpls-graph__packet text {
+  fill: #0b0c0e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mpls-graph__packet--dropped rect {
+  fill: var(--mpls-dropped);
+}
+
+/* --- LFIB panel ---------------------------------------------------------- */
+
+.mpls-lfib {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.mpls-lfib__title {
+  margin: 0 0 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mpls-lfib__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.mpls-lfib__table th {
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-align: left;
+}
+
+.mpls-lfib__table td {
+  padding: 0.35rem 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.mpls-lfib__row--active td {
+  background: rgba(45, 212, 191, 0.14);
+  font-weight: 700;
+}
+
+.mpls-lfib__row--missing td {
+  color: var(--mpls-dropped);
+  border-top: 1px dashed var(--mpls-dropped);
+}
+
+.mpls-lfib__empty {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.mpls-lfib__label-input {
+  width: 4.5rem;
+  padding: 0.15rem 0.3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+}
+
+/* The table needs the full width once the graph stacks above it. */
+@media (max-width: 900px) {
+  .mpls__board {
+    grid-template-columns: 1fr;
+  }
+}

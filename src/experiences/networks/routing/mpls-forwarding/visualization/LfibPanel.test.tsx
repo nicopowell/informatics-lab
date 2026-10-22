@@ -1,19 +1,25 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
-import type { Preset } from '../logic/model'
+import type { LfibEntry, Preset } from '../logic/model'
 import { generateFrames } from '../logic/frames'
 import { MPLS_PRESET } from '../logic/preset'
 import LfibPanel from './LfibPanel'
 
 const HEADERS = ['Input port', 'Input label', 'Output port', 'Output label']
 
-function renderNode(preset: Preset, nodeId: string, frameIndex = 0): string {
+function renderNode(
+  preset: Preset,
+  nodeId: string,
+  frameIndex = 0,
+  onOutLabelChange?: (entry: LfibEntry, value: number) => void,
+): string {
   const node = preset.nodes.find((candidate) => candidate.id === nodeId)!
   return renderToStaticMarkup(
     <LfibPanel
       node={node}
       entries={preset.lfib[nodeId] ?? []}
       frame={generateFrames(preset)[frameIndex]}
+      onOutLabelChange={onOutLabelChange}
     />,
   )
 }
@@ -56,5 +62,15 @@ describe('LfibPanel', () => {
     const html = renderNode(MPLS_PRESET, 'lsr-2')
 
     expect(html).toContain('No entries — not on any LSP')
+  })
+
+  it('edits only numeric output labels and leaves the egress pop alone', () => {
+    const editable = renderNode(MPLS_PRESET, 'lsr-1', 0, () => {})
+    expect(editable).toContain('type="number"')
+    expect(editable).toContain('value="17"')
+
+    const egress = renderNode(MPLS_PRESET, 'ler-b', 0, () => {})
+    expect(egress).not.toContain('type="number"')
+    expect(egress).toContain('pop')
   })
 })

@@ -285,6 +285,35 @@ function SjfSchedulingArt() {
   )
 }
 
+function MplsForwardingArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      {/* the physical shortcut the packet never takes */}
+      <path
+        d="M25 70 H175"
+        stroke="rgba(255, 255, 255, 0.22)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      {/* the LSP tunnel laid over the topology */}
+      <path
+        d="M25 70 L70 35 H130 L175 70"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <g fill="currentColor">
+        <circle cx="70" cy="35" r="7" />
+        <circle cx="130" cy="35" r="7" />
+        <rect x="58" y="10" width="26" height="15" rx="4" opacity="0.9" />
+        <rect x="18" y="62" width="14" height="16" rx="4" opacity="0.55" />
+        <rect x="168" y="62" width="14" height="16" rx="4" opacity="0.55" />
+      </g>
+    </svg>
+  )
+}
+
 function FallbackExperienceArt() {
   return (
     <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
@@ -314,6 +343,7 @@ const ART: Record<string, ReactNode> = {
   'fcfs-scheduling': <FcfsSchedulingArt />,
   'sjf-scheduling': <SjfSchedulingArt />,
   'round-robin-scheduling': <RoundRobinSchedulingArt />,
+  'mpls-forwarding': <MplsForwardingArt />,
 }
 
 type ExperienceArtProps = {

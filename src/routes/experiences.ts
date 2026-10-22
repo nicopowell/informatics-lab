@@ -6,6 +6,7 @@ import InsertionSortPage from '@/experiences/algorithms/sorting/insertion-sort/I
 import FcfsSchedulingPage from '@/experiences/operating-systems/process-management/fcfs-scheduling/FcfsSchedulingPage'
 import SjfSchedulingPage from '@/experiences/operating-systems/process-management/sjf-scheduling/SjfSchedulingPage'
 import RoundRobinSchedulingPage from '@/experiences/operating-systems/process-management/round-robin-scheduling/RoundRobinSchedulingPage'
+import MplsForwardingPage from '@/experiences/networks/routing/mpls-forwarding/MplsForwardingPage'
 
 // Implemented experiences. This map is the single source of truth for what the
 // catalogue may offer as available.
@@ -17,6 +18,7 @@ export const EXPERIENCES: Record<string, ComponentType> = {
   'fcfs-scheduling': FcfsSchedulingPage,
   'sjf-scheduling': SjfSchedulingPage,
   'round-robin-scheduling': RoundRobinSchedulingPage,
+  'mpls-forwarding': MplsForwardingPage,
 }
 
 /*
