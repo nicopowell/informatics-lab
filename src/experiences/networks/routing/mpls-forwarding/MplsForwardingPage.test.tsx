@@ -27,11 +27,11 @@ describe('the MPLS forwarding route', () => {
     expect(html).not.toContain('coming soon')
   })
 
-  it('opens on the ingress classification with the ingress LFIB on screen', () => {
+  it('opens on the source terminal with the no-table note on screen', () => {
     const html = renderExperienceRoute()
 
-    expect(html).toContain('classifies 10.0.7.0/24, pushes label 42')
-    expect(html).toContain('LFIB — LER-A')
+    expect(html).toContain('PC-A sends 10.0.7.0/24 to gateway LER-A')
+    expect(html).toContain('Terminal device — no forwarding table')
     expect(html).toContain('aria-label="Speed"')
     expect(html).toContain('Restore LFIB')
   })

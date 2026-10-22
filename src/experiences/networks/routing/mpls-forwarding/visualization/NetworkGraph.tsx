@@ -8,23 +8,32 @@ type NetworkGraphProps = {
 
 const LSR_RADIUS = 24
 const LER_RADIUS = 30
+const HOST_HALF_WIDTH = 17
+const HOST_HALF_HEIGHT = 13
 
 function linkKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`
 }
 
 // The packet badge shows the label the node has just written; a dropped packet
-// died carrying the label it arrived with, and a popped one carries nothing.
+// died carrying the label it arrived with, and send/received/pop carry nothing.
 function packetLabel(frame: MplsFrame): number | null {
   if (frame.action === 'pop') return null
   return frame.outLabel ?? frame.inLabel
 }
 
+function nodeShapeRadius(node: TopologyNode): number {
+  if (node.kind === 'lsr') return LSR_RADIUS
+  if (node.kind === 'host') return HOST_HALF_WIDTH
+  return LER_RADIUS
+}
+
 /*
  * The topology in SVG: physical links under the highlighted LSP tunnel, the
- * node the packet is visiting lit up, and the packet's label badge on top of
- * it. Links never disappear — the grey shortcuts are what make "the path is
- * configured, not discovered" visible without a sentence.
+ * node the packet is visiting lit up, the packet's label badge on top of it,
+ * and a small number beside every link endpoint naming that node's port — the
+ * same numbers the LFIB columns use. Links never disappear: the grey shortcuts
+ * are what make "the path is configured, not discovered" visible.
  */
 function NetworkGraph({ preset, frame }: NetworkGraphProps) {
   const nodeById = new Map(preset.nodes.map((node) => [node.id, node]))
@@ -41,7 +50,7 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
   return (
     <svg
       className="mpls-graph"
-      viewBox="0 0 760 300"
+      viewBox="0 0 800 300"
       role="img"
       aria-label="MPLS topology with the labelled packet"
     >
@@ -54,15 +63,43 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const classes = ['mpls-graph__link']
           if (lspLinks.has(key)) classes.push('mpls-graph__link--lsp')
           if (key === outgoing) classes.push('mpls-graph__link--active')
+
+          // Port numbers sit just past each node's edge, nudged off the line
+          // so both ends of a short link never collide.
+          const dx = to.x - from.x
+          const dy = to.y - from.y
+          const length = Math.hypot(dx, dy) || 1
+          const ux = dx / length
+          const uy = dy / length
+          const sideX = -uy * 9
+          const sideY = ux * 9
+          const fromGap = nodeShapeRadius(from) + 8
+          const toGap = nodeShapeRadius(to) + 8
+
           return (
-            <line
-              key={key}
-              className={classes.join(' ')}
-              x1={from.x}
-              y1={from.y}
-              x2={to.x}
-              y2={to.y}
-            />
+            <g key={key}>
+              <line
+                className={classes.join(' ')}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+              />
+              <text
+                className="mpls-graph__port"
+                x={from.x + ux * fromGap + sideX}
+                y={from.y + uy * fromGap + sideY + 3}
+              >
+                {link.aPort}
+              </text>
+              <text
+                className="mpls-graph__port"
+                x={to.x - ux * toGap + sideX}
+                y={to.y - uy * toGap + sideY + 3}
+              >
+                {link.bPort}
+              </text>
+            </g>
           )
         })}
       </g>
@@ -72,7 +109,7 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const classes = ['mpls-graph__node', `mpls-graph__node--${node.kind}`]
           if (node.id === frame.nodeId) {
             if (frame.action === 'dropped') classes.push('mpls-graph__node--dropped')
-            else if (frame.action === 'pop') classes.push('mpls-graph__node--delivered')
+            else if (frame.action === 'received') classes.push('mpls-graph__node--delivered')
             else classes.push('mpls-graph__node--active')
           }
           const className = classes.join(' ')
@@ -80,6 +117,15 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
             <g key={node.id}>
               {node.kind === 'lsr' ? (
                 <circle className={className} cx={node.x} cy={node.y} r={LSR_RADIUS} />
+              ) : node.kind === 'host' ? (
+                <rect
+                  className={className}
+                  x={node.x - HOST_HALF_WIDTH}
+                  y={node.y - HOST_HALF_HEIGHT}
+                  width={HOST_HALF_WIDTH * 2}
+                  height={HOST_HALF_HEIGHT * 2}
+                  rx={5}
+                />
               ) : (
                 <rect
                   className={className}
@@ -119,10 +165,6 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
       )}
     </svg>
   )
-}
-
-function nodeShapeRadius(node: TopologyNode): number {
-  return node.kind === 'lsr' ? LSR_RADIUS : LER_RADIUS
 }
 
 export default NetworkGraph

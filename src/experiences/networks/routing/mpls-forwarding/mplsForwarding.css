@@ -47,6 +47,13 @@
   stroke: var(--color-text);
 }
 
+/* Terminals read as endpoints, not routers: a dashed edge says the packet
+   stops here and no table lives inside. */
+.mpls-graph__node--host {
+  stroke: var(--color-text);
+  stroke-dasharray: 5 3;
+}
+
 .mpls-graph__node--active {
   stroke: var(--mpls-active);
   stroke-width: 3;
@@ -65,6 +72,12 @@
 .mpls-graph__label {
   fill: var(--color-text-muted);
   font-size: 13px;
+  text-anchor: middle;
+}
+
+.mpls-graph__port {
+  fill: var(--color-text-muted);
+  font-size: 10px;
   text-anchor: middle;
 }
 
