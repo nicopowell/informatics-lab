@@ -25,6 +25,12 @@ describe('the MPLS forwarding route', () => {
     expect(html).toContain('MPLS Forwarding')
     // Not the catalogue's "coming soon" placeholder for an unregistered id.
     expect(html).not.toContain('coming soon')
+    // The graph sits in its zoom viewport: fit is the default and the
+    // controls step through the levels from logic/zoom.ts.
+    expect(html).toContain('aria-label="Graph zoom"')
+    expect(html).toContain('aria-label="Zoom in"')
+    expect(html).toContain('aria-label="Zoom out"')
+    expect(html).toContain('mpls__graph-zoom')
   })
 
   it('opens on the source terminal with the no-table note on screen', () => {
