@@ -32,7 +32,7 @@ function MplsForwardingPage() {
   const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
   const playback = usePlayback(frames.length, delay)
-  // The clamp mirrors in both directions (R2-asymmetric-frame-clamp): the
+  // The clamp mirrors in both directions: the
   // playback index should not be able to address outside the frame list.
   const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
   const frame = frames[frameIndex]
@@ -65,7 +65,7 @@ function MplsForwardingPage() {
   const swaps = visited.filter((candidate) => candidate.action === 'swap').length
   const pops = visited.filter((candidate) => candidate.action === 'pop').length
   const counts = [
-    { label: 'Hop', value: `${frameIndex + 1} / ${frames.length}` },
+    { label: 'Frame', value: `${frameIndex + 1} / ${frames.length}` },
     { label: 'Label', value: frame.outLabel ?? frame.inLabel ?? '—' },
     { label: 'Push / swap / pop', value: `${pushes} / ${swaps} / ${pops}` },
   ]

@@ -2,6 +2,7 @@ import type { LfibEntry, Preset, TopologyNode } from './model'
 
 export type FrameAction =
   | 'send' // the source terminal puts the unlabelled packet on the wire
+  | 'arrive' // a labelled packet stands at a router before its table acts
   | 'classify' // the ingress pushes: destination -> FEC -> first label
   | 'swap' // each LSR trades its label for the next one
   | 'pop' // the egress removes the label and hands the packet to its port
@@ -24,7 +25,8 @@ export type MplsFrame = {
   entry: LfibEntry | null // the row that decided the frame; null when nothing matched
   inLabel: number | null // label on arrival; null before the push and after the pop
   outLabel: number | null // label on departure; null once popped or dropped
-  nextNodeId: string | null // where the packet goes next; null once it stops
+  nextNodeId: string | null // where it goes next: own id while standing at a node, null once it stops
+  fromNodeId?: string | null // the node this frame was reached from; lights the crossing link
   narration: string
   dropReason?: DropReason // present exactly when action is 'dropped'
 }
@@ -41,12 +43,13 @@ export function generateFrames(preset: Preset): MplsFrame[] {
   let arrivalPort: number | null = null // null until the first link is crossed
   let carried: number | null = null // no label exists before the ingress push
   let lookupLabel: number | string = preset.destination
+  let visits = 1 // node visits, not frames: arrivals give some visits two frames
 
   for (;;) {
     const node = nodeById.get(nodeId)
     if (!node) break
 
-    if (frames.length >= preset.nodes.length) {
+    if (visits > preset.nodes.length) {
       frames.push(
         droppedFrame({
           node,
@@ -77,6 +80,7 @@ export function generateFrames(preset: Preset): MplsFrame[] {
         })
         arrivalPort = terminal.arrivalPort
         nodeId = terminal.node.id
+        visits += 1
         continue
       }
       if (carried === null) {
@@ -96,6 +100,24 @@ export function generateFrames(preset: Preset): MplsFrame[] {
       // lookup below cannot match and the packet drops — only reachable from
       // a hand-edited preset, never from the edit UI.
     }
+
+    // Every router visit gets an arrival frame first: the packet parks with
+    // its incoming state on screen — its label, or bare at the ingress —
+    // before this node's table acts (sorting shows the compare before the
+    // swap for the same reason). With the travel animation this also keeps
+    // one frame one moment: the push never shares the frame with the glide.
+    frames.push({
+      nodeId,
+      action: 'arrive',
+      entry: null,
+      inLabel: carried,
+      outLabel: null,
+      nextNodeId: node.id,
+      narration:
+        carried === null
+          ? `${node.label} receives an unlabelled packet on port ${arrivalPort}`
+          : `${node.label} receives label ${carried} on port ${arrivalPort}`,
+    })
 
     const lookup: FrameLookup = { port: arrivalPort, label: lookupLabel }
     const entry = (preset.lfib[nodeId] ?? []).find(
@@ -159,6 +181,7 @@ export function generateFrames(preset: Preset): MplsFrame[] {
       carried = null // the packet crosses the last link unlabelled
       arrivalPort = sink.arrivalPort
       nodeId = sink.node.id
+      visits += 1
       continue
     }
 
@@ -199,9 +222,16 @@ export function generateFrames(preset: Preset): MplsFrame[] {
     lookupLabel = outLabel
     arrivalPort = hopOut.arrivalPort
     nodeId = hopOut.node.id
+    visits += 1
   }
 
-  return frames
+  // Every frame remembers the node it was reached from. The graph lights the
+  // crossed link on arrival frames — during the glide — so a chosen hop stays
+  // lit from the swap that chose it until the next operation takes over.
+  return frames.map((frame, index) => ({
+    ...frame,
+    fromNodeId: index === 0 ? null : frames[index - 1].nodeId,
+  }))
 }
 
 // Every stopped packet is built here so dropped frames cannot drift apart:

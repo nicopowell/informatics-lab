@@ -24,16 +24,57 @@
 .mpls-graph__link {
   stroke: var(--color-border);
   stroke-width: 2;
+  /* Declared on the base so the highlight fades IN and OUT — a transition
+     only on the active class snaps the old link dark the moment it changes. */
+  transition: stroke 300ms ease, stroke-width 300ms ease;
 }
 
+/* The configured path is a background fact, not an event: muted and thin
+   until the packet is on it (the active link carries the bright color). */
 .mpls-graph__link--lsp {
-  stroke: var(--mpls-tunnel);
-  stroke-width: 4;
+  stroke: color-mix(in srgb, var(--mpls-tunnel) 40%, transparent);
+  stroke-width: 3;
 }
 
 .mpls-graph__link--active {
   stroke: var(--mpls-active);
   stroke-width: 4;
+}
+
+/* Every link carries its flow overlay at opacity 0: the dashes fade in and
+   out through opacity (which interpolates — a dasharray swap would pop) and
+   march only while the link is lit. */
+.mpls-graph__link-flow {
+  /* Bright beads wider than the base line: same-color dashes vanish into
+     the solid line underneath, so the flow must read as its own layer. */
+  stroke: color-mix(in srgb, var(--mpls-active) 35%, white);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 3 15;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.mpls-graph__link-flow--on {
+  /* Translucent beads: present enough to read as flow, soft enough not to
+     shout over the lit line they ride on. */
+  opacity: 0.6;
+  animation: mpls-link-flow 500ms linear infinite;
+}
+
+/* Every preset link is drawn a→b in the packet's direction; a hop running
+   b→a (table edits can produce one) flows the opposite way. */
+.mpls-graph__link--active-reverse {
+  animation-direction: reverse;
+}
+
+@keyframes mpls-link-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -18px; /* one period: 10 dash + 8 gap */
+  }
 }
 
 .mpls-graph__node {
@@ -97,6 +138,87 @@
   fill: var(--mpls-dropped);
 }
 
+.mpls-graph__packet--dropped .mpls-graph__packet-dot {
+  fill: var(--mpls-dropped);
+}
+
+/* --- motion ---------------------------------------------------------------
+   The badge glides between nodes on a CSS transition and labels fade in and
+   out. Every bit of it turns off under prefers-reduced-motion: the frames
+   still tell the whole story, they just stop moving. */
+
+.mpls-graph__packet {
+  transition: transform 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* The chip and the dot morph into each other: the chip scales 0 to 1 and
+   the dot fades the other way, around their shared centre. transform-origin
+   must be the local 0,0 — the default would pivot on the viewBox. */
+.mpls-graph__packet-shape {
+  transform-origin: 0 0;
+  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mpls-graph__packet-dot {
+  fill: var(--mpls-tunnel);
+  transition: opacity 220ms ease;
+}
+
+.mpls-graph__label-text {
+  animation: mpls-label-in 280ms ease-out;
+}
+
+/* The pulse marks the frame where the table acts: the same instant the
+   LFIB row lights and the label morphs. Operation frames never travel —
+   the packet is already parked — so both stepping directions agree. */
+.mpls-graph__pulse {
+  stroke: var(--mpls-active);
+  opacity: 0;
+  animation: mpls-pulse 600ms ease-out forwards;
+}
+
+@keyframes mpls-label-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mpls-pulse {
+  from {
+    opacity: 0.55;
+    stroke-width: 3px;
+  }
+  to {
+    opacity: 0;
+    stroke-width: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mpls-graph__link,
+  .mpls-graph__link-flow,
+  .mpls-graph__link-flow--on,
+  .mpls-graph__packet,
+  .mpls-graph__packet-shape,
+  .mpls-graph__packet-dot,
+  .mpls-graph__label-text,
+  .mpls-graph__pulse,
+  .mpls-lfib__row--active td {
+    animation: none;
+    transition: none;
+  }
+
+  /* Without the animation the pulse has nothing left to hide it. */
+  .mpls-graph__pulse {
+    opacity: 0;
+  }
+}
+
 /* --- LFIB panel ---------------------------------------------------------- */
 
 .mpls-lfib {
@@ -137,6 +259,16 @@
 .mpls-lfib__row--active td {
   background: color-mix(in srgb, var(--mpls-active) 14%, transparent);
   font-weight: 700;
+  animation: mpls-row-light 320ms ease-out;
+}
+
+@keyframes mpls-row-light {
+  from {
+    opacity: 0.15;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .mpls-lfib__row--missing td {

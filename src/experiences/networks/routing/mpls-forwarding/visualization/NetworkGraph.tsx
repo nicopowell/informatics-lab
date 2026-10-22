@@ -15,8 +15,9 @@ function linkKey(a: string, b: string): string {
   return a < b ? `${a}|${b}` : `${b}|${a}`
 }
 
-// The packet badge shows the label the node has just written; a dropped packet
-// died carrying the label it arrived with, and send/received/pop carry nothing.
+// The packet badge shows the label on board: the push's new label at the
+// ingress and the incoming one on an arrival. A pop converts the chip back
+// to the bare-packet dot, which is also how send and delivery travel.
 function packetLabel(frame: MplsFrame): number | null {
   if (frame.action === 'pop') return null
   return frame.outLabel ?? frame.inLabel
@@ -42,8 +43,16 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
     lspLinks.add(linkKey(preset.lsp[index], preset.lsp[index + 1]))
   }
 
-  const outgoing =
-    frame.nextNodeId !== null ? linkKey(frame.nodeId, frame.nextNodeId) : null
+  // The lit hop: the table's choice on operations, the link the packet is
+  // riding on arrivals (the glide renders there) — self-references never
+  // count as a hop. Light travels the preset's draw direction a→b; hops that
+  // run b→a get the reversed-flow class.
+  const activeHop =
+    frame.nextNodeId !== null && frame.nextNodeId !== frame.nodeId
+      ? ([frame.nodeId, frame.nextNodeId] as const)
+      : frame.fromNodeId != null && frame.fromNodeId !== frame.nodeId
+        ? ([frame.fromNodeId, frame.nodeId] as const)
+        : null
   const label = packetLabel(frame)
   const activeNode = nodeById.get(frame.nodeId)
 
@@ -62,7 +71,13 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const key = linkKey(link.a, link.b)
           const classes = ['mpls-graph__link']
           if (lspLinks.has(key)) classes.push('mpls-graph__link--lsp')
-          if (key === outgoing) classes.push('mpls-graph__link--active')
+          const forwards =
+            activeHop !== null && link.a === activeHop[0] && link.b === activeHop[1]
+          const backwards =
+            activeHop !== null && link.a === activeHop[1] && link.b === activeHop[0]
+          const lit = forwards || backwards
+          if (lit) classes.push('mpls-graph__link--active')
+          if (backwards) classes.push('mpls-graph__link--active-reverse')
 
           // Port numbers sit just past each node's edge, one end nudged to
           // each side of the line: the two numbers of a short link can never
@@ -81,6 +96,19 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
             <g key={key}>
               <line
                 className={classes.join(' ')}
+                x1={from.x}
+                y1={from.y}
+                x2={to.x}
+                y2={to.y}
+              />
+              <line
+                className={[
+                  'mpls-graph__link-flow',
+                  lit ? 'mpls-graph__link-flow--on' : '',
+                  backwards ? 'mpls-graph__link--active-reverse' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 x1={from.x}
                 y1={from.y}
                 x2={to.x}
@@ -152,19 +180,61 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
         })}
       </g>
 
-      {label !== null && activeNode && (
+      {/* The pulse marks the frame where the table acts: the same instant
+          the LFIB row lights and the label morphs. */}
+      {frame.entry !== null && activeNode && (
+        <circle
+          className="mpls-graph__pulse"
+          cx={activeNode.x}
+          cy={activeNode.y}
+          r={nodeShapeRadius(activeNode) + 5}
+          fill="none"
+        />
+      )}
+
+      {activeNode && (
         <g
           className={
             frame.action === 'dropped'
               ? 'mpls-graph__packet mpls-graph__packet--dropped'
               : 'mpls-graph__packet'
           }
-          transform={`translate(${activeNode.x}, ${activeNode.y - nodeShapeRadius(activeNode) - 20})`}
+          style={{
+            transform: `translate(${activeNode.x}px, ${activeNode.y - nodeShapeRadius(activeNode) - 20}px)`,
+          }}
         >
-          <rect x={-24} y={-14} width={48} height={28} rx={7} />
-          <text x={0} y={6} textAnchor="middle">
-            {label}
-          </text>
+          {/* Both shapes are always here: the push grows the chip out of the
+              dot and the pop collapses it back, instead of one shape
+              swapping for the other. */}
+          <g
+            className="mpls-graph__packet-shape"
+            style={{ transform: `scale(${label !== null ? 1 : 0})` }}
+          >
+            <rect
+              className="mpls-graph__label-chip"
+              x={-24}
+              y={-14}
+              width={48}
+              height={28}
+              rx={7}
+            />
+            {label !== null && (
+              <text
+                key={label}
+                className="mpls-graph__label-text"
+                x={0}
+                y={6}
+                textAnchor="middle"
+              >
+                {label}
+              </text>
+            )}
+          </g>
+          <circle
+            className="mpls-graph__packet-dot"
+            r={9}
+            style={{ opacity: label !== null ? 0 : 1 }}
+          />
         </g>
       )}
     </svg>
