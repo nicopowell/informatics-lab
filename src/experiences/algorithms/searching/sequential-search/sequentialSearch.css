@@ -1,0 +1,273 @@
+/*
+ * Every structural selector below is scoped under `.sequential-search`.
+ * These are generic names (`.matrix`, `.cell`, `.pointer`, ...) that
+ * binary-search's stylesheet also defines globally; an unscoped rule here
+ * would override it, which is exactly how that experience's low/mid/high
+ * pointer stacking broke. Scoping keeps each stylesheet on its own page.
+ * The legend at the bottom follows the convention docs/experiences.md states.
+ */
+
+.sequential-search {
+  --cell-size: clamp(2rem, 6.5vw, 3.5rem);
+  --cell-gap: clamp(0.35rem, 0.8vw, 0.5rem);
+  --cell-radius: 8px;
+  --lane-height: 1.4rem;
+  --surface-raised: #2b3a52;
+  --border-strong: var(--color-neutral);
+  --text: var(--color-text);
+  --text-muted: #94a3b8;
+  --text-faint: var(--color-neutral);
+  --accent: var(--color-comparing);
+  --found: var(--color-success);
+  --pointer: #cbd5e1;
+  --step-duration: 0.32s;
+}
+
+.sequential-search__key {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sequential-search__key-input {
+  width: 5ch;
+  padding: 0.05rem 0.25rem 0.1rem;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.sequential-search__key-input:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.sequential-search .matrix {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Local scroll only: cells and rail live inside .matrix-grid, so they scroll
+   together and stay aligned. The row keeps the full width so a scrollbar only
+   appears when the cells genuinely do not fit; padding-inline absorbs the
+   sub-pixel overflow from the pointer transforms. */
+.sequential-search .matrix-scroll {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Sizes to the cells row so the pointer rail shares its exact column metrics. */
+.sequential-search .matrix-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: max-content;
+  margin-inline: auto;
+}
+
+.sequential-search .cells {
+  display: flex;
+  gap: var(--cell-gap);
+}
+
+.sequential-search .cell-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: var(--cell-size);
+}
+
+.sequential-search .cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  box-sizing: border-box;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  cursor: pointer;
+  appearance: none;
+  overflow: visible;
+  border: 1px solid transparent;
+  border-radius: var(--cell-radius);
+  transition:
+    background-color var(--step-duration, 0.32s) ease,
+    color var(--step-duration, 0.32s) ease,
+    border-color var(--step-duration, 0.32s) ease,
+    opacity var(--step-duration, 0.32s) ease,
+    transform var(--step-duration, 0.32s) ease,
+    box-shadow var(--step-duration, 0.32s) ease;
+}
+
+.sequential-search .cell-index {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text-faint);
+  transition:
+    color var(--step-duration, 0.32s) ease,
+    opacity var(--step-duration, 0.32s) ease;
+}
+
+.sequential-search .cell-slot--comparing .cell-index {
+  color: var(--accent);
+}
+
+.sequential-search .cell-slot--found .cell-index {
+  color: var(--found);
+}
+
+.sequential-search .cell-slot--checked .cell-index {
+  color: #475569;
+  opacity: 0.5;
+}
+
+.sequential-search .cell--pending {
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+/* Checked cells recede: no surface, dashed ghost border, and a smaller box.
+   The shrink is what makes the consumed prefix of the scan readable. */
+.sequential-search .cell--checked {
+  background: transparent;
+  border-color: rgba(100, 116, 139, 0.28);
+  border-style: dashed;
+  color: #475569;
+  opacity: 0.45;
+  transform: scale(0.86);
+}
+
+.sequential-search .cell--comparing {
+  z-index: 1;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1c1917;
+  transform: scale(1.07);
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.1),
+    0 6px 16px -10px rgba(245, 158, 11, 0.35);
+}
+
+.sequential-search .cell--found {
+  z-index: 1;
+  background: var(--found);
+  border-color: var(--found);
+  color: #052e16;
+  transform: scale(1.07);
+  box-shadow:
+    0 0 0 4px rgba(34, 197, 94, 0.16),
+    0 10px 24px -8px rgba(34, 197, 94, 0.6);
+}
+
+/* One scan cursor only, so the rail holds a single lane: the pointer is
+   absolutely positioned inside a fixed-height track, so it sliding to another
+   column never reflows the layout. */
+.sequential-search .pointer-rail {
+  position: relative;
+  height: calc(var(--lane-height) + 0.2rem);
+}
+
+.sequential-search .pointer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: var(--cell-size);
+  padding-bottom: 0.2rem;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pointer);
+  border-bottom: 2px solid currentColor;
+  transform: translateX(
+    calc(var(--column) * (var(--cell-size) + var(--cell-gap)))
+  );
+  transition: transform var(--step-duration, 0.32s) ease;
+}
+
+.sequential-search .pointer--scan {
+  color: var(--accent);
+  font-weight: 600;
+  animation: sequential-scan-appear 0.3s ease;
+}
+
+/* Keyframes are global too: this name stays unique to this experience. */
+@keyframes sequential-scan-appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Legend styles are scoped to this experience so they never leak to others. */
+.sequential-search .legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.sequential-search .legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sequential-search .legend__swatch {
+  box-sizing: border-box;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-strong);
+}
+
+.sequential-search .legend__swatch--comparing {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Mirrors the checked cell: no fill, dashed border. */
+.sequential-search .legend__swatch--checked {
+  background: transparent;
+  border: 1px dashed rgba(100, 116, 139, 0.28);
+}
+
+.sequential-search .legend__swatch--found {
+  background: var(--found);
+  border-color: var(--found);
+}

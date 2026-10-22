@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { BinarySearchFrame } from '../logic/visualFrames'
+import { scrollAnchor } from '../logic/visualFrames'
+import { useActiveCellScroll } from '../../useActiveCellScroll'
 
 type ArrayCellsProps = {
   values: number[]
@@ -83,10 +85,12 @@ function pointerViews(frame: BinarySearchFrame, size: number): PointerView[] {
 
 function ArrayCells({ values, frame, onSelectCell }: ArrayCellsProps) {
   const pointers = pointerViews(frame, values.length)
+  const anchor = scrollAnchor(frame)
+  const scrollRef = useActiveCellScroll(anchor, frame)
 
   return (
     <div className="matrix">
-      <div className="matrix-scroll">
+      <div className="matrix-scroll" ref={scrollRef}>
         <div className="matrix-grid">
           <div className="pointer-rail">
             {pointers.map((pointer) => (
@@ -111,7 +115,11 @@ function ArrayCells({ values, frame, onSelectCell }: ArrayCellsProps) {
             {values.map((value, index) => {
               const state = cellState(index, frame)
               return (
-                <div className={`cell-slot cell-slot--${state}`} key={index}>
+                <div
+                  className={`cell-slot cell-slot--${state}`}
+                  key={index}
+                  data-active={index === anchor ? '' : undefined}
+                >
                   <button
                     type="button"
                     className={`cell cell--${state}`}

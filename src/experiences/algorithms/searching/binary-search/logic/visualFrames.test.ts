@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { generateBinarySearchSteps } from './binarySearch'
 import type { BinarySearchStep } from './binarySearch'
-import { createReadyFrame, toVisualFrames } from './visualFrames'
+import { createReadyFrame, toVisualFrames, scrollAnchor } from './visualFrames'
 
 const VALUES = [1, 3, 5, 7, 9, 11, 13, 15]
 
@@ -152,5 +152,30 @@ describe('toVisualFrames', () => {
     const frames = toVisualFrames(generateBinarySearchSteps(VALUES, 11))
 
     expect(frames.every((frame) => frame.key === 11)).toBe(true)
+  })
+})
+
+describe('scrollAnchor', () => {
+  it('anchors on the probed cell while a probe is on screen', () => {
+    const frames = toVisualFrames(generateBinarySearchSteps(VALUES, 11))
+
+    expect(scrollAnchor(frames[0])).toBe(3)
+  })
+
+  it('anchors on the midpoint the ready frame is about to probe', () => {
+    expect(scrollAnchor(createReadyFrame(8, 11))).toBe(3)
+  })
+
+  it('anchors on the midpoint of the surviving range after eliminating', () => {
+    const frames = toVisualFrames(generateBinarySearchSteps(VALUES, 11))
+
+    expect(scrollAnchor(frames[1])).toBe(5)
+  })
+
+  it('anchors nowhere once the range is exhausted', () => {
+    const frames = toVisualFrames(generateBinarySearchSteps(VALUES, 0))
+
+    expect(frames.at(-1)?.kind).toBe('notFound')
+    expect(scrollAnchor(frames.at(-1)!)).toBeNull()
   })
 })
