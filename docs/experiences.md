@@ -133,7 +133,10 @@ structure as the experience's `logic/` file: the same loop bounds, the same
 comparison operator, the same guard around the write. Drop the counters, keep the
 shape.
 
-Do not add one by default. A simulation teaches the consequence of a rule, not
+The default is decided per module. In `algorithms`, add the panel: reading the
+implementation is part of what the concept is about, so its experiences ship one
+by default. In every other module, do not add one by default. Either way the cost
+applies: a simulation teaches the consequence of a rule, not
 the rule's source text, and the panel carries a cost the visualization does not:
 the snippets are strings, so no test covers them, they ship to the browser, and
 they drift silently from the implementation they claim to show. The scheduling
