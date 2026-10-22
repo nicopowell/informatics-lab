@@ -7,6 +7,7 @@ import { frameDelay } from '@/experience/frameDelay'
 import { usePlayback } from '@/experience/usePlayback'
 import type { LfibEntry, Preset } from './logic/model'
 import { generateFrames } from './logic/frames'
+import { panelNodeId, toggleSelection } from './logic/panelView'
 import { MPLS_PRESET } from './logic/preset'
 import NetworkGraph from './visualization/NetworkGraph'
 import LfibPanel from './visualization/LfibPanel'
@@ -22,6 +23,7 @@ const MAX_TRANSITION = 500
 function MplsForwardingPage() {
   const [lfib, setLfib] = useState(MPLS_PRESET.lfib)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
 
   // Frames and the LFIB panel must read the same lfib object: the panel lights
   // its active row by reference identity, so nothing here may clone the tables
@@ -36,8 +38,16 @@ function MplsForwardingPage() {
   // playback index should not be able to address outside the frame list.
   const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
   const frame = frames[frameIndex]
-  const activeNode =
-    preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
+
+  // The panel follows the packet while playback runs; once stopped or
+  // paused, a node the user clicked pins it (see logic/panelView.ts).
+  const shownNodeId = panelNodeId(
+    playback.isPlaying,
+    frame.nodeId,
+    selectedNodeId,
+  )
+  const shownNode =
+    preset.nodes.find((node) => node.id === shownNodeId) ?? preset.nodes[0]
 
   // Any table edit invalidates the current position in the execution.
   function replaceLfib(next: Record<string, LfibEntry[]>) {
@@ -82,10 +92,17 @@ function MplsForwardingPage() {
               {frame.narration}
             </p>
             <div className="mpls__board">
-              <NetworkGraph preset={preset} frame={frame} />
+              <NetworkGraph
+                preset={preset}
+                frame={frame}
+                selectedNodeId={selectedNodeId}
+                onSelectNode={(nodeId) =>
+                  setSelectedNodeId(toggleSelection(selectedNodeId, nodeId))
+                }
+              />
               <LfibPanel
-                node={activeNode}
-                entries={lfib[frame.nodeId] ?? []}
+                node={shownNode}
+                entries={lfib[shownNode.id] ?? []}
                 frame={frame}
                 onOutLabelChange={handleOutLabelChange}
               />
