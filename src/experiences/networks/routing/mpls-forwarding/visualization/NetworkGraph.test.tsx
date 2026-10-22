@@ -23,7 +23,7 @@ describe('NetworkGraph', () => {
   it('numbers every port beside its link endpoint', () => {
     const html = render(MPLS_PRESET, 0)
 
-    // Both ends of every link name the port the LFIB columns also use (L12.3).
+    // Both ends of every link name the port the LFIB columns also use.
     expect(html.match(/mpls-graph__port/g)).toHaveLength(MPLS_PRESET.links.length * 2)
   })
 

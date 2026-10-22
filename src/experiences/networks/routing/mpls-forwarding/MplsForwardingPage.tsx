@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import AppShell from '@/components/AppShell'
 import MarkdownDescription from '@/experience/MarkdownDescription'
-import PlaybackControls, { MAX_SPEED, MIN_SPEED } from '@/experience/PlaybackControls'
+import PlaybackControls from '@/experience/PlaybackControls'
+import { frameDelay } from '@/experience/frameDelay'
 import { usePlayback } from '@/experience/usePlayback'
 import type { LfibEntry, Preset } from './logic/model'
 import { generateFrames } from './logic/frames'
@@ -18,12 +19,6 @@ const SLOWEST_DELAY = 1400
 const FASTEST_DELAY = 90
 const MAX_TRANSITION = 500
 
-// Same geometric ramp as the scheduling pages: low speeds genuinely slow.
-function frameDelay(speed: number): number {
-  const ratio = (speed - MIN_SPEED) / (MAX_SPEED - MIN_SPEED)
-  return Math.round(SLOWEST_DELAY * Math.pow(FASTEST_DELAY / SLOWEST_DELAY, ratio))
-}
-
 function MplsForwardingPage() {
   const [lfib, setLfib] = useState(MPLS_PRESET.lfib)
   const [speed, setSpeed] = useState(INITIAL_SPEED)
@@ -34,10 +29,13 @@ function MplsForwardingPage() {
   const preset: Preset = useMemo(() => ({ ...MPLS_PRESET, lfib }), [lfib])
   const frames = useMemo(() => generateFrames(preset), [preset])
 
-  const delay = frameDelay(speed)
+  const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
   const playback = usePlayback(frames.length, delay)
-  const frame = frames[Math.min(playback.frameIndex, frames.length - 1)]
+  // The clamp mirrors in both directions (R2-asymmetric-frame-clamp): the
+  // playback index should not be able to address outside the frame list.
+  const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
+  const frame = frames[frameIndex]
   const activeNode =
     preset.nodes.find((node) => node.id === frame.nodeId) ?? preset.nodes[0]
 
@@ -67,7 +65,7 @@ function MplsForwardingPage() {
   const swaps = visited.filter((candidate) => candidate.action === 'swap').length
   const pops = visited.filter((candidate) => candidate.action === 'pop').length
   const counts = [
-    { label: 'Hop', value: `${frame.hop + 1} / ${frames.length}` },
+    { label: 'Hop', value: `${frameIndex + 1} / ${frames.length}` },
     { label: 'Label', value: frame.outLabel ?? frame.inLabel ?? '—' },
     { label: 'Push / swap / pop', value: `${pushes} / ${swaps} / ${pops}` },
   ]

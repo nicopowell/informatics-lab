@@ -50,7 +50,7 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
   return (
     <svg
       className="mpls-graph"
-      viewBox="0 0 800 300"
+      viewBox="0 0 830 300"
       role="img"
       aria-label="MPLS topology with the labelled packet"
     >
@@ -64,8 +64,9 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           if (lspLinks.has(key)) classes.push('mpls-graph__link--lsp')
           if (key === outgoing) classes.push('mpls-graph__link--active')
 
-          // Port numbers sit just past each node's edge, nudged off the line
-          // so both ends of a short link never collide.
+          // Port numbers sit just past each node's edge, one end nudged to
+          // each side of the line: the two numbers of a short link can never
+          // land on top of each other.
           const dx = to.x - from.x
           const dy = to.y - from.y
           const length = Math.hypot(dx, dy) || 1
@@ -73,8 +74,8 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
           const uy = dy / length
           const sideX = -uy * 9
           const sideY = ux * 9
-          const fromGap = nodeShapeRadius(from) + 8
-          const toGap = nodeShapeRadius(to) + 8
+          const fromGap = nodeShapeRadius(from) + 12
+          const toGap = nodeShapeRadius(to) + 12
 
           return (
             <g key={key}>
@@ -88,14 +89,16 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
               <text
                 className="mpls-graph__port"
                 x={from.x + ux * fromGap + sideX}
-                y={from.y + uy * fromGap + sideY + 3}
+                y={from.y + uy * fromGap + sideY}
+                dominantBaseline="central"
               >
                 {link.aPort}
               </text>
               <text
                 className="mpls-graph__port"
-                x={to.x - ux * toGap + sideX}
-                y={to.y - uy * toGap + sideY + 3}
+                x={to.x - ux * toGap - sideX}
+                y={to.y - uy * toGap - sideY}
+                dominantBaseline="central"
               >
                 {link.bPort}
               </text>
@@ -139,7 +142,8 @@ function NetworkGraph({ preset, frame }: NetworkGraphProps) {
               <text
                 className="mpls-graph__label"
                 x={node.x}
-                y={node.y + nodeShapeRadius(node) + 18}
+                y={node.y}
+                dominantBaseline="central"
               >
                 {node.label}
               </text>

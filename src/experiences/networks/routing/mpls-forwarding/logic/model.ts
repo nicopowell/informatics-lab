@@ -17,7 +17,7 @@ export type TopologyNode = {
 export type TopologyLink = {
   a: string
   b: string
-  // Ports are plain 0-based numbers (L13) and belong to the link endpoint, not
+  // Ports are plain 0-based numbers and belong to the link endpoint, not
   // to the node in isolation: the same node holds a different port per neighbour.
   aPort: number
   bPort: number

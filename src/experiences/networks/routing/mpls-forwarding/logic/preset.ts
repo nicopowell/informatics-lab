@@ -11,15 +11,21 @@ export const MPLS_PRESET: Preset = {
   source: 'pc-a',
   lsp: ['ler-a', 'lsr-1', 'lsr-3', 'lsr-4', 'lsr-5', 'ler-b'],
   nodes: [
-    { id: 'pc-a', label: 'PC-A', kind: 'host', x: 40, y: 155 },
+    // Terminals sit far enough from their LER that each port number can hug
+    // its own node (12px clearance each side) without the two numbers meeting
+    // in the middle of the gap — see the user note in the feature doc.
+    { id: 'pc-a', label: 'PC-A', kind: 'host', x: 23, y: 155 },
     { id: 'ler-a', label: 'LER-A', kind: 'ingress', x: 110, y: 155 },
     { id: 'lsr-1', label: 'LSR-1', kind: 'lsr', x: 265, y: 80 },
     { id: 'lsr-2', label: 'LSR-2', kind: 'lsr', x: 455, y: 80 },
     { id: 'lsr-3', label: 'LSR-3', kind: 'lsr', x: 265, y: 230 },
     { id: 'lsr-4', label: 'LSR-4', kind: 'lsr', x: 455, y: 230 },
-    { id: 'lsr-5', label: 'LSR-5', kind: 'lsr', x: 575, y: 155 },
+    // y 200 instead of level with LER-B: at equal height its link to LER-B
+    // arrived at almost the same angle as lsr-2's shortcut and the two port
+    // numbers stacked on top of each other at the LER.
+    { id: 'lsr-5', label: 'LSR-5', kind: 'lsr', x: 575, y: 200 },
     { id: 'ler-b', label: 'LER-B', kind: 'egress', x: 700, y: 155 },
-    { id: 'pc-b', label: 'PC-B', kind: 'host', x: 765, y: 155 },
+    { id: 'pc-b', label: 'PC-B', kind: 'host', x: 787, y: 155 },
   ],
   links: [
     // terminals: the packet's first and last hop
