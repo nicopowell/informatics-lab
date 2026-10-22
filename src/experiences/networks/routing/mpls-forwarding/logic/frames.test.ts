@@ -104,6 +104,49 @@ describe('generateFrames', () => {
     })
   })
 
+  it('drops the packet when a table sends it to a port no link reaches', () => {
+    const preset = withLfib({
+      'lsr-1': [{ inPort: 0, inLabel: 42, outPort: 9, outLabel: 17 }],
+    })
+    const frames = generateFrames(preset)
+
+    expect(frames.at(-1)).toMatchObject({
+      nodeId: 'lsr-1',
+      action: 'dropped',
+      dropReason: 'bad-port',
+      lookup: { port: 0, label: 42 },
+      entry: preset.lfib['lsr-1'][0],
+      inLabel: 42,
+      outLabel: null,
+      nextNodeId: null,
+      narration: 'LSR-1 sends label 17 to unconnected port 9 — packet dropped',
+    })
+  })
+
+  it('drops a preset that pushes pop at the ingress, where nothing is labelled yet', () => {
+    const preset = withLfib({
+      'ler-a': [{
+        inPort: 1,
+        inLabel: '10.0.7.0/24',
+        outPort: 0,
+        outLabel: 'pop',
+      }],
+    })
+    const frames = generateFrames(preset)
+
+    expect(frames.at(-1)).toMatchObject({
+      nodeId: 'ler-a',
+      action: 'dropped',
+      dropReason: 'invalid-pop',
+      lookup: { port: 1, label: '10.0.7.0/24' },
+      entry: preset.lfib['ler-a'][0],
+      inLabel: null,
+      outLabel: null,
+      nextNodeId: null,
+      narration: 'LER-A cannot pop a label it never pushed — packet dropped',
+    })
+  })
+
   it('follows the output port even when it leaves the configured LSP', () => {
     const preset = withLfib({
       'lsr-1': [{ inPort: 0, inLabel: 42, outPort: 1, outLabel: 17 }],
@@ -138,6 +181,10 @@ describe('generateFrames', () => {
     expect(last.dropReason).toBe('loop')
     expect(last.nodeId).toBe('lsr-5')
     expect(last.narration).toContain('loop')
+    // The guard fires before any lookup could match, so the frame still records
+    // the search it never got to finish, with the arrival port intact.
+    expect(last.lookup).toEqual({ port: 0, label: 17 })
+    expect(last.inLabel).toBe(17)
     // Frames outnumber visits once arrivals split them; two per node plus the drop.
     expect(frames.length).toBeLessThanOrEqual(preset.nodes.length * 2 + 1)
   })

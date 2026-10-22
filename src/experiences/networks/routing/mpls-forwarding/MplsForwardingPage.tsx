@@ -37,8 +37,9 @@ function MplsForwardingPage() {
   const delay = frameDelay(speed, SLOWEST_DELAY, FASTEST_DELAY)
   const transition = Math.min(delay, MAX_TRANSITION)
   const playback = usePlayback(frames.length, delay)
-  // The clamp mirrors in both directions: the
-  // playback index should not be able to address outside the frame list.
+  // The clamp mirrors in both directions: the playback index should not be
+  // able to address outside the frame list. Every frame-index read below
+  // uses this clamped value — playback.frameIndex is never consulted again.
   const frameIndex = Math.min(Math.max(playback.frameIndex, 0), frames.length - 1)
   const frame = frames[frameIndex]
 
@@ -97,7 +98,7 @@ function MplsForwardingPage() {
     )
   }
 
-  const visited = frames.slice(0, playback.frameIndex + 1)
+  const visited = frames.slice(0, frameIndex + 1)
   // Every classify frame is exactly one push — the ingress is the only node
   // that runs it — so the counter keeps the three operations description.md
   // teaches while the frames keep the precise action name.
@@ -188,6 +189,9 @@ function MplsForwardingPage() {
               onSpeedChange={setSpeed}
             />
             <div className="experience__input">
+              {/* Restoring hands the preset's table object straight back, never
+                  a clone: the disabled check above and the panel's active-row
+                  lighting both rely on reference identity. */}
               <button
                 type="button"
                 className="ui-button"
