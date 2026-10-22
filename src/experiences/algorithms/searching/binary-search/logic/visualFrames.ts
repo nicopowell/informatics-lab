@@ -22,6 +22,19 @@ export function createReadyFrame(size: number, key: number): BinarySearchFrame {
   }
 }
 
+// The cell the visualization should keep in view: the one under comparison,
+// or the midpoint of the range the search is about to probe next. An exhausted
+// range anchors nowhere, so the last view of the search is left untouched.
+export function scrollAnchor(frame: BinarySearchFrame): number | null {
+  if (frame.mid !== null) {
+    return frame.mid
+  }
+  if (frame.low > frame.high) {
+    return null
+  }
+  return Math.floor((frame.low + frame.high) / 2)
+}
+
 export function toVisualFrames(steps: BinarySearchStep[]): BinarySearchFrame[] {
   return steps.flatMap((step): BinarySearchFrame[] => {
     if (step.kind === 'notFound') {
