@@ -88,6 +88,11 @@ in `src/experience/`:
 - **`usePlayback.ts`** — hook owning the frame index, the playing state, the
   auto-advance timer and the play/step/reset actions. Pass an `onNavigate`
   callback when the visualization needs the pair of frames involved in a move.
+- **`frameDelay.ts`** — the speed-to-delay ramp behind that timer: a geometric
+  curve between `MIN_SPEED` and `MAX_SPEED`, so low speeds stay genuinely slow
+  and high speeds genuinely fast around a comfortable default. The curve is
+  mechanism and lives here; the slowest and fastest delays of a concept stay
+  per experience, because that tuning is policy.
 - **`CodePanel.tsx`** — the collapsible reference panel with the language
   dropdown. Pass it the experience's `ReferenceLanguage[]` and an `open` flag.
 - **`CodeToggle.tsx`** — the "View code / Hide code" button.
