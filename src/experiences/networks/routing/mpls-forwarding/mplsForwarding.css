@@ -278,6 +278,7 @@
   gap: 0.35rem;
 }
 
+
 .mpls__zoom .ui-button {
   min-width: 2rem;
   padding: 0.2rem 0.5rem;
@@ -286,6 +287,10 @@
 /* --- LFIB panel ---------------------------------------------------------- */
 
 .mpls-lfib {
+  /* Grid items default to min-width: auto: the table's intrinsic width would
+     stretch the board's 1fr column past the card and spill the panel (and the   zoom row above it) outside the border. Zero lets the column clamp and the   table scroll inside instead of being cut. */
+  min-width: 0;
+  overflow-x: auto;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   padding: 0.75rem;
@@ -360,5 +365,47 @@
 @media (max-width: 900px) {
   .mpls__board {
     grid-template-columns: 1fr;
+  }
+}
+
+/* --- mobile (≤480px) ------------------------------------------------------
+   The desktop frame is a ~103px-tall slot at this width: the zoom enlarges   the map but the WINDOW stays short, leaving no vertical room to verify   anything. Three adjustments, no narration changes (it reflows to multiple   lines between frames and tighter margins would make those jumps louder):
+   a moderate 4:3 window — not full-screen, so playback controls stay   reachable without scrolling the page — filled by HEIGHT so the map reads   at real size and the follow pans it; the controls leave the scene overlay   for a compact row above the window; the LFIB table sheds padding so its   four columns fit. */
+@media (max-width: 480px) {
+  .mpls__graph-zoom {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mpls__graph-zoom .mpls-graph {
+    width: auto;
+    height: var(--mpls-zoom, 100%);
+    min-width: 100%;
+  }
+
+  .mpls__zoom {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+
+  .mpls__zoom .ui-button {
+    min-width: 1.6rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .mpls-lfib {
+    padding: 0.5rem;
+  }
+
+  .mpls-lfib__label-input {
+    /* Six digits max (20-bit labels) — ch units track the row font so the   field never reads wider or larger than the row around it. */
+    width: 6ch;
+  }
+
+  .mpls-lfib th,
+  .mpls-lfib td {
+    padding: 0.2rem 0.25rem;
+    font-size: 0.75rem;
   }
 }

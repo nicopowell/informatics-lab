@@ -4,6 +4,35 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Scrollbars: standard properties first (Firefox and Chromium 121+ read
+   these), then the webkit detail pass Chromium/Safari renders precisely —
+   a slim translucent thumb over the dark theme that shows presence on hover   and stays out of the way otherwise. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+  background-clip: padding-box;
+}
+
 :root {
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;

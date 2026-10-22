@@ -15,7 +15,9 @@ export type FrameAction =
 export type DropReason = 'no-entry' | 'invalid-pop' | 'bad-port' | 'loop'
 
 // port is null only before the packet crosses its first link — a lookup that
-// cannot exist yet. Terminals never search: their frames omit lookup entirely.
+// cannot exist yet. The terminal's own actions (send, received) never search
+// and their frames omit lookup entirely; a labelled packet dropped at a
+// terminal still records the lookup that could not match.
 export type FrameLookup = { port: number | null; label: number | string }
 
 export type MplsFrame = {
@@ -32,10 +34,10 @@ export type MplsFrame = {
 }
 
 // A packet follows its LFIB output ports, not the configured LSP — the LSP is
-// only what well-formed tables happen to produce (see the preset integrity
-// test). Edits can therefore walk the packet off the tunnel or into a cycle,
-// and every sequence must still end: visiting more nodes than exist means the
-// tables loop, and the packet is dropped instead of animated forever.
+// only what well-formed tables happen to produce. Edits can therefore walk
+// the packet off the tunnel or into a cycle, and every sequence must still
+// end: visiting more nodes than exist means the tables loop, and the packet
+// is dropped instead of animated forever.
 export function generateFrames(preset: Preset): MplsFrame[] {
   const frames: MplsFrame[] = []
   const nodeById = new Map(preset.nodes.map((node) => [node.id, node]))
@@ -62,7 +64,6 @@ export function generateFrames(preset: Preset): MplsFrame[] {
       )
       break
     }
-
 
     if (node.kind === 'host') {
       if (arrivalPort === null) {
@@ -267,9 +268,13 @@ function hostHop(
     (candidate) => candidate.a === host.id || candidate.b === host.id,
   )
   if (!link) return null
+  // A terminal owns a single port on its one link, so resolveHop would only
+  // search the links again to land back on this same one: the gateway is the
+  // link's other end.
   const hostIsA = link.a === host.id
-  const port = hostIsA ? link.aPort : link.bPort
-  return resolveHop(preset, host, port, nodeById)
+  const node = nodeById.get(hostIsA ? link.b : link.a)
+  if (!node) return null
+  return { node, arrivalPort: hostIsA ? link.bPort : link.aPort }
 }
 
 function resolveHop(
