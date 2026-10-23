@@ -314,25 +314,48 @@ function MplsForwardingArt() {
   )
 }
 
+// The card's tree glyph: symmetric positions, smaller circles than the first
+// draft, and every edge trimmed in code to its two circles' rims — the
+// hand-placed endpoints fell a few pixels short of the children and the nodes
+// read as floating off-centre.
 function BinarySearchTreeArt() {
+  type Pt = { x: number; y: number; r: number }
+
+  const branch = (from: Pt, to: Pt, pad = 2): string => {
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+    const len = Math.hypot(dx, dy)
+    const unitX = dx / len
+    const unitY = dy / len
+    return `M${from.x + unitX * (from.r + pad)} ${from.y + unitY * (from.r + pad)} L${to.x - unitX * (to.r + pad)} ${to.y - unitY * (to.r + pad)}`
+  }
+
+  const root: Pt = { x: 100, y: 28, r: 7 }
+  const left: Pt = { x: 70, y: 56, r: 6 }
+  const right: Pt = { x: 130, y: 56, r: 6 }
+  const leafLL: Pt = { x: 52, y: 82, r: 5 }
+  const leafLR: Pt = { x: 88, y: 82, r: 5 }
+  const leafRL: Pt = { x: 112, y: 82, r: 5 }
+  const leafRR: Pt = { x: 148, y: 82, r: 5 }
+
   return (
     <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
       <g stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        <path d="M94 39 L76 55" opacity="0.9" />
-        <path d="M106 39 L124 55" opacity="0.9" />
-        <path d="M70 70 L58 79" opacity="0.35" />
-        <path d="M78 70 L90 79" opacity="0.35" />
-        <path d="M132 70 L120 79" opacity="0.9" />
-        <path d="M140 70 L152 79" opacity="0.9" />
+        <path d={branch(root, left)} opacity="0.9" />
+        <path d={branch(root, right)} opacity="0.9" />
+        <path d={branch(left, leafLL)} opacity="0.35" />
+        <path d={branch(left, leafLR)} opacity="0.35" />
+        <path d={branch(right, leafRL)} opacity="0.9" />
+        <path d={branch(right, leafRR)} opacity="0.9" />
       </g>
       <g fill="currentColor">
-        <circle cx="100" cy="30" r="9" opacity="0.9" />
-        <circle cx="66" cy="62" r="8" opacity="0.35" />
-        <circle cx="134" cy="62" r="8" opacity="0.9" />
-        <circle cx="52" cy="88" r="7" opacity="0.35" />
-        <circle cx="96" cy="88" r="7" opacity="0.35" />
-        <circle cx="112" cy="88" r="7" opacity="0.9" />
-        <circle cx="158" cy="88" r="7" opacity="0.9" />
+        <circle cx={root.x} cy={root.y} r={root.r} opacity="0.9" />
+        <circle cx={left.x} cy={left.y} r={left.r} opacity="0.35" />
+        <circle cx={right.x} cy={right.y} r={right.r} opacity="0.9" />
+        <circle cx={leafLL.x} cy={leafLL.y} r={leafLL.r} opacity="0.35" />
+        <circle cx={leafLR.x} cy={leafLR.y} r={leafLR.r} opacity="0.35" />
+        <circle cx={leafRL.x} cy={leafRL.y} r={leafRL.r} opacity="0.9" />
+        <circle cx={leafRR.x} cy={leafRR.y} r={leafRR.r} opacity="0.9" />
       </g>
     </svg>
   )
