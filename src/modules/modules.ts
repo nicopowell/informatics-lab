@@ -72,7 +72,13 @@ export const MODULES: ModuleInfo[] = [
         id: 'trees',
         title: 'Trees',
         description: 'Hierarchical structures and traversals.',
-        experiences: [],
+        experiences: [
+          {
+            id: 'binary-search-tree',
+            title: 'Binary Search Tree',
+            description: 'Compare at every node: smaller left, larger right.',
+          },
+        ],
       },
       {
         id: 'graphs',

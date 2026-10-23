@@ -314,6 +314,30 @@ function MplsForwardingArt() {
   )
 }
 
+function BinarySearchTreeArt() {
+  return (
+    <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
+      <g stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M94 39 L76 55" opacity="0.9" />
+        <path d="M106 39 L124 55" opacity="0.9" />
+        <path d="M70 70 L58 79" opacity="0.35" />
+        <path d="M78 70 L90 79" opacity="0.35" />
+        <path d="M132 70 L120 79" opacity="0.9" />
+        <path d="M140 70 L152 79" opacity="0.9" />
+      </g>
+      <g fill="currentColor">
+        <circle cx="100" cy="30" r="9" opacity="0.9" />
+        <circle cx="66" cy="62" r="8" opacity="0.35" />
+        <circle cx="134" cy="62" r="8" opacity="0.9" />
+        <circle cx="52" cy="88" r="7" opacity="0.35" />
+        <circle cx="96" cy="88" r="7" opacity="0.35" />
+        <circle cx="112" cy="88" r="7" opacity="0.9" />
+        <circle cx="158" cy="88" r="7" opacity="0.9" />
+      </g>
+    </svg>
+  )
+}
+
 function FallbackExperienceArt() {
   return (
     <svg viewBox="0 0 200 100" fill="none" aria-hidden="true">
@@ -340,6 +364,7 @@ const ART: Record<string, ReactNode> = {
   'merge-sort': <MergeSortArt />,
   'binary-search': <BinarySearchArt />,
   'sequential-search': <SequentialSearchArt />,
+  'binary-search-tree': <BinarySearchTreeArt />,
   'fcfs-scheduling': <FcfsSchedulingArt />,
   'sjf-scheduling': <SjfSchedulingArt />,
   'round-robin-scheduling': <RoundRobinSchedulingArt />,
