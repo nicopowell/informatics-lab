@@ -1,0 +1,283 @@
+/*
+ * Every structural selector below is scoped under `.binary-search-tree`, the
+ * page's root class, so nothing here can leak onto another experience's
+ * screen. Node states are filled shapes: the value text sits above the
+ * circle, so the filled states also flip the text to the dark background
+ * colour for contrast. Declaration order matters — the path rule comes before
+ * the spotlight states, which win over it.
+ */
+
+.binary-search-tree {
+  /* The walked route gets its own colour, distinct from the amber comparing
+     spotlight and the green success states. */
+  --bst-path: #38bdf8;
+}
+
+.binary-search-tree__zoomwrap {
+  position: relative;
+  /* Grid items default to min-width: auto: an oversized intrinsic child
+     would stretch this box past its column and clip the overflow. */
+  min-width: 0;
+}
+
+.binary-search-tree__zoom {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.binary-search-tree__zoom .ui-button {
+  min-width: 2rem;
+  padding: 0.2rem 0.5rem;
+}
+
+.binary-search-tree__canvas-zoom {
+  min-width: 0;
+  height: clamp(300px, 52vh, 540px);
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+/* Zooming has to scale the content, not just the box: at 100% the svg box
+   equals the viewport and meet() fits whatever frame is current inside it —
+   a miss's gap row or a freshly inserted node can never open a scrollbar at
+   fit, by construction. Zooming scales the box past the viewport and follow
+   panning (logic/follow.ts) brings the walked node back into view. */
+.binary-search-tree .bst-tree {
+  display: block;
+  width: calc(100% * var(--bst-zoom, 1));
+  height: calc(100% * var(--bst-zoom, 1));
+  /* Zoom steps glide instead of snapping the whole drawing bigger. */
+  transition:
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.binary-search-tree .bst-tree__edge {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5;
+  opacity: 0.6;
+  transition:
+    stroke var(--step-duration) ease,
+    opacity var(--step-duration) ease;
+}
+
+.binary-search-tree .bst-tree__edge--path {
+  stroke: var(--bst-path);
+  stroke-width: 2.5;
+  opacity: 1;
+}
+
+.binary-search-tree .bst-tree__edge--discarded {
+  opacity: 0.2;
+}
+
+.binary-search-tree .bst-tree__edge--new {
+  stroke: var(--color-success);
+  stroke-width: 2.5;
+  opacity: 1;
+}
+
+.binary-search-tree .bst-tree__node {
+  fill: color-mix(in srgb, var(--color-text-muted) 18%, var(--color-bg));
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5;
+  /* One motion language for the whole canvas: every state change — colours,
+     the ghost's entrance and exit, the branch — rides this clock, the
+     playback speed. No geometry transitions: an insert drops its node into
+     a free half-slot, so the untouched nodes never move. */
+  transition:
+    fill var(--step-duration) ease,
+    stroke var(--step-duration) ease,
+    opacity var(--step-duration) ease;
+}
+
+.binary-search-tree .bst-tree__node--path {
+  stroke: var(--bst-path);
+  fill: color-mix(in srgb, var(--bst-path) 18%, var(--color-bg));
+}
+
+.binary-search-tree .bst-tree__node--active {
+  fill: var(--color-comparing);
+  stroke: var(--color-comparing);
+}
+
+.binary-search-tree .bst-tree__node--found,
+.binary-search-tree .bst-tree__node--new {
+  fill: var(--color-success);
+  stroke: var(--color-success);
+}
+
+/* Muted but opaque: a translucent circle would let the ruled-out edge show
+   through it, because the edges draw under the nodes. */
+.binary-search-tree .bst-tree__node--discarded {
+  fill: color-mix(in srgb, var(--color-text-muted) 10%, var(--color-bg));
+  stroke: color-mix(in srgb, var(--color-text-muted) 45%, var(--color-bg));
+}
+
+.binary-search-tree .bst-tree__value {
+  fill: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  transition:
+    fill var(--step-duration) ease,
+    opacity var(--step-duration) ease;
+}
+
+/* The number takes the state of its node: dark on the filled amber and
+   green shapes, dimmed with a discarded circle. */
+.binary-search-tree .bst-tree__node--active + .bst-tree__value,
+.binary-search-tree .bst-tree__node--found + .bst-tree__value,
+.binary-search-tree .bst-tree__node--new + .bst-tree__value {
+  fill: var(--color-bg);
+  font-weight: 700;
+}
+
+.binary-search-tree .bst-tree__node--discarded + .bst-tree__value {
+  fill: var(--color-text-muted);
+}
+
+/* The node or slot the operation will show stays mounted on every frame of
+   that operation, invisible. Keyframes alone never play in reverse — they
+   only run on mount — so the entrance and the exit both go through the same
+   opacity transition, on the playback clock. */
+.binary-search-tree .bst-tree__pending {
+  opacity: 0;
+}
+
+/* The ghost's text fades with its circle: the pending modifier is shared by
+   every ghost element, so the sibling rule must name that class, not a
+   node-specific one no element ever carries. */
+.binary-search-tree .bst-tree__pending + .bst-tree__value {
+  opacity: 0;
+}
+
+.binary-search-tree .bst-tree__gap-line {
+  stroke: var(--color-neutral);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+  transition: opacity var(--step-duration) ease;
+}
+
+.binary-search-tree .bst-tree__gap {
+  fill: none;
+  stroke: var(--color-neutral);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+  transition: opacity var(--step-duration) ease;
+}
+
+/* Legend styles are scoped to this experience so they never leak to others. */
+.binary-search-tree .legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+}
+
+.binary-search-tree .legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.binary-search-tree .legend__swatch {
+  box-sizing: border-box;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-text-muted);
+}
+
+.binary-search-tree .legend__swatch--node {
+  background: color-mix(in srgb, var(--color-text-muted) 18%, var(--color-bg));
+}
+
+.binary-search-tree .legend__swatch--comparing {
+  background: var(--color-comparing);
+  border-color: var(--color-comparing);
+}
+
+.binary-search-tree .legend__swatch--route {
+  background: var(--bst-path);
+  border-color: var(--bst-path);
+}
+
+.binary-search-tree .legend__swatch--success {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.binary-search-tree .legend__swatch--discarded {
+  background: color-mix(in srgb, var(--color-text-muted) 10%, var(--color-bg));
+  border-color: color-mix(in srgb, var(--color-text-muted) 45%, var(--color-bg));
+}
+
+.binary-search-tree .legend__swatch--gap {
+  background: transparent;
+  border: 1px dashed var(--color-neutral);
+}
+
+.binary-search-tree__target {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.binary-search-tree__target-input {
+  width: 5ch;
+  padding: 0.05rem 0.25rem 0.1rem;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.binary-search-tree__target-input:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.binary-search-tree__op--active,
+.binary-search-tree__preset--active {
+  border-color: var(--color-comparing);
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-comparing) 14%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .binary-search-tree__canvas-zoom {
+    scroll-behavior: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .binary-search-tree__zoom {
+    position: static;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+
+  .binary-search-tree__zoom .ui-button {
+    min-width: 1.6rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
