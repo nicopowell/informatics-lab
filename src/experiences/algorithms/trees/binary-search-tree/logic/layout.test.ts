@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { BstNode } from './binarySearchTree'
-import { layoutTree, LEVEL_HEIGHT, NODE_GAP } from './layout'
+import { generateInsertSteps, generateSearchSteps } from './binarySearchTree'
+import { createReadyFrame, toVisualFrames } from './visualFrames'
+import type { BstFrame } from './visualFrames'
+import { frameGeometry, layoutTree, LEVEL_HEIGHT, NODE_GAP } from './layout'
 
 function n(
   value: number,
@@ -95,5 +98,79 @@ describe('layoutTree', () => {
     const gapX = (parent?.x ?? 0) + NODE_GAP / 2
 
     expect(gapX + 22).toBeLessThanOrEqual(layout.width)
+  })
+})
+
+describe('frameGeometry', () => {
+  it('always reserves one spare slot and row so the viewBox never jumps', () => {
+    const geometry = frameGeometry(createReadyFrame(TREE, 42))
+
+    // A miss's slot and the next insert's column live in that spare space;
+    // keeping it in every frame makes the canvas identical across a search.
+    expect(geometry.width).toBe(layoutTree(TREE).width + NODE_GAP)
+    expect(geometry.height).toBe(layoutTree(TREE).height + LEVEL_HEIGHT)
+    expect(geometry.gap).toBeNull()
+    expect(geometry.gapEdge).toBeNull()
+  })
+
+  it('points the dashed edge at the slot one row below its parent', () => {
+    const frames = toVisualFrames(generateSearchSteps(TREE, 31), TREE)
+    const geometry = frameGeometry(frames.at(-1) as BstFrame)
+    const layout = layoutTree(TREE)
+    const byValue = new Map(layout.nodes.map((node) => [node.value, node]))
+    const parent = byValue.get(30)
+
+    expect(geometry.height).toBe(layout.height + LEVEL_HEIGHT)
+    expect(geometry.gap).toEqual({
+      x: (parent?.x ?? 0) + NODE_GAP / 2,
+      y: (parent?.y ?? 0) + LEVEL_HEIGHT,
+    })
+    expect(geometry.gapEdge).toEqual({
+      x1: parent?.x,
+      y1: parent?.y,
+      x2: geometry.gap?.x,
+      y2: geometry.gap?.y,
+    })
+  })
+
+  it('draws the insert on the very same canvas as the frame before it', () => {
+    const ready = frameGeometry(createReadyFrame(TREE, 64))
+    const { steps, root } = generateInsertSteps(TREE, 64)
+    const frames = toVisualFrames(steps, TREE, root)
+    const grown = frameGeometry(frames.at(-1) as BstFrame)
+
+    expect(grown.width).toBe(ready.width)
+    expect(grown.height).toBe(ready.height)
+  })
+})
+
+describe('layoutTree with a freshly inserted value', () => {
+  const { root } = generateInsertSteps(TREE, 64)
+
+  it('leaves every existing node exactly where it was', () => {
+    const base = layoutTree(TREE)
+    const grown = layoutTree(root, 64)
+    const baseByValue = new Map(base.nodes.map((node) => [node.value, node]))
+
+    for (const node of grown.nodes) {
+      if (node.value === 64) continue
+      expect(node.x).toBe(baseByValue.get(node.value)?.x)
+      expect(node.y).toBe(baseByValue.get(node.value)?.y)
+    }
+    expect(grown.width).toBe(base.width)
+    expect(grown.height).toBe(base.height)
+  })
+
+  it('drops the new node midway between its in-order neighbours', () => {
+    const base = layoutTree(TREE)
+    const grown = layoutTree(root, 64)
+    const inserted = grown.nodes.find((node) => node.value === 64)
+    const node60 = grown.nodes.find((node) => node.value === 60)
+    const node78 = grown.nodes.find((node) => node.value === 78)
+
+    expect(inserted?.x).toBe(((node60?.x ?? 0) + (node78?.x ?? 0)) / 2)
+    expect(inserted?.y).toBe((node78?.y ?? 0) + LEVEL_HEIGHT)
+    expect(inserted).toMatchObject({ parent: 78, side: 'left' })
+    expect(grown.edges).toHaveLength(base.edges.length + 1)
   })
 })
