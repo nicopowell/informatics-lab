@@ -1,3 +1,4 @@
+import './App.css'
 import { Navigate, Route, Routes } from "react-router";
 import SiteHeader from "./components/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
