@@ -11,9 +11,9 @@ function TopicsPage() {
 	}
 
 	return (
-		<section className="topics">
+    <section className="topics">
+			<p className="topics__kicker">{moduleInfo.subtitle}</p>
 			<h1 className="topics__title">{moduleInfo.title}</h1>
-			<p className="topics__subtitle">{moduleInfo.subtitle}</p>
 
       <div className="topics__grid">
         {moduleInfo.topics.map((topic) => (
