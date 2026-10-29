@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from "react-router";
 import { MODULES } from "../data/modules";
+import './catalogue.css'
 
 function ExperiencesPage() {
 	const { moduleId, topicId } = useParams<{ moduleId: string; topicId: string }>();
