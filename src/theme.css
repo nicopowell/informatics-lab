@@ -2,19 +2,22 @@
 /* Components must reference these variables, never raw hex values */
 
 :root {
-  /* Colors */
-  --color-bg: #0e1117;
-  --color-surface: #161b22;
-  --color-text: #e6edf3;
-  --color-muted: #8b949e;
-  --color-accent: #22d3ee;
-  --color-sorted: #3fb950;
-  --color-comparing: #f59e0b;
-  --color-danger: #f85149;
-  --color-border: #30363d;
+	/* Colors */
+	--color-bg: #101113;
+	--color-surface: #191b1e;
+	--color-text: #e6edf3;
+	--color-muted: #8b949e;
+	--color-accent: #22d3ee;
+	--color-sorted: #3fb950;
+	--color-comparing: #f59e0b;
+	--color-danger: #f85149;
+	--color-border: rgba(255, 255, 255, 0.08);
 
-  /* Typography */
-  --font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+	/* Typography */
+	--font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+	/* Radius */
+	--radius-sm: 6px;
+	--radius-md: 14px;
 }
-
