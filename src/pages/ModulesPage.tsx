@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { MODULES } from "../data/modules";
-import './catalogue.css'
+import "./catalogue.css";
+import ModuleArt from "../components/art/moduleArt";
 
 function ModulesPage() {
 	return (
@@ -12,7 +13,14 @@ function ModulesPage() {
 
 			<div className="modules__grid">
 				{MODULES.map((module) => (
-					<Link className="module-card" to={`/${module.id}`} key={module.id}>
+					<Link
+						className="module-card module-card--hero"
+						to={`/${module.id}`}
+						key={module.id}
+					>
+						<div className="module-card__art">
+							<ModuleArt id={module.id} />
+						</div>
 						<h2 className="module-card__title">{module.title}</h2>
 						<p className="module-card__subtitle">{module.subtitle}</p>
 					</Link>

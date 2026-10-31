@@ -85,6 +85,54 @@
 	color: var(--color-muted);
 }
 
+.module-card--hero {
+  position: relative;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  min-height: 20rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.module-card--hero .module-card__art {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 70%;
+  margin-bottom: 0;
+}
+
+.module-card--hero .module-card__art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.module-card--hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 60%,
+    var(--color-surface) 95%
+  );
+}
+
+.module-card--hero .module-card__title {
+  position: relative;
+  z-index: 1;
+  font-size: 1.35rem;
+  padding: 0 1.5rem;
+}
+
+.module-card--hero .module-card__subtitle {
+  position: relative;
+  z-index: 1;
+  font-size: 0.9rem;
+  padding: 0 1.5rem 1.6rem;
+}
+
 .experiences__empty {
 	margin: 2.5rem 0 0;
 	color: var(--color-muted);
