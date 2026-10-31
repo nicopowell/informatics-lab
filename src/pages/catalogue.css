@@ -1,0 +1,127 @@
+/* Catalogue pages (Modules, topics, experiences) */
+
+.modules__title,
+.topics__title,
+.experiences__title {
+	max-width: 30rem;
+	margin: 0;
+	font-size: clamp(2rem, 4.5vw, 3.25rem);
+	font-weight: 400;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+}
+
+.modules__title {
+	margin-bottom: 3.5rem;
+}
+
+.modules__title-accent {
+	color: var(--color-comparing);
+}
+
+.topics__kicker,
+.experiences__kicker {
+	margin: 0 0 0.9rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+.topics__title {
+  margin-bottom: 3.5rem;
+}
+
+.experiences__title {
+	margin-bottom: 3.5rem;
+}
+
+.modules__grid,
+.topics__grid,
+.experiences__grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1.5rem;
+}
+
+.module-card,
+.topic-card,
+.experience-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	padding: 1.4rem 1.5rem 1.6rem;
+	text-decoration: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	transition:
+		border-color 0.2s ease,
+		transform 0.2s ease;
+}
+
+.module-card:hover,
+.topic-card:hover,
+.experience-card:hover {
+	border-color: var(--color-accent);
+	transform: translateY(-2px);
+}
+
+.module-card__title,
+.topic-card__title,
+.experience-card__title {
+	font-size: 1.15rem;
+	font-weight: 600;
+}
+
+.module-card__subtitle,
+.topic-card__subtitle,
+.experience-card__subtitle {
+	font-size: 0.85rem;
+	line-height: 1.5;
+	color: var(--color-muted);
+}
+
+.experiences__empty {
+	margin: 2.5rem 0 0;
+	color: var(--color-muted);
+}
+
+.experience-card__meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.experience-card--coming-soon {
+  cursor: default;
+  border-style: dashed;
+  background: transparent;
+  opacity: 0.6;
+}
+
+.experience-card--coming-soon:hover {
+  border-color: var(--color-border);
+  transform: none;
+}
+
+@media (max-width: 1024px) {
+	.modules__grid,
+	.topics__grid,
+	.experiences__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 720px) {
+	.modules__grid,
+	.topics__grid,
+	.experiences__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
