@@ -2,6 +2,7 @@ import { Navigate, useParams } from "react-router";
 import { MODULES } from "../data/modules";
 import "./catalogue.css";
 import CatalogueCard from "../components/CatalogueCard";
+import TopicArt from "../components/art/topicArt";
 
 function TopicsPage() {
 	const { moduleId } = useParams<{ moduleId: string }>();
@@ -24,6 +25,7 @@ function TopicsPage() {
 						subtitle={topic.description}
 						to={`/${moduleInfo.id}/${topic.id}`}
 						modifier={moduleInfo.id}
+            art={<TopicArt id={topic.id} />}
 					/>
 				))}
 			</div>

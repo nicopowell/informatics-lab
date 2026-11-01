@@ -3,6 +3,7 @@ import { MODULES } from "../data/modules";
 import "./catalogue.css";
 import { IMPLEMENTED_EXPERIENCES } from "../data/experiences";
 import CatalogueCard from "../components/CatalogueCard";
+import ExperienceArt from "../components/art/experienceArt";
 
 function ExperiencesPage() {
 	const { moduleId, topicId } = useParams<{ moduleId: string; topicId: string }>();
@@ -34,6 +35,7 @@ function ExperiencesPage() {
 								: undefined
 						}
 						modifier={moduleInfo.id}
+            art={<ExperienceArt id={experience.id} />}
 					/>
 				))}
 			</div>

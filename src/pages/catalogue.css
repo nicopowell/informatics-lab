@@ -93,6 +93,7 @@
 
 .catalogue-card__art {
 	margin-bottom: 0.5rem;
+  color: var(--card-accent, var(--color-text));
 }
 
 .catalogue-card__art svg {
