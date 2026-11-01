@@ -1,18 +1,20 @@
-/* Catalogue pages (Modules, topics, experiences) */
+/*
+    * Catalogue pages (modules, topics, experiences): page titles, grids and
+    * the shared catalogue card. Card chrome lives in one .catalogue-card
+    * block; variants are modifiers. Chrome styles live in src/App.css.
+    */
+
+/* --- Page titles and kickers --- */
 
 .modules__title,
 .topics__title,
 .experiences__title {
 	max-width: 30rem;
-	margin: 0;
+	margin: 0 0 3.5rem;
 	font-size: clamp(2rem, 4.5vw, 3.25rem);
 	font-weight: 400;
 	line-height: 1.15;
 	letter-spacing: -0.02em;
-}
-
-.modules__title {
-	margin-bottom: 3.5rem;
 }
 
 .modules__title-accent {
@@ -28,13 +30,7 @@
 	color: var(--color-muted);
 }
 
-.topics__title {
-  margin-bottom: 3.5rem;
-}
-
-.experiences__title {
-	margin-bottom: 3.5rem;
-}
+/* --- Grids --- */
 
 .modules__grid,
 .topics__grid,
@@ -42,120 +38,6 @@
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: 1.5rem;
-}
-
-.module-card,
-.topic-card,
-.experience-card {
-	display: flex;
-	flex-direction: column;
-	gap: 0.7rem;
-	padding: 1.4rem 1.5rem 1.6rem;
-	text-decoration: none;
-	color: inherit;
-	text-align: left;
-	cursor: pointer;
-	background: var(--color-surface);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-md);
-	transition:
-		border-color 0.2s ease,
-		transform 0.2s ease;
-}
-
-.module-card:hover,
-.topic-card:hover,
-.experience-card:hover {
-	border-color: var(--color-accent);
-	transform: translateY(-2px);
-}
-
-.module-card__title,
-.topic-card__title,
-.experience-card__title {
-	font-size: 1.15rem;
-	font-weight: 600;
-}
-
-.module-card__subtitle,
-.topic-card__subtitle,
-.experience-card__subtitle {
-	font-size: 0.85rem;
-	line-height: 1.5;
-	color: var(--color-muted);
-}
-
-.module-card--hero {
-  position: relative;
-  justify-content: flex-end;
-  gap: 0.45rem;
-  min-height: 20rem;
-  padding: 0;
-  overflow: hidden;
-}
-
-.module-card--hero .module-card__art {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 70%;
-  margin-bottom: 0;
-}
-
-.module-card--hero .module-card__art svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.module-card--hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    transparent 60%,
-    var(--color-surface) 95%
-  );
-}
-
-.module-card--hero .module-card__title {
-  position: relative;
-  z-index: 1;
-  font-size: 1.35rem;
-  padding: 0 1.5rem;
-}
-
-.module-card--hero .module-card__subtitle {
-  position: relative;
-  z-index: 1;
-  font-size: 0.9rem;
-  padding: 0 1.5rem 1.6rem;
-}
-
-.experiences__empty {
-	margin: 2.5rem 0 0;
-	color: var(--color-muted);
-}
-
-.experience-card__meta {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-}
-
-.experience-card--coming-soon {
-  cursor: default;
-  border-style: dashed;
-  background: transparent;
-  opacity: 0.6;
-}
-
-.experience-card--coming-soon:hover {
-  border-color: var(--color-border);
-  transform: none;
 }
 
 @media (max-width: 1024px) {
@@ -172,4 +54,146 @@
 	.experiences__grid {
 		grid-template-columns: minmax(0, 1fr);
 	}
+}
+
+/* --- Catalogue card: one block, modifiers below --- */
+
+.catalogue-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.7rem;
+	padding: 1.4rem 1.5rem 1.6rem;
+	text-decoration: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	transition:
+		border-color 0.2s ease,
+		transform 0.2s ease;
+}
+
+.catalogue-card:hover {
+	border-color: var(--card-accent, var(--color-accent));
+	transform: translateY(-2px);
+}
+
+.catalogue-card__title {
+	font-size: 1.15rem;
+	font-weight: 600;
+}
+
+.catalogue-card__subtitle {
+	font-size: 0.85rem;
+	line-height: 1.5;
+	color: var(--color-muted);
+}
+
+.catalogue-card__art {
+	margin-bottom: 0.5rem;
+}
+
+.catalogue-card__art svg {
+	display: block;
+	width: 100%;
+	height: 8rem;
+}
+
+.catalogue-card__meta {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+/* Hero variant: tall card, art filling the top, text over a fade. */
+
+.catalogue-card--hero {
+	position: relative;
+	justify-content: flex-end;
+	gap: 0.45rem;
+	min-height: 20rem;
+	padding: 0;
+	overflow: hidden;
+}
+
+.catalogue-card--hero .catalogue-card__art {
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 70%;
+	margin-bottom: 0;
+}
+
+.catalogue-card--hero .catalogue-card__art svg {
+	height: 100%;
+}
+
+/* Fades the artwork into the card so the text stays readable. */
+.catalogue-card--hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.catalogue-card--hero .catalogue-card__title {
+	position: relative;
+	z-index: 1;
+	font-size: 1.35rem;
+	padding: 0 1.5rem;
+}
+
+.catalogue-card--hero .catalogue-card__subtitle {
+	position: relative;
+	z-index: 1;
+	font-size: 0.9rem;
+	padding: 0 1.5rem 1.6rem;
+}
+
+.catalogue-card--hero .catalogue-card__meta {
+	position: relative;
+	z-index: 1;
+	padding: 0 1.5rem;
+}
+
+/* Coming soon: visible but not clickable. */
+
+.catalogue-card--coming-soon {
+	cursor: default;
+	border-style: dashed;
+	background: transparent;
+	opacity: 0.6;
+}
+
+.catalogue-card--coming-soon:hover {
+	border-color: var(--color-border);
+	transform: none;
+}
+
+/* Per-module hover accent. */
+
+.catalogue-card--algorithms {
+	--card-accent: var(--color-comparing);
+}
+
+.catalogue-card--numerical {
+	--card-accent: var(--color-violet);
+}
+
+.catalogue-card--networks {
+	--card-accent: var(--color-teal);
+}
+
+.catalogue-card--operating-systems {
+	--card-accent: var(--color-rose);
+}
+
+/* --- Misc --- */
+
+.experiences__empty {
+	margin: 2.5rem 0 0;
+	color: var(--color-muted);
 }
