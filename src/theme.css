@@ -12,6 +12,11 @@
 	--color-comparing: #f59e0b;
 	--color-danger: #f85149;
 	--color-border: rgba(255, 255, 255, 0.08);
+  --color-sky: #60a5fa;
+  --color-violet: #a78bfa;
+  --color-teal: #2dd4bf;
+  --color-rose: #fb7185;
+  
 
 	/* Typography */
 	--font-sans: "IBM Plex Sans Variable", system-ui, sans-serif;

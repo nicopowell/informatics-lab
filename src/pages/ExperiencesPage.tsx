@@ -1,7 +1,9 @@
-import { Link, Navigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { MODULES } from "../data/modules";
 import "./catalogue.css";
 import { IMPLEMENTED_EXPERIENCES } from "../data/experiences";
+import CatalogueCard from "../components/CatalogueCard";
+import ExperienceArt from "../components/art/experienceArt";
 
 function ExperiencesPage() {
 	const { moduleId, topicId } = useParams<{ moduleId: string; topicId: string }>();
@@ -22,37 +24,20 @@ function ExperiencesPage() {
 			<h1 className="experiences__title">{topic.title}</h1>
 
 			<div className="experiences__grid">
-				{topic.experiences.map((experience) => {
-					const isImplemented = IMPLEMENTED_EXPERIENCES.has(experience.id);
-					const cardContent = (
-						<>
-							<h2 className="experience-card__title">{experience.title}</h2>
-							<p className="experience-card__subtitle">{experience.description}</p>
-						</>
-					);
-
-					if (isImplemented) {
-						return (
-							<Link
-								className="experience-card"
-								to={`/${moduleInfo.id}/${topic.id}/${experience.id}`}
-								key={experience.id}
-							>
-								{cardContent}
-							</Link>
-						);
-					}
-
-					return (
-						<div
-							className="experience-card experience-card--coming-soon"
-							key={experience.id}
-						>
-              <span className="experience-card__meta">Coming Soon</span>
-              {cardContent}
-            </div>
-					);
-				})}
+				{topic.experiences.map((experience) => (
+					<CatalogueCard
+						key={experience.id}
+						title={experience.title}
+						subtitle={experience.description}
+						to={
+							IMPLEMENTED_EXPERIENCES.has(experience.id)
+								? `/${moduleInfo.id}/${topic.id}/${experience.id}`
+								: undefined
+						}
+						modifier={moduleInfo.id}
+            art={<ExperienceArt id={experience.id} />}
+					/>
+				))}
 			</div>
 
 			{topic.experiences.length === 0 ? (

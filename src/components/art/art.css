@@ -1,0 +1,15 @@
+.module-art--algorithms {
+  color: var(--color-comparing);
+}
+
+.module-art--numerical {
+  color: var(--color-sky);
+}
+
+.module-art--networks {
+  color: var(--color-teal);
+}
+
+.module-art--operating-systems {
+  color: var(--color-rose);
+}

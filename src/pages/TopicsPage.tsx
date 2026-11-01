@@ -1,6 +1,8 @@
-import { Link, Navigate, useParams } from "react-router";
+import { Navigate, useParams } from "react-router";
 import { MODULES } from "../data/modules";
-import './catalogue.css'
+import "./catalogue.css";
+import CatalogueCard from "../components/CatalogueCard";
+import TopicArt from "../components/art/topicArt";
 
 function TopicsPage() {
 	const { moduleId } = useParams<{ moduleId: string }>();
@@ -11,22 +13,22 @@ function TopicsPage() {
 	}
 
 	return (
-    <section className="topics">
+		<section className="topics">
 			<p className="topics__kicker">{moduleInfo.subtitle}</p>
 			<h1 className="topics__title">{moduleInfo.title}</h1>
 
-      <div className="topics__grid">
-        {moduleInfo.topics.map((topic) => (
-          <Link
-            className="topic-card"
-            to={`/${moduleInfo.id}/${topic.id}`}
-            key={topic.id}
-          >
-            <h2 className="topic-card__title">{topic.title}</h2>
-            <p className="topic-card__subtitle">{topic.description}</p>
-          </Link>
-        ))}
-      </div>
+			<div className="topics__grid">
+				{moduleInfo.topics.map((topic) => (
+					<CatalogueCard
+						key={topic.id}
+						title={topic.title}
+						subtitle={topic.description}
+						to={`/${moduleInfo.id}/${topic.id}`}
+						modifier={moduleInfo.id}
+            art={<TopicArt id={topic.id} />}
+					/>
+				))}
+			</div>
 		</section>
 	);
 }
