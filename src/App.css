@@ -26,6 +26,12 @@
 	opacity: 0.75;
 }
 
+.site-header__logo {
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
 .site-header__wordmark {
 	font-size: 0.8rem;
 	font-weight: 600;
