@@ -4,6 +4,7 @@ import ModulesPage from "./pages/ModulesPage";
 import TopicsPage from "./pages/TopicsPage";
 import ExperiencesPage from "./pages/ExperiencesPage";
 import SiteLayout from "./components/SiteLayout";
+import KitPage from "./pages/KitPage";
 
 function App() {
 	return (
@@ -11,6 +12,7 @@ function App() {
 			<Route element={<SiteLayout />}>
 				<Route path="/" element={<ModulesPage />} />
 				<Route path="/about" element={<div>About</div>} />
+        <Route path="/kit" element={<KitPage />} />
 				<Route path="/:moduleId" element={<TopicsPage />} />
 				<Route path="/:moduleId/:topicId" element={<ExperiencesPage />} />
 				<Route path="/:moduleId/:topicId/:experienceId" element={<div>Experience</div>} />

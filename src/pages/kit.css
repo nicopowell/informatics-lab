@@ -1,0 +1,44 @@
+.kit__kicker {
+	margin: 0 0 0.9rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+.kit__title {
+	margin: 0 0 0.5rem;
+	font-size: clamp(2rem, 4.5vw, 3.25rem);
+	font-weight: 400;
+	line-height: 1.15;
+	letter-spacing: -0.02em;
+}
+
+.kit__note {
+	margin: 0 0 2.5rem;
+	max-width: 40rem;
+	color: var(--color-muted);
+}
+
+.kit__block {
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+}
+
+.kit__block-title {
+	margin: 0 0 1rem;
+	font-size: 0.72rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--color-muted);
+}
+
+.kit__state {
+	margin: 0.75rem 0 0;
+	font-family: var(--font-mono);
+	font-size: 0.8rem;
+	color: var(--color-muted);
+}
