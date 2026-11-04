@@ -1,0 +1,14 @@
+{
+  "name": "pseudocode",
+  "scopeName": "source.pseudocode",
+  "repository": {},
+  "patterns": [
+    { "name": "comment.line.double-slash.pseudocode", "match": "//.*$" },
+    {
+      "name": "keyword.control.pseudocode",
+      "match": "\\b(procedure|while|for|to|if|then|else|do|return|break|repeat|until|and|or|not|true|false|swap|length)\\b"
+    },
+    { "name": "constant.numeric.pseudocode", "match": "\\b\\d+\\b" },
+    { "name": "keyword.operator.pseudocode", "match": "<-|->|[<>]=?|==|!=|[/+\\-*]" }
+  ]
+}
