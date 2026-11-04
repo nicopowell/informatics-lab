@@ -2,6 +2,8 @@ import { useState } from "react";
 import CodeToggle from "../experience/code-panel/CodeToggle";
 import HighlightedCode from "../experience/code-panel/HighlightedCode";
 import MarkdownDescription from "../experience/markdown/MarkdownDescription";
+import CodePanel from "../experience/code-panel/CodePanel";
+import type { ReferenceLanguage } from "../experience/code-panel/CodePanel";
 
 const PSEUDOCODE_SAMPLE = `procedure insertionSort(A : list of numbers)
       n <- length(A)
@@ -58,6 +60,13 @@ const DESCRIPTION_SAMPLE = `# Insertion Sort
   - **Best case:** O(n), on an ordered array every pass costs one comparison
   - **Stable:** the scan stops on an equal value, so equal values keep their order`;
 
+const REFERENCE_SAMPLES: ReferenceLanguage[] = [
+	{ id: "pseudocode", label: "Pseudocode", code: PSEUDOCODE_SAMPLE },
+	{ id: "python", label: "Python", code: PYTHON_SAMPLE },
+	{ id: "javascript", label: "JavaScript", code: JAVASCRIPT_SAMPLE },
+	{ id: "cpp", label: "C++", code: CPP_SAMPLE },
+];
+
 function KitPage() {
 	const [codeOpen, setCodeOpen] = useState(false);
 
@@ -70,23 +79,24 @@ function KitPage() {
 			</p>
 
 			<section className="kit__block">
-				<h2 className="kit__block-title">CodeToggle</h2>
+				<h2 className="kit__block-title">CodeToggle + CodePanel</h2>
 				<CodeToggle open={codeOpen} onToggle={() => setCodeOpen(!codeOpen)} />
-				<p className="kit__state">State: {codeOpen ? "open" : "closed"}</p>
+				<p className="kit__state">state: {codeOpen ? "open" : "closed"}</p>
+				<CodePanel languages={REFERENCE_SAMPLES} open={codeOpen} />
 			</section>
 
 			<section className="kit__block">
-				<h2 className="kit__block-title">HighlightedCode - pseudocode</h2>
+				<h2 className="kit__block-title">HighlightedCode — pseudocode</h2>
 				<HighlightedCode language="pseudocode" code={PSEUDOCODE_SAMPLE} />
 			</section>
 
 			<section className="kit__block">
-				<h2 className="kit__block-title">HighlightedCode - python</h2>
+				<h2 className="kit__block-title">HighlightedCode — python</h2>
 				<HighlightedCode language="python" code={PYTHON_SAMPLE} />
 			</section>
 
 			<section className="kit__block">
-				<h2 className="kit__block-title">HighlightedCode - javascript</h2>
+				<h2 className="kit__block-title">HighlightedCode — javascript</h2>
 				<HighlightedCode language="javascript" code={JAVASCRIPT_SAMPLE} />
 			</section>
 

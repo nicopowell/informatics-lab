@@ -77,7 +77,7 @@ function HighlightedCode({ language, code }: HighlightedCodeProps) {
 			? highlighted.html
 			: null;
 
-	if (html) return <span dangerouslySetInnerHTML={{ __html: html }} />;
+	if (html) return <span className="highlighted-code" dangerouslySetInnerHTML={{ __html: html }} />;
 
 	return (
 		<pre>
