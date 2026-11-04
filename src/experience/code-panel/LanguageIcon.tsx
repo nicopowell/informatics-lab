@@ -1,7 +1,7 @@
-import cppUrl from '../assets/language-icons/cpp.svg'
-import javascriptUrl from '../assets/language-icons/javascript.svg'
-import pythonUrl from '../assets/language-icons/python.svg'
-import pseudocodeUrl from '../assets/language-icons/pseudocode.svg'
+import cppUrl from '../../assets/language-icons/cpp.svg'
+import javascriptUrl from '../../assets/language-icons/javascript.svg'
+import pythonUrl from '../../assets/language-icons/python.svg'
+import pseudocodeUrl from '../../assets/language-icons/pseudocode.svg'
 
 const LANGUAGE_ICONS: Record<string, string> = {
   pseudocode: pseudocodeUrl,
