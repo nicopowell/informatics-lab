@@ -1,20 +1,39 @@
 import { useEffect, useState } from "react";
-import { createHighlighter, type Highlighter } from "shiki";
+
 import pseudocodeGrammar from "./pseudocode.tmLanguage.json";
+import type { HighlighterCore } from "shiki";
 
 const THEME = "vitesse-dark";
-const BUNDLED_LANGS = ["javascript", "python", "cpp"];
-const SUPPORTED_LANGS = new Set([...BUNDLED_LANGS, pseudocodeGrammar.name]);
+const SUPPORTED_LANGS = new Set(["javascript", "python", "cpp", pseudocodeGrammar.name]);
 
-// One shared highlighter: the theme, the grammars and the pseudocode rules load
-// once, as a lazy chunk, and every code panel reuses the same instance.
-let highlighterPromise: Promise<Highlighter> | null = null;
+// One shared highlighter: core, engine, grammars and theme load once, as lazy
+// chunks, and every code panel reuses the same instance.
+let highlighterPromise: Promise<HighlighterCore> | null = null;
 
-function getHighlighter(): Promise<Highlighter> {
-	highlighterPromise ??= createHighlighter({
-		themes: [THEME],
-		langs: [...BUNDLED_LANGS, pseudocodeGrammar],
-	});
+function getHighlighter(): Promise<HighlighterCore> {
+	highlighterPromise ??= (async () => {
+		const [
+			{ createHighlighterCore },
+			{ createJavaScriptRegexEngine },
+			javascriptLang,
+			pythonLang,
+			cppLang,
+			vitesseDark,
+		] = await Promise.all([
+			import("shiki/core"),
+			import("shiki/engine/javascript"),
+			import("shiki/langs/javascript.mjs"),
+			import("shiki/langs/python.mjs"),
+			import("shiki/langs/cpp.mjs"),
+			import("shiki/themes/vitesse-dark.mjs"),
+		]);
+
+		return createHighlighterCore({
+			themes: [vitesseDark.default],
+			langs: [javascriptLang.default, pythonLang.default, cppLang.default, pseudocodeGrammar],
+			engine: createJavaScriptRegexEngine(),
+		});
+	})();
 	return highlighterPromise;
 }
 
