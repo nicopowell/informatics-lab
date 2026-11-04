@@ -1,0 +1,40 @@
+.experience-description {
+	color: var(--color-muted);
+}
+
+.experience-description h1 {
+	margin: 0 0 0.75rem;
+	font-size: 1.75rem;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	color: var(--color-text);
+}
+
+.experience-description h2 {
+	margin: 1.5rem 0 0.5rem;
+	font-size: 1.2rem;
+	color: var(--color-text);
+}
+
+.experience-description p {
+	margin: 0 0 1rem;
+}
+
+.experience-description ul {
+	margin: 0 0 1rem;
+	padding-left: 1.35rem;
+}
+
+.experience-description li {
+	margin-bottom: 0.35rem;
+}
+
+.experience-description li:last-child,
+.experience-description p:last-child,
+.experience-description ul:last-child {
+	margin-bottom: 0;
+}
+
+.experience-description strong {
+	color: var(--color-text);
+}

@@ -1,0 +1,16 @@
+.code-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: var(--font-mono);
+}
+
+.code-toggle__icon {
+	color: var(--color-comparing);
+	font-weight: 600;
+}
+
+/* An open panel is a state, so the label reads as active text. */
+.code-toggle--active {
+	color: var(--color-text);
+}

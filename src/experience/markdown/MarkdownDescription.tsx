@@ -1,4 +1,5 @@
 import Markdown from "react-markdown"
+import './markdown.css'
 
 type MarkdownDescriptionProps = {
   source: string
@@ -6,7 +7,9 @@ type MarkdownDescriptionProps = {
 
 function MarkdownDescription({ source }: MarkdownDescriptionProps) {
   return (
-    <Markdown>{source}</Markdown>
+    <div className="experience-description">
+      <Markdown>{source}</Markdown>
+    </div>
   )
 }
 

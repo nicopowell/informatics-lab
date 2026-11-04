@@ -1,3 +1,5 @@
+import './code-panel.css'
+
 type CodeToggleProps = {
   open: boolean
   onToggle: () => void
