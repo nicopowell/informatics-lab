@@ -9,16 +9,14 @@ const DESCRIPTION = `# Bubble Sort
   - Sections are required props, so a page cannot ship without them
   `;
 
-function Placeholder() {
-  return (
-    <ExperienceLayout
-      visualization={
-        <p className="experience__status">Placeholder visualization</p>
-      }
-      controls={<span>Placeholder controls</span>}
-      description={DESCRIPTION}
-    />
-  )
+function PlaceholderPage() {
+	return (
+		<ExperienceLayout
+			visualization={<p className="experience__status">Placeholder visualization</p>}
+			controls={<span>Placeholder controls</span>}
+			description={DESCRIPTION}
+		/>
+	);
 }
 
-export default Placeholder
+export default PlaceholderPage;
