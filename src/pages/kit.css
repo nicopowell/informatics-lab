@@ -42,3 +42,20 @@
 	font-size: 0.8rem;
 	color: var(--color-muted);
 }
+
+.kit__slot {
+	display: grid;
+	place-items: center;
+	min-height: 12rem;
+	border: 1px dashed var(--color-border);
+	border-radius: var(--radius-sm);
+	color: var(--color-muted);
+	font-size: 0.8rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.kit__fake-controls {
+	display: flex;
+	gap: 0.5rem;
+}

@@ -150,7 +150,7 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	overflow: auto;
+	overflow: hidden;
 }
 
 .code-panel__body pre {
@@ -160,8 +160,9 @@
 	font-family: var(--font-mono);
 	font-size: 0.78rem;
 	line-height: 1.65;
+	overflow: auto;
 }
 
-   .highlighted-code {
-      display: contents;
-   }
+.highlighted-code {
+	display: contents;
+}

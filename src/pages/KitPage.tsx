@@ -4,6 +4,7 @@ import HighlightedCode from "../experience/code-panel/HighlightedCode";
 import MarkdownDescription from "../experience/markdown/MarkdownDescription";
 import CodePanel from "../experience/code-panel/CodePanel";
 import type { ReferenceLanguage } from "../experience/code-panel/CodePanel";
+import ExperienceLayout from "../experience/layout/ExperienceLayout";
 
 const PSEUDOCODE_SAMPLE = `procedure insertionSort(A : list of numbers)
       n <- length(A)
@@ -67,6 +68,15 @@ const REFERENCE_SAMPLES: ReferenceLanguage[] = [
 	{ id: "cpp", label: "C++", code: CPP_SAMPLE },
 ];
 
+const LAYOUT_DESCRIPTION = `# Placeholder experience
+
+  The shared frame renders **visualization**, **controls** and this description in
+  that order. The code panel appears only when a reference is provided.
+
+  - Visualization and controls arrive as nodes
+  - The frame owns the section order and spacing
+  - The panel splits the layout instead of overlaying it`;
+
 function KitPage() {
 	const [codeOpen, setCodeOpen] = useState(false);
 
@@ -108,6 +118,36 @@ function KitPage() {
 			<section className="kit__block">
 				<h2 className="kit__block-title">MarkdownDescription</h2>
 				<MarkdownDescription source={DESCRIPTION_SAMPLE} />
+			</section>
+
+			<section className="kit__block">
+				<h2 className="kit__block-title">ExperienceLayout</h2>
+				<ExperienceLayout
+					visualization={
+						<>
+							<p className="experience__status">Ready to sort</p>
+							<div className="kit__slot">Visualization slot</div>
+						</>
+					}
+					controls={
+						<>
+							<div className="kit__fake-controls">
+								<button type="button" className="ui-button">
+									Play
+								</button>
+								<button type="button" className="ui-button">
+									Step
+								</button>
+								<button type="button" className="ui-button">
+									Reset
+								</button>
+							</div>
+							<span className="kit__state">controls slot</span>
+						</>
+					}
+					description={LAYOUT_DESCRIPTION}
+					reference={REFERENCE_SAMPLES}
+				/>
 			</section>
 		</section>
 	);
