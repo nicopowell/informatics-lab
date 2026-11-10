@@ -5,6 +5,7 @@ import TopicsPage from "./pages/TopicsPage";
 import ExperiencesPage from "./pages/ExperiencesPage";
 import SiteLayout from "./components/SiteLayout";
 import KitPage from "./pages/KitPage";
+import ExperiencePage from "./pages/ExperiencePage";
 
 function App() {
 	return (
@@ -15,7 +16,7 @@ function App() {
         <Route path="/kit" element={<KitPage />} />
 				<Route path="/:moduleId" element={<TopicsPage />} />
 				<Route path="/:moduleId/:topicId" element={<ExperiencesPage />} />
-				<Route path="/:moduleId/:topicId/:experienceId" element={<div>Experience</div>} />
+				<Route path="/:moduleId/:topicId/:experienceId" element={<ExperiencePage />} />
 				<Route path="*" element={<Navigate to="/" replace />} />
 			</Route>
 		</Routes>
