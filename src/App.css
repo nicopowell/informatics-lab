@@ -26,6 +26,12 @@
 	opacity: 0.75;
 }
 
+.site-header__logo {
+	flex: none;
+	width: 1.6rem;
+	height: 1.6rem;
+}
+
 .site-header__wordmark {
 	font-size: 0.8rem;
 	font-weight: 600;
@@ -107,4 +113,31 @@
 
 .site-breadcrumb__current {
 	color: var(--color-text);
+}
+
+.ui-button {
+	font: inherit;
+	font-size: 0.7rem;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	text-decoration: none;
+	color: var(--color-muted);
+	background: transparent;
+	border: 1px solid var(--color-border);
+	border-radius: 6px;
+	padding: 0.45rem 0.9rem;
+	cursor: pointer;
+	transition:
+		color 0.15s ease,
+		border-color 0.15s ease;
+}
+
+.ui-button:hover {
+	color: var(--color-text);
+	border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ui-button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
 }

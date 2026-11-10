@@ -1,8 +1,10 @@
-/*
-  Ids of the experiences that exist as implemented code. The catalogue
-  (src/data/modules.ts) describes the full plan; this set marks what is
-  actually built. Catalogue cards render experiences outside this set as
-  coming soon and not clickable.
-*/
+import type { ComponentType } from "react";
+import PlaceholderPage from "@/experiences/algorithms/sorting/bubble-sort/page/PlaceholderPage";
 
-export const IMPLEMENTED_EXPERIENCES: ReadonlySet<string> = new Set([]);
+export const EXPERIENCES: Record<string, ComponentType> = {
+	"bubble-sort": PlaceholderPage,
+};
+
+export const IMPLEMENTED_EXPERIENCES: ReadonlySet<string> = new Set(
+  Object.keys(EXPERIENCES)
+)

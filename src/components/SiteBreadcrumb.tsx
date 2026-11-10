@@ -2,9 +2,14 @@ import { Link, useParams } from "react-router";
 import { MODULES } from "../data/modules";
 
 function SiteBreadcrumb() {
-	const { moduleId, topicId } = useParams<{ moduleId: string; topicId: string }>();
+	const { moduleId, topicId, experienceId } = useParams<{
+		moduleId: string;
+		topicId: string;
+		experienceId: string;
+	}>();
 	const moduleInfo = MODULES.find((m) => m.id === moduleId);
 	const topic = moduleInfo?.topics.find((t) => t.id === topicId);
+  const experience = topic?.experiences.find((e) => e.id === experienceId)
 
 	const trail: { label: string; to: string }[] = [{ label: "Home", to: "/" }];
 
@@ -15,6 +20,13 @@ function SiteBreadcrumb() {
 	if (moduleInfo && topic) {
 		trail.push({ label: topic.title, to: `/${moduleInfo.id}/${topic.id}` });
 	}
+
+  if (moduleInfo && topic && experience) {
+    trail.push({
+      label: experience.title,
+      to: `/${moduleInfo.id}/${topic.id}/${experience.id}`
+    })
+  }
 
 	return (
 		<nav className="site-breadcrumb" aria-label="Breadcrumb">
